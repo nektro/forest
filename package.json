@@ -1,0 +1,15 @@
+{
+  "name": "arborist",
+  "version": "0.1.0",
+  "description": "A bundle of tree-sitter grammars, packaged for the web",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "bun web/build.ts",
+    "serve": "bun web/serve.ts"
+  },
+  "devDependencies": {
+    "web-tree-sitter": "0.27.2"
+  }
+}
