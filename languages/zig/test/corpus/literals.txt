@@ -1,0 +1,121 @@
+================================================================================
+Numbers
+================================================================================
+
+const a = 42;
+const b = 0xFF_FF;
+const c = 0o755;
+const d = 0b1010;
+const e = 1_000.5e+3;
+const f = 0x1p-3;
+const g = 1e10;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (integer))
+  (variable_declaration
+    name: (identifier)
+    value: (integer))
+  (variable_declaration
+    name: (identifier)
+    value: (integer))
+  (variable_declaration
+    name: (identifier)
+    value: (integer))
+  (variable_declaration
+    name: (identifier)
+    value: (float))
+  (variable_declaration
+    name: (identifier)
+    value: (float))
+  (variable_declaration
+    name: (identifier)
+    value: (float)))
+
+================================================================================
+Characters and strings
+================================================================================
+
+const a = 'a';
+const b = '\n';
+const c = "hello\x41\u{1F600}\"";
+const d = "// not a comment";
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (character))
+  (variable_declaration
+    name: (identifier)
+    value: (character))
+  (variable_declaration
+    name: (identifier)
+    value: (string
+      (string_content)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)))
+  (variable_declaration
+    name: (identifier)
+    value: (string
+      (string_content))))
+
+================================================================================
+Multiline strings
+================================================================================
+
+const a =
+    \\line one
+    \\line two
+;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (multiline_string)))
+
+================================================================================
+Quoted identifiers
+================================================================================
+
+const @"weird name" = 1;
+const a = s.@"0";
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (integer))
+  (variable_declaration
+    name: (identifier)
+    value: (field_expression
+      object: (identifier)
+      member: (identifier))))
+
+================================================================================
+Comments
+================================================================================
+
+// plain
+//// also plain
+/// doc
+const a = 1; // trailing
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (comment)
+  (comment)
+  (doc_comment)
+  (variable_declaration
+    name: (identifier)
+    value: (integer))
+  (comment))

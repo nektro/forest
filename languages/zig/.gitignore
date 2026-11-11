@@ -1,0 +1,5 @@
+target/
+build/
+prebuilds/
+node_modules/
+parser.c

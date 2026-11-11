@@ -1,0 +1,315 @@
+================================================================================
+Binary precedence
+================================================================================
+
+const a = x or y and z == w | v << 1 + 2 * 3;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (binary_expression
+      left: (identifier)
+      right: (binary_expression
+        left: (identifier)
+        right: (binary_expression
+          left: (identifier)
+          right: (binary_expression
+            left: (identifier)
+            right: (binary_expression
+              left: (identifier)
+              right: (binary_expression
+                left: (integer)
+                right: (binary_expression
+                  left: (integer)
+                  right: (integer))))))))))
+
+================================================================================
+Prefix operators and try
+================================================================================
+
+const a = -x + !y;
+const b = try foo() orelse return error.Oops;
+const c = &arr[0];
+const d = -%x;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (binary_expression
+      left: (unary_expression
+        operand: (identifier))
+      right: (unary_expression
+        operand: (identifier))))
+  (variable_declaration
+    name: (identifier)
+    value: (binary_expression
+      left: (unary_expression
+        operand: (call_expression
+          function: (identifier)
+          arguments: (arguments)))
+      right: (return_expression
+        value: (error_value
+          name: (identifier)))))
+  (variable_declaration
+    name: (identifier)
+    value: (unary_expression
+      operand: (index_expression
+        object: (identifier)
+        index: (integer))))
+  (variable_declaration
+    name: (identifier)
+    value: (unary_expression
+      operand: (identifier))))
+
+================================================================================
+Catch with payload
+================================================================================
+
+const a = foo() catch |err| return err;
+const b = foo() catch 0;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (binary_expression
+      left: (call_expression
+        function: (identifier)
+        arguments: (arguments))
+      payload: (payload
+        (identifier))
+      right: (return_expression
+        value: (identifier))))
+  (variable_declaration
+    name: (identifier)
+    value: (binary_expression
+      left: (call_expression
+        function: (identifier)
+        arguments: (arguments))
+      right: (integer))))
+
+================================================================================
+Keyword expressions extend as far as possible
+================================================================================
+
+const a = if (c) x else y + 1;
+const b = for (xs) |x| {
+    if (x) break true;
+} else false;
+const c = blk: {
+    break :blk 1;
+};
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (if_expression
+      condition: (identifier)
+      consequence: (identifier)
+      alternative: (binary_expression
+        left: (identifier)
+        right: (integer))))
+  (variable_declaration
+    name: (identifier)
+    value: (for_expression
+      input: (identifier)
+      payload: (payload
+        (identifier))
+      body: (block
+        (if_statement
+          condition: (identifier)
+          consequence: (break_expression
+            value: (identifier))))
+      alternative: (identifier)))
+  (variable_declaration
+    name: (identifier)
+    value: (block
+      label: (identifier)
+      (expression_statement
+        (break_expression
+          label: (identifier)
+          value: (integer))))))
+
+================================================================================
+Suffix expressions
+================================================================================
+
+const a = b.c().?.*[0..n :0];
+const d = e[1..];
+const f = g[i];
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (slice_expression
+      object: (dereference_expression
+        operand: (unwrap_expression
+          operand: (call_expression
+            function: (field_expression
+              object: (identifier)
+              member: (identifier))
+            arguments: (arguments))))
+      start: (integer)
+      end: (identifier)
+      sentinel: (integer)))
+  (variable_declaration
+    name: (identifier)
+    value: (slice_expression
+      object: (identifier)
+      start: (integer)))
+  (variable_declaration
+    name: (identifier)
+    value: (index_expression
+      object: (identifier)
+      index: (identifier))))
+
+================================================================================
+Builtin calls
+================================================================================
+
+const std = @import("std");
+const n = @as(u32, @intCast(x));
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (builtin_call_expression
+      function: (builtin_identifier)
+      arguments: (arguments
+        (string
+          (string_content)))))
+  (variable_declaration
+    name: (identifier)
+    value: (builtin_call_expression
+      function: (builtin_identifier)
+      arguments: (arguments
+        (identifier)
+        (builtin_call_expression
+          function: (builtin_identifier)
+          arguments: (arguments
+            (identifier)))))))
+
+================================================================================
+Init expressions
+================================================================================
+
+const a = Point{ .x = 1, .y = 2 };
+const b = .{ 1, 2, 3 };
+const c = [_]u8{ 'a', 'b' };
+const d = .{};
+const e = S{};
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (init_expression
+      type: (identifier)
+      initializer: (initializer_list
+        (field_initializer
+          name: (identifier)
+          value: (integer))
+        (field_initializer
+          name: (identifier)
+          value: (integer)))))
+  (variable_declaration
+    name: (identifier)
+    value: (init_expression
+      initializer: (initializer_list
+        (integer)
+        (integer)
+        (integer))))
+  (variable_declaration
+    name: (identifier)
+    value: (init_expression
+      type: (array_type
+        length: (identifier)
+        child: (identifier))
+      initializer: (initializer_list
+        (character)
+        (character))))
+  (variable_declaration
+    name: (identifier)
+    value: (init_expression
+      initializer: (initializer_list)))
+  (variable_declaration
+    name: (identifier)
+    value: (init_expression
+      type: (identifier)
+      initializer: (initializer_list))))
+
+================================================================================
+Bare break before a sentinel
+================================================================================
+
+const a = [if (cond) len else break:0]u8;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (array_type
+      length: (if_expression
+        condition: (identifier)
+        consequence: (identifier)
+        alternative: (break_expression))
+      sentinel: (integer)
+      child: (identifier))))
+
+================================================================================
+Inline assembly
+================================================================================
+
+fn f() void {
+    asm volatile ("syscall"
+        : [ret] "={rax}" (-> usize),
+        : [number] "{rax}" (n),
+        : .{ .rcx = true, .r11 = true });
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    return_type: (identifier)
+    body: (block
+      (expression_statement
+        (asm_expression
+          template: (string
+            (string_content))
+          outputs: (asm_outputs
+            (asm_output_item
+              name: (identifier)
+              constraint: (string
+                (string_content))
+              type: (identifier)))
+          inputs: (asm_inputs
+            (asm_input_item
+              name: (identifier)
+              constraint: (string
+                (string_content))
+              value: (identifier)))
+          clobbers: (asm_clobbers
+            (init_expression
+              initializer: (initializer_list
+                (field_initializer
+                  name: (identifier)
+                  value: (identifier))
+                (field_initializer
+                  name: (identifier)
+                  value: (identifier))))))))))

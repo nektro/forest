@@ -1,0 +1,198 @@
+================================================================================
+Container doc comment and test declarations
+================================================================================
+
+//! Module docs.
+
+test "string name" {}
+test ident {}
+test {}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (container_doc_comment)
+  (test_declaration
+    name: (string
+      (string_content))
+    body: (block))
+  (test_declaration
+    name: (identifier)
+    body: (block))
+  (test_declaration
+    body: (block)))
+
+================================================================================
+Function declarations
+================================================================================
+
+pub fn main() !void {}
+export fn add(a: i32, b: i32) callconv(.c) i32 {
+    return a + b;
+}
+extern "c" fn printf(format: [*:0]const u8, ...) c_int;
+inline fn id(comptime T: type, x: T) T {
+    return x;
+}
+fn aligned() align(16) linksection(".text") void {}
+fn generic(x: anytype) @TypeOf(x) {
+    return x;
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    return_type: (error_union_type
+      value: (identifier))
+    body: (block))
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      (parameter
+        name: (identifier)
+        type: (identifier))
+      (parameter
+        name: (identifier)
+        type: (identifier)))
+    calling_convention: (calling_convention
+      (enum_literal
+        name: (identifier)))
+    return_type: (identifier)
+    body: (block
+      (expression_statement
+        (return_expression
+          value: (binary_expression
+            left: (identifier)
+            right: (identifier))))))
+  (function_declaration
+    library: (string
+      (string_content))
+    name: (identifier)
+    parameters: (parameters
+      (parameter
+        name: (identifier)
+        type: (pointer_type
+          sentinel: (integer)
+          child: (identifier)))
+      (variadic_parameter))
+    return_type: (identifier))
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      (parameter
+        name: (identifier)
+        type: (identifier))
+      (parameter
+        name: (identifier)
+        type: (identifier)))
+    return_type: (identifier)
+    body: (block
+      (expression_statement
+        (return_expression
+          value: (identifier)))))
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    alignment: (byte_alignment
+      (integer))
+    link_section: (link_section
+      (string
+        (string_content)))
+    return_type: (identifier)
+    body: (block))
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      (parameter
+        name: (identifier)
+        type: (anytype)))
+    return_type: (builtin_call_expression
+      function: (builtin_identifier)
+      arguments: (arguments
+        (identifier)))
+    body: (block
+      (expression_statement
+        (return_expression
+          value: (identifier))))))
+
+================================================================================
+Variable declarations
+================================================================================
+
+const a = 1;
+pub var b: u32 align(4) = 2;
+threadlocal var c: u8 = 0;
+extern "kernel32" var d: u32;
+export const e: usize = 0;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (integer))
+  (variable_declaration
+    name: (identifier)
+    type: (identifier)
+    alignment: (byte_alignment
+      (integer))
+    value: (integer))
+  (variable_declaration
+    name: (identifier)
+    type: (identifier)
+    value: (integer))
+  (variable_declaration
+    library: (string
+      (string_content))
+    name: (identifier)
+    type: (identifier))
+  (variable_declaration
+    name: (identifier)
+    type: (identifier)
+    value: (integer)))
+
+================================================================================
+Comptime and usingnamespace declarations
+================================================================================
+
+comptime {
+    _ = 1;
+}
+pub usingnamespace @import("std");
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (comptime_declaration
+    body: (block
+      (expression_statement
+        (assignment
+          left: (identifier)
+          right: (integer)))))
+  (usingnamespace_declaration
+    (builtin_call_expression
+      function: (builtin_identifier)
+      arguments: (arguments
+        (string
+          (string_content))))))
+
+================================================================================
+Return type that is a type-level if
+================================================================================
+
+fn f() if (c) A else B {}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    return_type: (if_expression
+      condition: (identifier)
+      consequence: (identifier)
+      alternative: (identifier))
+    body: (block)))

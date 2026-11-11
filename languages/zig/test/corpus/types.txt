@@ -1,0 +1,154 @@
+================================================================================
+Pointer types
+================================================================================
+
+const a: *u8 = undefined;
+const b: [*]const u8 = undefined;
+const c: [*c]u8 = undefined;
+const d: [*:0]const u8 = undefined;
+const e: *align(1:2:4) volatile u8 = undefined;
+const f: **u8 = undefined;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    type: (pointer_type
+      child: (identifier))
+    value: (identifier))
+  (variable_declaration
+    name: (identifier)
+    type: (pointer_type
+      child: (identifier))
+    value: (identifier))
+  (variable_declaration
+    name: (identifier)
+    type: (pointer_type
+      child: (identifier))
+    value: (identifier))
+  (variable_declaration
+    name: (identifier)
+    type: (pointer_type
+      sentinel: (integer)
+      child: (identifier))
+    value: (identifier))
+  (variable_declaration
+    name: (identifier)
+    type: (pointer_type
+      (bit_alignment
+        (integer)
+        bit_offset: (integer)
+        host_size: (integer))
+      child: (identifier))
+    value: (identifier))
+  (variable_declaration
+    name: (identifier)
+    type: (pointer_type
+      child: (pointer_type
+        child: (identifier)))
+    value: (identifier)))
+
+================================================================================
+Slices, arrays and optionals
+================================================================================
+
+const a: []u8 = undefined;
+const b: [:0]const u8 = undefined;
+const c: [4]u8 = undefined;
+const d: [4:0]u8 = undefined;
+const e: ?*T = null;
+const f: anyframe->u8 = undefined;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    type: (slice_type
+      child: (identifier))
+    value: (identifier))
+  (variable_declaration
+    name: (identifier)
+    type: (slice_type
+      sentinel: (integer)
+      child: (identifier))
+    value: (identifier))
+  (variable_declaration
+    name: (identifier)
+    type: (array_type
+      length: (integer)
+      child: (identifier))
+    value: (identifier))
+  (variable_declaration
+    name: (identifier)
+    type: (array_type
+      length: (integer)
+      sentinel: (integer)
+      child: (identifier))
+    value: (identifier))
+  (variable_declaration
+    name: (identifier)
+    type: (optional_type
+      child: (pointer_type
+        child: (identifier)))
+    value: (identifier))
+  (variable_declaration
+    name: (identifier)
+    type: (anyframe_type
+      child: (identifier))
+    value: (identifier)))
+
+================================================================================
+Error unions
+================================================================================
+
+const a: E!?[]const u8 = undefined;
+fn f() error{Oops}!void {}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    type: (error_union_type
+      error: (identifier)
+      value: (optional_type
+        child: (slice_type
+          child: (identifier))))
+    value: (identifier))
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    return_type: (error_union_type
+      error: (error_set_type
+        (identifier))
+      value: (identifier))
+    body: (block)))
+
+================================================================================
+Function types
+================================================================================
+
+const F = *const fn (comptime T: type, noalias p: *T, ...) callconv(.c) T;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (pointer_type
+      child: (function_type
+        parameters: (parameters
+          (parameter
+            name: (identifier)
+            type: (identifier))
+          (parameter
+            name: (identifier)
+            type: (pointer_type
+              child: (identifier)))
+          (variadic_parameter))
+        calling_convention: (calling_convention
+          (enum_literal
+            name: (identifier)))
+        return_type: (identifier)))))

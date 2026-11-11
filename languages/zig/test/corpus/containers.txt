@@ -1,0 +1,196 @@
+================================================================================
+Struct with fields and declarations
+================================================================================
+
+const Point = struct {
+    /// The x coordinate.
+    x: f32,
+    y: f32 = 0,
+    comptime z: u8 = 1,
+
+    pub fn len(self: Point) f32 {
+        return self.x;
+    }
+};
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (struct_declaration
+      (doc_comment)
+      (container_field
+        name: (identifier)
+        type: (identifier))
+      (container_field
+        name: (identifier)
+        type: (identifier)
+        default_value: (integer))
+      (container_field
+        name: (identifier)
+        type: (identifier)
+        default_value: (integer))
+      (function_declaration
+        name: (identifier)
+        parameters: (parameters
+          (parameter
+            name: (identifier)
+            type: (identifier)))
+        return_type: (identifier)
+        body: (block
+          (expression_statement
+            (return_expression
+              value: (field_expression
+                object: (identifier)
+                member: (identifier)))))))))
+
+================================================================================
+Tuple struct and comptime-typed field
+================================================================================
+
+const T = struct {
+    u32,
+    comptime comptime u32,
+    *u32 = 1,
+};
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (struct_declaration
+      (container_field
+        type: (identifier))
+      (container_field
+        type: (comptime_expression
+          (identifier)))
+      (container_field
+        type: (pointer_type
+          child: (identifier))
+        default_value: (integer)))))
+
+================================================================================
+Container layouts
+================================================================================
+
+const A = extern struct { a: u8 };
+const B = bitpack struct(u32) { a: u4, b: u28 };
+const C = packed union { a: u8 };
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (struct_declaration
+      layout: (container_layout)
+      (container_field
+        name: (identifier)
+        type: (identifier))))
+  (variable_declaration
+    name: (identifier)
+    value: (struct_declaration
+      layout: (container_layout)
+      backing_integer: (identifier)
+      (container_field
+        name: (identifier)
+        type: (identifier))
+      (container_field
+        name: (identifier)
+        type: (identifier))))
+  (variable_declaration
+    name: (identifier)
+    value: (union_declaration
+      layout: (container_layout)
+      (container_field
+        name: (identifier)
+        type: (identifier)))))
+
+================================================================================
+Enums
+================================================================================
+
+const E = enum(u8) {
+    a,
+    b = 2,
+    _,
+
+    pub const default: E = .a;
+};
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (enum_declaration
+      tag_type: (identifier)
+      (container_field
+        type: (identifier))
+      (container_field
+        type: (identifier)
+        default_value: (integer))
+      (container_field
+        type: (identifier))
+      (variable_declaration
+        name: (identifier)
+        type: (identifier)
+        value: (enum_literal
+          name: (identifier))))))
+
+================================================================================
+Tagged unions
+================================================================================
+
+const U = union(enum) { a: i32, b };
+const V = union(enum(u8)) { a: void };
+const W = union(Tag) { a: void };
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (union_declaration
+      (tagged)
+      (container_field
+        name: (identifier)
+        type: (identifier))
+      (container_field
+        type: (identifier))))
+  (variable_declaration
+    name: (identifier)
+    value: (union_declaration
+      (tagged)
+      tag_type: (identifier)
+      (container_field
+        name: (identifier)
+        type: (identifier))))
+  (variable_declaration
+    name: (identifier)
+    value: (union_declaration
+      tag_type: (identifier)
+      (container_field
+        name: (identifier)
+        type: (identifier)))))
+
+================================================================================
+Opaque and error sets
+================================================================================
+
+const O = opaque {};
+const Err = error{ OutOfMemory, Overflow };
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    name: (identifier)
+    value: (opaque_declaration))
+  (variable_declaration
+    name: (identifier)
+    value: (error_set_type
+      (identifier)
+      (identifier))))

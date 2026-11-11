@@ -1,0 +1,361 @@
+================================================================================
+Block-level statements
+================================================================================
+
+fn f() void {
+    {}
+    blk: {
+        break :blk;
+    }
+    defer x.deinit();
+    errdefer {}
+    comptime var i = 0;
+    comptime {}
+    nosuspend {}
+    suspend {}
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    return_type: (identifier)
+    body: (block
+      (block)
+      (block
+        label: (identifier)
+        (expression_statement
+          (break_expression
+            label: (identifier))))
+      (defer_statement
+        (call_expression
+          function: (field_expression
+            object: (identifier)
+            member: (identifier))
+          arguments: (arguments)))
+      (errdefer_statement
+        (block))
+      (comptime_statement
+        (variable_declaration
+          name: (identifier)
+          value: (integer)))
+      (comptime_statement
+        (block))
+      (nosuspend_statement
+        (block))
+      (suspend_statement
+        (block)))))
+
+================================================================================
+Statement forms win over expression statements
+================================================================================
+
+fn f() void {
+    {}
+    -x;
+    blk: {}
+    .x = 1;
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    return_type: (identifier)
+    body: (block
+      (block)
+      (expression_statement
+        (unary_expression
+          operand: (identifier)))
+      (block
+        label: (identifier))
+      (expression_statement
+        (assignment
+          left: (enum_literal
+            name: (identifier))
+          right: (integer))))))
+
+================================================================================
+If statements
+================================================================================
+
+fn f() void {
+    if (a) b();
+    if (a) b() else c();
+    if (a) {} else if (b) {} else {}
+    if (opt) |v| use(v) else |err| fail(err);
+    if (a) x = 1 else y = 2;
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    return_type: (identifier)
+    body: (block
+      (if_statement
+        condition: (identifier)
+        consequence: (call_expression
+          function: (identifier)
+          arguments: (arguments)))
+      (if_statement
+        condition: (identifier)
+        consequence: (call_expression
+          function: (identifier)
+          arguments: (arguments))
+        alternative: (expression_statement
+          (call_expression
+            function: (identifier)
+            arguments: (arguments))))
+      (if_statement
+        condition: (identifier)
+        consequence: (block)
+        alternative: (if_statement
+          condition: (identifier)
+          consequence: (block)
+          alternative: (block)))
+      (if_statement
+        condition: (identifier)
+        payload: (payload
+          (identifier))
+        consequence: (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (identifier)))
+        payload: (payload
+          (identifier))
+        alternative: (expression_statement
+          (call_expression
+            function: (identifier)
+            arguments: (arguments
+              (identifier)))))
+      (if_statement
+        condition: (identifier)
+        consequence: (assignment
+          left: (identifier)
+          right: (integer))
+        alternative: (expression_statement
+          (assignment
+            left: (identifier)
+            right: (integer)))))))
+
+================================================================================
+Loops
+================================================================================
+
+fn f() void {
+    while (i < n) : (i += 1) {}
+    while (it.next()) |item| process(item);
+    outer: for (items, 0..) |*item, i| {
+        continue :outer;
+    }
+    inline for (fields) |field| {} else {}
+    while (cond) : ({ a += 1; b += 1; }) {}
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    return_type: (identifier)
+    body: (block
+      (while_statement
+        condition: (binary_expression
+          left: (identifier)
+          right: (identifier))
+        continue: (assignment
+          left: (identifier)
+          right: (integer))
+        body: (block))
+      (while_statement
+        condition: (call_expression
+          function: (field_expression
+            object: (identifier)
+            member: (identifier))
+          arguments: (arguments))
+        payload: (payload
+          (identifier))
+        body: (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (identifier))))
+      (for_statement
+        label: (identifier)
+        input: (identifier)
+        input: (range_expression
+          start: (integer))
+        payload: (payload
+          (pointer_capture
+            (identifier))
+          (identifier))
+        body: (block
+          (expression_statement
+            (continue_expression
+              label: (identifier)))))
+      (for_statement
+        input: (identifier)
+        payload: (payload
+          (identifier))
+        body: (block)
+        alternative: (block))
+      (while_statement
+        condition: (identifier)
+        continue: (block
+          (expression_statement
+            (assignment
+              left: (identifier)
+              right: (integer)))
+          (expression_statement
+            (assignment
+              left: (identifier)
+              right: (integer))))
+        body: (block)))))
+
+================================================================================
+Switch statements
+================================================================================
+
+fn f() void {
+    switch (x) {
+        0 => {},
+        1, 2 => a(),
+        3...9 => |v| b(v),
+        .tag => |*p, i| p.* = i,
+        inline else => |v, tag| c(v, tag),
+    }
+    sw: switch (state) {
+        .start => continue :sw .next,
+        else => break :sw,
+    }
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    return_type: (identifier)
+    body: (block
+      (switch_expression
+        condition: (identifier)
+        (switch_case
+          pattern: (integer)
+          consequence: (block))
+        (switch_case
+          pattern: (integer)
+          pattern: (integer)
+          consequence: (call_expression
+            function: (identifier)
+            arguments: (arguments)))
+        (switch_case
+          pattern: (range_expression
+            start: (integer)
+            end: (integer))
+          payload: (payload
+            (identifier))
+          consequence: (call_expression
+            function: (identifier)
+            arguments: (arguments
+              (identifier))))
+        (switch_case
+          pattern: (enum_literal
+            name: (identifier))
+          payload: (payload
+            (pointer_capture
+              (identifier))
+            (identifier))
+          consequence: (assignment
+            left: (dereference_expression
+              operand: (identifier))
+            right: (identifier)))
+        (switch_case
+          pattern: (else)
+          payload: (payload
+            (identifier)
+            (identifier))
+          consequence: (call_expression
+            function: (identifier)
+            arguments: (arguments
+              (identifier)
+              (identifier)))))
+      (switch_expression
+        label: (identifier)
+        condition: (identifier)
+        (switch_case
+          pattern: (enum_literal
+            name: (identifier))
+          consequence: (continue_expression
+            label: (identifier)
+            value: (enum_literal
+              name: (identifier))))
+        (switch_case
+          pattern: (else)
+          consequence: (break_expression
+            label: (identifier)))))))
+
+================================================================================
+Assignments and destructuring
+================================================================================
+
+fn f() void {
+    x = 1;
+    x += 2;
+    x *%= 3;
+    x <<|= 4;
+    a, b = .{ 1, 2 };
+    const c, var d = pair();
+    _ = e;
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    return_type: (identifier)
+    body: (block
+      (expression_statement
+        (assignment
+          left: (identifier)
+          right: (integer)))
+      (expression_statement
+        (assignment
+          left: (identifier)
+          right: (integer)))
+      (expression_statement
+        (assignment
+          left: (identifier)
+          right: (integer)))
+      (expression_statement
+        (assignment
+          left: (identifier)
+          right: (integer)))
+      (destructuring_assignment
+        target: (identifier)
+        target: (identifier)
+        value: (init_expression
+          initializer: (initializer_list
+            (integer)
+            (integer))))
+      (destructuring_assignment
+        target: (variable_declaration
+          name: (identifier))
+        target: (variable_declaration
+          name: (identifier))
+        value: (call_expression
+          function: (identifier)
+          arguments: (arguments)))
+      (expression_statement
+        (assignment
+          left: (identifier)
+          right: (identifier))))))
