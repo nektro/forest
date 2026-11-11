@@ -4,6 +4,7 @@ A bundle of tree-sitter grammars.
 
 | Language | Directory | External scanner |
 | --- | --- | --- |
+| JSON (and JSONC, JSON Lines) | [languages/json](languages/json) | none |
 | Zig | [languages/zig](languages/zig) | none |
 
 ## On the web
@@ -84,6 +85,18 @@ bun run serve
 ```
 
 `serve` hosts `dist/` on http://localhost:8000 with a demo page.
+
+### Adding a language
+
+The build has no per-language code. It picks up every
+`languages/*/tree-sitter.json` and, for each grammar in it:
+
+- regenerates `src/parser.c` from `src/grammar.json` when needed and builds
+  `tree-sitter-<name>.wasm`
+- bundles its queries: the paths `tree-sitter.json` lists, or else
+  `queries/<kind>.scm` if it exists
+- takes `title`, `scope` and `file-types` for `Arborist.languageForFile`
+- puts every file in `examples/` on the demo page
 
 The web-tree-sitter version in `package.json` should match the `tree-sitter`
 CLI's version, which sets the grammar ABI.

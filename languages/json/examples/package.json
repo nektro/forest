@@ -1,0 +1,20 @@
+{
+  "name": "arborist",
+  "version": "0.1.0",
+  "description": "A bundle of tree-sitter grammars, packaged for the web",
+  "private": true,
+  "keywords": ["tree-sitter", "highlighting", "wasm"],
+  "scripts": {
+    "build": "bun web/build.ts",
+    "serve": "bun web/serve.ts"
+  },
+  "engines": { "bun": ">=1.2" },
+  "workspaces": [],
+  "config": {
+    "port": 8000,
+    "ratio": -1.5e-3,
+    "escapes": "tab\t, quote\", snowman \u2603",
+    "unset": null,
+    "debug": false
+  }
+}

@@ -12,51 +12,82 @@
   pre { padding: 1rem; border-radius: 6px; background: color-mix(in srgb, CanvasText 5%, Canvas); overflow-x: auto; }
   textarea { width: 100%; height: 12rem; box-sizing: border-box; tab-size: 4; }
   details pre { max-height: 20rem; }
+  .controls { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center; margin-bottom: 0.5rem; }
+  h3 { font-size: 0.9rem; font-weight: 600; margin: 1rem 0 0.25rem; }
 </style>
 <script src="arborist.js" data-auto></script>
 </head>
 <body>
 <h1>arborist</h1>
-<p>Static block, highlighted by <code>&lt;script src="arborist.js" data-auto&gt;</code>:</p>
-<pre><code class="language-zig">const std = @import("std");
+<p>Bundled languages: <span id="languages"></span>.</p>
 
-/// Greets the world — or anyone else.
-pub fn main() !void {
-    const name = "wörld 🌍";
-    for (0..3) |i| {
-        std.debug.print("hello, {s} #{d}\n", .{ name, i });
-    }
-}
-
-test "math" {
-    try std.testing.expectEqual(@as(u32, 4), 2 + 2);
-}
-</code></pre>
-
-<p>Live (edit me):</p>
-<textarea id="input" spellcheck="false">const Point = struct {
-    x: f32 = 0.0,
-    y: f32 = 0.0,
-
-    pub fn len(self: Point) f32 {
-        return @sqrt(self.x * self.x + self.y * self.y);
-    }
-};</textarea>
+<h2>Live</h2>
+<div class="controls">
+  <label>Language <select id="language"></select></label>
+  <label>Example <select id="example"></select></label>
+</div>
+<textarea id="input" spellcheck="false"></textarea>
 <pre class="arborist" id="output"></pre>
 <details><summary>Syntax tree</summary><pre id="tree"></pre></details>
 
+<h2>Static</h2>
+<p>Highlighted by <code>&lt;script src="arborist.js" data-auto&gt;</code>:</p>
+<div id="static"></div>
+
+<!-- Filled in by web/build.ts from each grammar's examples/ directory. -->
+<script type="application/json" id="examples">/*ARBORIST_EXAMPLES*/{}</script>
 <script>
-  const input = document.getElementById("input");
-  Arborist.load("zig").then((zig) => {
-    const update = () => {
-      document.getElementById("output").innerHTML = zig.highlightHTML(input.value);
-      const tree = zig.parse(input.value);
-      document.getElementById("tree").textContent = tree.rootNode.toString();
-      tree.delete();
-    };
-    input.addEventListener("input", update);
+  const EXAMPLES = JSON.parse(document.getElementById("examples").textContent);
+  const $ = (id) => document.getElementById(id);
+  const option = (value, text = value) => Object.assign(document.createElement("option"), { value, text });
+
+  $("languages").textContent = Arborist.languages.join(", ");
+
+  // Static blocks; data-auto highlights them on DOMContentLoaded.
+  for (const lang of Arborist.languages) {
+    for (const { name, source } of EXAMPLES[lang] ?? []) {
+      const h = document.createElement("h3");
+      h.textContent = name;
+      const pre = document.createElement("pre");
+      const code = document.createElement("code");
+      code.className = `language-${lang}`;
+      code.textContent = source;
+      pre.append(code);
+      $("static").append(h, pre);
+    }
+  }
+
+  // Live editor.
+  let grammar = null;
+  let generation = 0;
+  const update = () => {
+    if (!grammar) return;
+    const source = $("input").value;
+    $("output").innerHTML = grammar.highlightHTML(source);
+    const tree = grammar.parse(source);
+    $("tree").textContent = tree.rootNode.toString();
+    tree.delete();
+  };
+  const pickExample = () => {
+    const list = EXAMPLES[$("language").value] ?? [];
+    $("input").value = list[Number($("example").value)]?.source ?? "";
     update();
-  });
+  };
+  const pickLanguage = async () => {
+    const lang = $("language").value;
+    $("example").replaceChildren(...(EXAMPLES[lang] ?? []).map((ex, i) => option(i, ex.name)));
+    const mine = ++generation;
+    grammar = null;
+    const loaded = await Arborist.load(lang);
+    if (mine !== generation) return;
+    grammar = loaded;
+    pickExample();
+  };
+  $("language").replaceChildren(...Arborist.languages.map((lang) => option(lang)));
+  $("language").addEventListener("change", pickLanguage);
+  $("example").addEventListener("change", pickExample);
+  $("input").addEventListener("input", update);
+  pickLanguage();
 </script>
 </body>
 </html>

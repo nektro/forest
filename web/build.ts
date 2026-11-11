@@ -5,7 +5,11 @@
 //                          Arborist API
 //   tree-sitter-<lang>.wasm one per grammar, fetched on first use
 //   arborist.css           default highlight theme
-//   index.html             demo page
+//   index.html             demo page, showing every grammar's examples/
+//
+// Nothing here is specific to one language. Every languages/*/tree-sitter.json
+// is picked up; per grammar, queries come from the paths it lists, falling
+// back to queries/<kind>.scm, and files in examples/ feed the demo page.
 //
 // Usage: bun web/build.ts
 
@@ -33,9 +37,14 @@ async function mtime(path: string): Promise<number> {
   }
 }
 
-async function readQuery(dir: string, file: string | string[] | undefined) {
-  if (!file) return undefined;
+async function readQuery(dir: string, kind: string, file: string | string[] | undefined) {
+  // tree-sitter.json has no field for some kinds (folds), and listing the
+  // conventional path is optional for the rest.
+  file ??= `queries/${kind}.scm`;
   const files = Array.isArray(file) ? file : [file];
+  if (!(await Promise.all(files.map((f) => Bun.file(join(dir, f)).exists()))).every(Boolean)) {
+    return undefined;
+  }
   const parts = await Promise.all(files.map((f) => Bun.file(join(dir, f)).text()));
   return parts.join("\n");
 }
@@ -44,6 +53,8 @@ await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
 
 const languages: Record<string, GrammarInfo> = {};
+// Demo-only sample sources: language -> [{ name, source }].
+const examples: Record<string, { name: string; source: string }[]> = {};
 const languagesDir = join(root, "languages");
 
 for (const entry of (await readdir(languagesDir)).sort()) {
@@ -68,7 +79,7 @@ for (const entry of (await readdir(languagesDir)).sort()) {
 
     const queries: GrammarInfo["queries"] = {};
     for (const kind of QUERY_KINDS) {
-      const text = await readQuery(grammarDir, grammar[kind]);
+      const text = await readQuery(grammarDir, kind, grammar[kind]);
       if (text) queries[kind] = text;
     }
     languages[grammar.name] = {
@@ -78,6 +89,12 @@ for (const entry of (await readdir(languagesDir)).sort()) {
       fileTypes: grammar["file-types"] ?? [],
       queries,
     };
+
+    const examplesDir = join(grammarDir, "examples");
+    const files = (await readdir(examplesDir).catch(() => [] as string[])).filter((f) => !f.startsWith(".")).sort();
+    examples[grammar.name] = await Promise.all(
+      files.map(async (name) => ({ name, source: await Bun.file(join(examplesDir, name)).text() })),
+    );
   }
 }
 
@@ -130,7 +147,12 @@ if (!result.success) {
 console.log(`bundle    arborist.js`);
 
 await cp(join(import.meta.dir, "arborist.css"), join(dist, "arborist.css"));
-await cp(join(import.meta.dir, "demo.html"), join(dist, "index.html"));
+// The demo page gets the examples inlined as JSON (with `<` escaped so the
+// script element cannot be closed early).
+const demo = await Bun.file(join(import.meta.dir, "demo.html")).text();
+const PLACEHOLDER = "/*ARBORIST_EXAMPLES*/{}";
+if (!demo.includes(PLACEHOLDER)) throw new Error(`demo.html is missing ${PLACEHOLDER}`);
+await Bun.write(join(dist, "index.html"), demo.replace(PLACEHOLDER, () => JSON.stringify(examples).replace(/</g, "\\u003c")));
 
 for (const file of (await readdir(dist)).sort()) {
   const size = (await stat(join(dist, file))).size;

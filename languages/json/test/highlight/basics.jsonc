@@ -1,0 +1,16 @@
+// A comment.
+// <- comment
+{
+  "name": "arborist",
+// ^ property
+//        ^ string
+  "escaped": "a\nb",
+//              ^ string.escape
+  "count": 3,
+//         ^ number
+  "ok": true,
+//      ^ boolean
+  "none": null
+//        ^ constant.builtin
+}
+// <- punctuation.bracket
