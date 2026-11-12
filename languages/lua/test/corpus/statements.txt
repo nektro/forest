@@ -1,0 +1,419 @@
+================================================================================
+Assignments
+================================================================================
+
+a = 1
+a, b.c, d[1] = 1, 2
+x, y = y, x
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (assignment_statement
+    left: (variable_list
+      name: (identifier))
+    right: (expression_list
+      value: (number)))
+  (assignment_statement
+    left: (variable_list
+      name: (identifier)
+      name: (dot_index_expression
+        table: (identifier)
+        field: (identifier))
+      name: (bracket_index_expression
+        table: (identifier)
+        field: (number)))
+    right: (expression_list
+      value: (number)
+      value: (number)))
+  (assignment_statement
+    left: (variable_list
+      name: (identifier)
+      name: (identifier))
+    right: (expression_list
+      value: (identifier)
+      value: (identifier))))
+
+================================================================================
+Local declarations
+================================================================================
+
+local a
+local b, c = 1, 2
+local d <const> = 42
+local e <close>, f <const> = g()
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (local_variable_declaration
+    name: (identifier))
+  (local_variable_declaration
+    name: (identifier)
+    name: (identifier)
+    value: (expression_list
+      value: (number)
+      value: (number)))
+  (local_variable_declaration
+    name: (identifier)
+    attribute: (attribute
+      name: (identifier))
+    value: (expression_list
+      value: (number)))
+  (local_variable_declaration
+    name: (identifier)
+    attribute: (attribute
+      name: (identifier))
+    name: (identifier)
+    attribute: (attribute
+      name: (identifier))
+    value: (expression_list
+      value: (function_call
+        name: (identifier)
+        arguments: (arguments)))))
+
+================================================================================
+Local declarations with a prefixed attribute
+================================================================================
+
+local <const> a, b <close> = 1, 2
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (local_variable_declaration
+    attribute: (attribute
+      name: (identifier))
+    name: (identifier)
+    name: (identifier)
+    attribute: (attribute
+      name: (identifier))
+    value: (expression_list
+      value: (number)
+      value: (number))))
+
+================================================================================
+Global declarations
+================================================================================
+
+global print, x
+global <const> *
+global y <const> = 10
+global function f(a) return a end
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (global_variable_declaration
+    name: (identifier)
+    name: (identifier))
+  (global_variable_declaration
+    attribute: (attribute
+      name: (identifier))
+    (wildcard))
+  (global_variable_declaration
+    name: (identifier)
+    attribute: (attribute
+      name: (identifier))
+    value: (expression_list
+      value: (number)))
+  (global_function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier))
+    body: (block
+      (return_statement
+        (expression_list
+          value: (identifier))))))
+
+================================================================================
+Global as a name
+================================================================================
+
+global = 1
+global.x = global
+global(1)
+global "x"
+local t = {global = global}
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (assignment_statement
+    left: (variable_list
+      name: (identifier))
+    right: (expression_list
+      value: (number)))
+  (assignment_statement
+    left: (variable_list
+      name: (dot_index_expression
+        table: (identifier)
+        field: (identifier)))
+    right: (expression_list
+      value: (identifier)))
+  (function_call
+    name: (identifier)
+    arguments: (arguments
+      (number)))
+  (function_call
+    name: (identifier)
+    arguments: (arguments
+      (string
+        content: (string_content))))
+  (local_variable_declaration
+    name: (identifier)
+    value: (expression_list
+      value: (table_constructor
+        (field
+          name: (identifier)
+          value: (identifier))))))
+
+================================================================================
+Function declarations
+================================================================================
+
+function f() end
+function a.b.c(x) return x end
+function a.b:m(...) end
+local function g(a, b) end
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters))
+  (function_declaration
+    name: (dot_index_expression
+      table: (dot_index_expression
+        table: (identifier)
+        field: (identifier))
+      field: (identifier))
+    parameters: (parameters
+      name: (identifier))
+    body: (block
+      (return_statement
+        (expression_list
+          value: (identifier)))))
+  (function_declaration
+    name: (method_index_expression
+      table: (dot_index_expression
+        table: (identifier)
+        field: (identifier))
+      method: (identifier))
+    parameters: (parameters
+      (vararg_parameter)))
+  (local_function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      name: (identifier))))
+
+================================================================================
+Named varargs
+================================================================================
+
+function f(a, ...rest) return rest.n end
+function g(...t) end
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      name: (identifier)
+      (vararg_parameter
+        name: (identifier)))
+    body: (block
+      (return_statement
+        (expression_list
+          value: (dot_index_expression
+            table: (identifier)
+            field: (identifier))))))
+  (function_declaration
+    name: (identifier)
+    parameters: (parameters
+      (vararg_parameter
+        name: (identifier)))))
+
+================================================================================
+Control flow
+================================================================================
+
+if a then
+  b()
+elseif c then
+  d()
+elseif e then
+else
+  return
+end
+
+while x do x = x - 1 end
+
+repeat local y = f() until y
+
+do end
+
+do
+  break
+end
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (if_statement
+    condition: (identifier)
+    consequence: (block
+      (function_call
+        name: (identifier)
+        arguments: (arguments)))
+    alternative: (elseif_statement
+      condition: (identifier)
+      consequence: (block
+        (function_call
+          name: (identifier)
+          arguments: (arguments))))
+    alternative: (elseif_statement
+      condition: (identifier))
+    alternative: (else_statement
+      body: (block
+        (return_statement))))
+  (while_statement
+    condition: (identifier)
+    body: (block
+      (assignment_statement
+        left: (variable_list
+          name: (identifier))
+        right: (expression_list
+          value: (binary_expression
+            left: (identifier)
+            right: (number))))))
+  (repeat_statement
+    body: (block
+      (local_variable_declaration
+        name: (identifier)
+        value: (expression_list
+          value: (function_call
+            name: (identifier)
+            arguments: (arguments)))))
+    condition: (identifier))
+  (do_statement)
+  (do_statement
+    body: (block
+      (break_statement))))
+
+================================================================================
+For loops
+================================================================================
+
+for i = 1, 10 do print(i) end
+for i = 10, 1, -1 do end
+for k, v in pairs(t) do end
+for a, b, c in f, s, nil do end
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (for_statement
+    clause: (for_numeric_clause
+      name: (identifier)
+      start: (number)
+      end: (number))
+    body: (block
+      (function_call
+        name: (identifier)
+        arguments: (arguments
+          (identifier)))))
+  (for_statement
+    clause: (for_numeric_clause
+      name: (identifier)
+      start: (number)
+      end: (number)
+      step: (unary_expression
+        operand: (number))))
+  (for_statement
+    clause: (for_generic_clause
+      (name_list
+        name: (identifier)
+        name: (identifier))
+      (expression_list
+        value: (function_call
+          name: (identifier)
+          arguments: (arguments
+            (identifier))))))
+  (for_statement
+    clause: (for_generic_clause
+      (name_list
+        name: (identifier)
+        name: (identifier)
+        name: (identifier))
+      (expression_list
+        value: (identifier)
+        value: (identifier)
+        value: (nil)))))
+
+================================================================================
+Goto and labels
+================================================================================
+
+goto continue
+::continue::
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (goto_statement
+    label: (identifier))
+  (label_statement
+    name: (identifier)))
+
+================================================================================
+Return
+================================================================================
+
+return 1, 2;
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (return_statement
+    (expression_list
+      value: (number)
+      value: (number))))
+
+================================================================================
+Return in a block
+================================================================================
+
+local function f()
+  return
+end
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (local_function_declaration
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (return_statement))))
+
+================================================================================
+Empty statements
+================================================================================
+
+;;local a = 1; ;
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (empty_statement)
+  (empty_statement)
+  (local_variable_declaration
+    name: (identifier)
+    value: (expression_list
+      value: (number)))
+  (empty_statement)
+  (empty_statement))

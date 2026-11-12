@@ -1,0 +1,436 @@
+================================================================================
+Arithmetic precedence
+================================================================================
+
+x = 1 + 2 * 3 - 4 / 5 // 6 % 7
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (assignment_statement
+    left: (variable_list
+      name: (identifier))
+    right: (expression_list
+      value: (binary_expression
+        left: (binary_expression
+          left: (number)
+          right: (binary_expression
+            left: (number)
+            right: (number)))
+        right: (binary_expression
+          left: (binary_expression
+            left: (binary_expression
+              left: (number)
+              right: (number))
+            right: (number))
+          right: (number))))))
+
+================================================================================
+Power is right associative and binds tighter than unary operators
+================================================================================
+
+x = -2 ^ 2
+y = 2 ^ -3 ^ 2
+z = not a == b
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (assignment_statement
+    left: (variable_list
+      name: (identifier))
+    right: (expression_list
+      value: (unary_expression
+        operand: (binary_expression
+          left: (number)
+          right: (number)))))
+  (assignment_statement
+    left: (variable_list
+      name: (identifier))
+    right: (expression_list
+      value: (binary_expression
+        left: (number)
+        right: (unary_expression
+          operand: (binary_expression
+            left: (number)
+            right: (number))))))
+  (assignment_statement
+    left: (variable_list
+      name: (identifier))
+    right: (expression_list
+      value: (binary_expression
+        left: (unary_expression
+          operand: (identifier))
+        right: (identifier)))))
+
+================================================================================
+Concatenation is right associative
+================================================================================
+
+x = a .. b .. c + 1
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (assignment_statement
+    left: (variable_list
+      name: (identifier))
+    right: (expression_list
+      value: (binary_expression
+        left: (identifier)
+        right: (binary_expression
+          left: (identifier)
+          right: (binary_expression
+            left: (identifier)
+            right: (number)))))))
+
+================================================================================
+Bitwise and comparison operators
+================================================================================
+
+x = a | b ~ c & d << 1 >> 2
+y = a < b and b <= c or c > d and d >= e or a ~= b and a == ~b
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (assignment_statement
+    left: (variable_list
+      name: (identifier))
+    right: (expression_list
+      value: (binary_expression
+        left: (identifier)
+        right: (binary_expression
+          left: (identifier)
+          right: (binary_expression
+            left: (identifier)
+            right: (binary_expression
+              left: (binary_expression
+                left: (identifier)
+                right: (number))
+              right: (number)))))))
+  (assignment_statement
+    left: (variable_list
+      name: (identifier))
+    right: (expression_list
+      value: (binary_expression
+        left: (binary_expression
+          left: (binary_expression
+            left: (binary_expression
+              left: (identifier)
+              right: (identifier))
+            right: (binary_expression
+              left: (identifier)
+              right: (identifier)))
+          right: (binary_expression
+            left: (binary_expression
+              left: (identifier)
+              right: (identifier))
+            right: (binary_expression
+              left: (identifier)
+              right: (identifier))))
+        right: (binary_expression
+          left: (binary_expression
+            left: (identifier)
+            right: (identifier))
+          right: (binary_expression
+            left: (identifier)
+            right: (unary_expression
+              operand: (identifier))))))))
+
+================================================================================
+Length and logical operators
+================================================================================
+
+x = #t > 0 and not done or default
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (assignment_statement
+    left: (variable_list
+      name: (identifier))
+    right: (expression_list
+      value: (binary_expression
+        left: (binary_expression
+          left: (binary_expression
+            left: (unary_expression
+              operand: (identifier))
+            right: (number))
+          right: (unary_expression
+            operand: (identifier)))
+        right: (identifier)))))
+
+================================================================================
+Indexing
+================================================================================
+
+x = a.b.c[d]["e"].f
+a.b[c].d = 1
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (assignment_statement
+    left: (variable_list
+      name: (identifier))
+    right: (expression_list
+      value: (dot_index_expression
+        table: (bracket_index_expression
+          table: (bracket_index_expression
+            table: (dot_index_expression
+              table: (dot_index_expression
+                table: (identifier)
+                field: (identifier))
+              field: (identifier))
+            field: (identifier))
+          field: (string
+            content: (string_content)))
+        field: (identifier))))
+  (assignment_statement
+    left: (variable_list
+      name: (dot_index_expression
+        table: (bracket_index_expression
+          table: (dot_index_expression
+            table: (identifier)
+            field: (identifier))
+          field: (identifier))
+        field: (identifier)))
+    right: (expression_list
+      value: (number))))
+
+================================================================================
+Calls
+================================================================================
+
+f()
+f(1, 2, ...)
+f"str"
+f[[long]]
+f{1, 2}
+obj:method(1)
+obj.field:method"x"{y}
+f()()
+(f)()
+f().x = 1
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (function_call
+    name: (identifier)
+    arguments: (arguments))
+  (function_call
+    name: (identifier)
+    arguments: (arguments
+      (number)
+      (number)
+      (vararg_expression)))
+  (function_call
+    name: (identifier)
+    arguments: (arguments
+      (string
+        content: (string_content))))
+  (function_call
+    name: (identifier)
+    arguments: (arguments
+      (string
+        content: (string_content))))
+  (function_call
+    name: (identifier)
+    arguments: (arguments
+      (table_constructor
+        (field
+          value: (number))
+        (field
+          value: (number)))))
+  (function_call
+    name: (method_index_expression
+      table: (identifier)
+      method: (identifier))
+    arguments: (arguments
+      (number)))
+  (function_call
+    name: (function_call
+      name: (method_index_expression
+        table: (dot_index_expression
+          table: (identifier)
+          field: (identifier))
+        method: (identifier))
+      arguments: (arguments
+        (string
+          content: (string_content))))
+    arguments: (arguments
+      (table_constructor
+        (field
+          value: (identifier)))))
+  (function_call
+    name: (function_call
+      name: (function_call
+        name: (function_call
+          name: (identifier)
+          arguments: (arguments))
+        arguments: (arguments))
+      arguments: (arguments
+        (identifier)))
+    arguments: (arguments))
+  (assignment_statement
+    left: (variable_list
+      name: (dot_index_expression
+        table: (function_call
+          name: (identifier)
+          arguments: (arguments))
+        field: (identifier)))
+    right: (expression_list
+      value: (number))))
+
+================================================================================
+A parenthesis continues the previous call
+================================================================================
+
+local a = f
+(g or h)()
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (local_variable_declaration
+    name: (identifier)
+    value: (expression_list
+      value: (function_call
+        name: (function_call
+          name: (identifier)
+          arguments: (arguments
+            (binary_expression
+              left: (identifier)
+              right: (identifier))))
+        arguments: (arguments)))))
+
+================================================================================
+Table constructors
+================================================================================
+
+t = {}
+t = {1, 2, 3,}
+t = {x = 1, ["y"] = 2; 3, f(), ...}
+t = {[[str]], {nested = {}}}
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (assignment_statement
+    left: (variable_list
+      name: (identifier))
+    right: (expression_list
+      value: (table_constructor)))
+  (assignment_statement
+    left: (variable_list
+      name: (identifier))
+    right: (expression_list
+      value: (table_constructor
+        (field
+          value: (number))
+        (field
+          value: (number))
+        (field
+          value: (number)))))
+  (assignment_statement
+    left: (variable_list
+      name: (identifier))
+    right: (expression_list
+      value: (table_constructor
+        (field
+          name: (identifier)
+          value: (number))
+        (field
+          name: (string
+            content: (string_content))
+          value: (number))
+        (field
+          value: (number))
+        (field
+          value: (function_call
+            name: (identifier)
+            arguments: (arguments)))
+        (field
+          value: (vararg_expression)))))
+  (assignment_statement
+    left: (variable_list
+      name: (identifier))
+    right: (expression_list
+      value: (table_constructor
+        (field
+          value: (string
+            content: (string_content)))
+        (field
+          value: (table_constructor
+            (field
+              name: (identifier)
+              value: (table_constructor))))))))
+
+================================================================================
+Function definitions
+================================================================================
+
+f = function() end
+g = function(a, b, ...) return ... end
+h = function(...) end
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (assignment_statement
+    left: (variable_list
+      name: (identifier))
+    right: (expression_list
+      value: (function_definition
+        parameters: (parameters))))
+  (assignment_statement
+    left: (variable_list
+      name: (identifier))
+    right: (expression_list
+      value: (function_definition
+        parameters: (parameters
+          name: (identifier)
+          name: (identifier)
+          (vararg_parameter))
+        body: (block
+          (return_statement
+            (expression_list
+              value: (vararg_expression)))))))
+  (assignment_statement
+    left: (variable_list
+      name: (identifier))
+    right: (expression_list
+      value: (function_definition
+        parameters: (parameters
+          (vararg_parameter))))))
+
+================================================================================
+Parenthesized expressions
+================================================================================
+
+x = (a + b) * c
+y = (f())
+
+--------------------------------------------------------------------------------
+
+(chunk
+  (assignment_statement
+    left: (variable_list
+      name: (identifier))
+    right: (expression_list
+      value: (binary_expression
+        left: (parenthesized_expression
+          (binary_expression
+            left: (identifier)
+            right: (identifier)))
+        right: (identifier))))
+  (assignment_statement
+    left: (variable_list
+      name: (identifier))
+    right: (expression_list
+      value: (parenthesized_expression
+        (function_call
+          name: (identifier)
+          arguments: (arguments))))))
