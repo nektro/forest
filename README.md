@@ -4,6 +4,7 @@ A bundle of tree-sitter grammars.
 
 | Language | Directory | External scanner |
 | --- | --- | --- |
+| CMake | [languages/cmake](languages/cmake) | none |
 | CSS | [languages/css](languages/css) | none |
 | Dockerfile | [languages/dockerfile](languages/dockerfile) | none |
 | Go | [languages/go](languages/go) | none |

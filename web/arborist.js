@@ -143,9 +143,14 @@ function load(name) {
 
 /** The language name for a file name or extension ("main.zig", ".zig", "zig"), or null. */
 function languageForFile(file) {
-  const ext = String(file).split(/[\\/]/).pop().split(".").pop();
-  for (const [name, info] of Object.entries(LANGUAGES)) {
-    if (info.fileTypes.includes(ext)) return name;
+  // A file type is an extension (`cmake`) or a whole file name
+  // (`CMakeLists.txt`). Whole names are checked first.
+  const base = String(file).split(/[\\/]/).pop();
+  const ext = base.split(".").pop();
+  for (const key of [base, ext]) {
+    for (const [name, info] of Object.entries(LANGUAGES)) {
+      if (info.fileTypes.includes(key)) return name;
+    }
   }
   return null;
 }

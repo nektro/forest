@@ -1,0 +1,216 @@
+================================================================================
+Command with no arguments
+================================================================================
+
+enable_testing()
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list)))
+
+================================================================================
+Command names ignore case and allow space before the parenthesis
+================================================================================
+
+ADD_EXECUTABLE (app main.c)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument)
+      (unquoted_argument))))
+
+================================================================================
+Unquoted arguments
+================================================================================
+
+set(x a b;c -DFOO=1 a\;b)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument)
+      (unquoted_argument)
+      (unquoted_argument)
+      (unquoted_argument)
+      (unquoted_argument
+        (escape_sequence)))))
+
+================================================================================
+Quoted arguments
+================================================================================
+
+message("hello" "" "a # b" "tab\there")
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (quoted_argument
+        (string_content))
+      (quoted_argument)
+      (quoted_argument
+        (string_content))
+      (quoted_argument
+        (string_content)
+        (escape_sequence)
+        (string_content)))))
+
+================================================================================
+Quoted argument with a line continuation
+================================================================================
+
+message("one \
+two")
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (quoted_argument
+        (string_content)
+        (line_continuation)
+        (string_content)))))
+
+================================================================================
+Multi-line quoted argument
+================================================================================
+
+set(x "a
+b")
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument)
+      (quoted_argument
+        (string_content)))))
+
+================================================================================
+Bracket arguments
+================================================================================
+
+set(x [[a]] [=[b]]c]=] [==[]=]]==] [[]])
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument)
+      (bracket_argument)
+      (bracket_argument)
+      (bracket_argument)
+      (bracket_argument))))
+
+================================================================================
+Deep bracket argument
+================================================================================
+
+set(x [==========[a]=]]==========] y)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument)
+      (bracket_argument)
+      (unquoted_argument))))
+
+================================================================================
+Bracket inside an unquoted argument is text
+================================================================================
+
+set(x a[[b]])
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument)
+      (unquoted_argument))))
+
+================================================================================
+Nested parentheses
+================================================================================
+
+if((A OR B) AND (NOT (C)))
+endif()
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (if_statement
+    (if_command
+      arguments: (argument_list
+        (argument_group
+          (unquoted_argument)
+          (unquoted_argument)
+          (unquoted_argument))
+        (unquoted_argument)
+        (argument_group
+          (unquoted_argument)
+          (argument_group
+            (unquoted_argument)))))
+    (endif_command
+      arguments: (argument_list))))
+
+================================================================================
+Make-style variable
+================================================================================
+
+add_custom_command(COMMAND $(MAKE) $ x$)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument)
+      (unquoted_argument)
+      (argument_group
+        (unquoted_argument))
+      (unquoted_argument)
+      (unquoted_argument))))
+
+================================================================================
+Adjacent quoted and unquoted arguments
+================================================================================
+
+set(x a"b" "c"d)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument)
+      (unquoted_argument)
+      (quoted_argument
+        (string_content))
+      (quoted_argument
+        (string_content))
+      (unquoted_argument))))

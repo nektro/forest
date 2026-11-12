@@ -1,0 +1,89 @@
+================================================================================
+Line comments
+================================================================================
+
+# comment
+set(x a # trailing
+  b)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (line_comment)
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument)
+      (unquoted_argument)
+      (line_comment)
+      (unquoted_argument))))
+
+================================================================================
+Bracket comments
+================================================================================
+
+#[[ one
+two ]]
+#[=[ ]] still ]=] set(x)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (bracket_comment)
+  (bracket_comment)
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument))))
+
+================================================================================
+Unclosed bracket comment is a line comment
+================================================================================
+
+#[[ unclosed
+set(x)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (line_comment)
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument))))
+
+================================================================================
+Module documentation comment
+================================================================================
+
+#[=======================================================================[.rst:
+FindFoo finds Foo. ]] and ]=] do not close it.
+#]=======================================================================]
+set(x)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (bracket_comment)
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument))))
+
+================================================================================
+Hash inside an argument starts a comment
+================================================================================
+
+set(x a#b
+  c)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument)
+      (unquoted_argument)
+      (line_comment)
+      (unquoted_argument))))

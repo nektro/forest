@@ -1,0 +1,192 @@
+================================================================================
+Variable references
+================================================================================
+
+message(${x} "${y}" $ENV{HOME} "$CACHE{z}")
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument
+        (variable_reference
+          name: (variable)))
+      (quoted_argument
+        (variable_reference
+          name: (variable)))
+      (unquoted_argument
+        (variable_reference
+          name: (variable)))
+      (quoted_argument
+        (variable_reference
+          name: (variable))))))
+
+================================================================================
+Variable references inside text
+================================================================================
+
+set(x lib${name}.a "pre${a}${b}post")
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument)
+      (unquoted_argument
+        (variable_reference
+          name: (variable)))
+      (quoted_argument
+        (string_content)
+        (variable_reference
+          name: (variable))
+        (variable_reference
+          name: (variable))
+        (string_content)))))
+
+================================================================================
+Nested variable references
+================================================================================
+
+set(x ${CMAKE_${lang}_FLAGS})
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument)
+      (unquoted_argument
+        (variable_reference
+          name: (variable
+            (variable_reference
+              name: (variable))))))))
+
+================================================================================
+Empty variable reference and dollar names
+================================================================================
+
+message(${} "${$}")
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument
+        (variable_reference))
+      (quoted_argument
+        (variable_reference
+          name: (variable))))))
+
+================================================================================
+Escapes in a variable name
+================================================================================
+
+message(${a\;b})
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument
+        (variable_reference
+          name: (variable
+            (escape_sequence)))))))
+
+================================================================================
+Generator expressions
+================================================================================
+
+target_compile_definitions(t PRIVATE $<$<CONFIG:Debug>:DEBUG=1> $<TARGET_PROPERTY:t,NAME>)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument)
+      (unquoted_argument)
+      (unquoted_argument
+        (generator_expression
+          (generator_expression
+            (genex_text)
+            (genex_text))
+          (genex_text)))
+      (unquoted_argument
+        (generator_expression
+          (genex_text)
+          (genex_text)
+          (genex_text))))))
+
+================================================================================
+Generator expression in a quoted argument
+================================================================================
+
+add_custom_command(COMMAND "$<TARGET_FILE:app> --flag x")
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument)
+      (quoted_argument
+        (generator_expression
+          (genex_text)
+          (genex_text))
+        (string_content)))))
+
+================================================================================
+Generator expression spanning arguments
+================================================================================
+
+target_compile_options(t PRIVATE $<$<CXX_COMPILER_ID:GNU>:-Wall -Wextra>)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument)
+      (unquoted_argument)
+      (unquoted_argument
+        (generator_expression
+          (generator_expression
+            (genex_text)
+            (genex_text))
+          (genex_text)))
+      (unquoted_argument))))
+
+================================================================================
+Generator expression with references
+================================================================================
+
+set(x $<$<BOOL:${opt}>:-D${name}>)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list
+      (unquoted_argument)
+      (unquoted_argument
+        (generator_expression
+          (generator_expression
+            (genex_text)
+            (variable_reference
+              name: (variable)))
+          (genex_text)
+          (variable_reference
+            name: (variable)))))))

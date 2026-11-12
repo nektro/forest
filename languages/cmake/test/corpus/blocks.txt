@@ -1,0 +1,202 @@
+================================================================================
+If statement
+================================================================================
+
+if(A)
+  set(x 1)
+elseif(B)
+  set(x 2)
+elseif(C)
+else()
+  set(x 3)
+endif()
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (if_statement
+    (if_command
+      arguments: (argument_list
+        (unquoted_argument)))
+    (command
+      name: (identifier)
+      arguments: (argument_list
+        (unquoted_argument)
+        (unquoted_argument)))
+    (elseif_clause
+      (elseif_command
+        arguments: (argument_list
+          (unquoted_argument)))
+      (command
+        name: (identifier)
+        arguments: (argument_list
+          (unquoted_argument)
+          (unquoted_argument))))
+    (elseif_clause
+      (elseif_command
+        arguments: (argument_list
+          (unquoted_argument))))
+    (else_clause
+      (else_command
+        arguments: (argument_list))
+      (command
+        name: (identifier)
+        arguments: (argument_list
+          (unquoted_argument)
+          (unquoted_argument))))
+    (endif_command
+      arguments: (argument_list))))
+
+================================================================================
+Keywords in any case
+================================================================================
+
+IF(A)
+EndIf()
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (if_statement
+    (if_command
+      arguments: (argument_list
+        (unquoted_argument)))
+    (endif_command
+      arguments: (argument_list))))
+
+================================================================================
+Commands that start with a keyword
+================================================================================
+
+whiletest()
+function_x()
+endif_helper()
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (identifier)
+    arguments: (argument_list))
+  (command
+    name: (identifier)
+    arguments: (argument_list))
+  (command
+    name: (identifier)
+    arguments: (argument_list)))
+
+================================================================================
+Foreach and while loops
+================================================================================
+
+foreach(f IN LISTS files ITEMS a b)
+  if(f)
+    continue()
+  endif()
+endforeach()
+while(n LESS 3)
+  math(EXPR n "${n} + 1")
+  break()
+endwhile()
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (foreach_loop
+    (foreach_command
+      arguments: (argument_list
+        (unquoted_argument)
+        (unquoted_argument)
+        (unquoted_argument)
+        (unquoted_argument)
+        (unquoted_argument)
+        (unquoted_argument)
+        (unquoted_argument)))
+    (if_statement
+      (if_command
+        arguments: (argument_list
+          (unquoted_argument)))
+      (command
+        name: (identifier)
+        arguments: (argument_list))
+      (endif_command
+        arguments: (argument_list)))
+    (endforeach_command
+      arguments: (argument_list)))
+  (while_loop
+    (while_command
+      arguments: (argument_list
+        (unquoted_argument)
+        (unquoted_argument)
+        (unquoted_argument)))
+    (command
+      name: (identifier)
+      arguments: (argument_list
+        (unquoted_argument)
+        (unquoted_argument)
+        (quoted_argument
+          (variable_reference
+            name: (variable))
+          (string_content))))
+    (command
+      name: (identifier)
+      arguments: (argument_list))
+    (endwhile_command
+      arguments: (argument_list))))
+
+================================================================================
+Function and macro definitions
+================================================================================
+
+function(add name)
+  return(PROPAGATE x)
+endfunction(add)
+macro(m)
+endmacro()
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_definition
+    (function_command
+      arguments: (argument_list
+        (unquoted_argument)
+        (unquoted_argument)))
+    (command
+      name: (identifier)
+      arguments: (argument_list
+        (unquoted_argument)
+        (unquoted_argument)))
+    (endfunction_command
+      arguments: (argument_list
+        (unquoted_argument))))
+  (macro_definition
+    (macro_command
+      arguments: (argument_list
+        (unquoted_argument)))
+    (endmacro_command
+      arguments: (argument_list))))
+
+================================================================================
+Block statement
+================================================================================
+
+block(SCOPE_FOR VARIABLES)
+  set(x 1)
+endblock()
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (block_statement
+    (block_command
+      arguments: (argument_list
+        (unquoted_argument)
+        (unquoted_argument)))
+    (command
+      name: (identifier)
+      arguments: (argument_list
+        (unquoted_argument)
+        (unquoted_argument)))
+    (endblock_command
+      arguments: (argument_list))))
