@@ -1,0 +1,223 @@
+================================================================================
+Empty attribute set
+================================================================================
+
+{ }
+
+---
+
+(source_code
+  expression: (attrset_expression))
+
+================================================================================
+Attribute set
+================================================================================
+
+{
+  a = 1;
+  b.c.d = 2;
+  "e f" = 3;
+  ${g} = 4;
+  h.${"i"}.j = 5;
+}
+
+---
+
+(source_code
+  expression: (attrset_expression
+    (binding_set
+      binding: (binding
+        attrpath: (attrpath
+          attr: (identifier))
+        expression: (integer_expression))
+      binding: (binding
+        attrpath: (attrpath
+          attr: (identifier)
+          attr: (identifier)
+          attr: (identifier))
+        expression: (integer_expression))
+      binding: (binding
+        attrpath: (attrpath
+          attr: (string_expression
+            (string_fragment)))
+        expression: (integer_expression))
+      binding: (binding
+        attrpath: (attrpath
+          attr: (interpolation
+            expression: (variable_expression
+              name: (identifier))))
+        expression: (integer_expression))
+      binding: (binding
+        attrpath: (attrpath
+          attr: (identifier)
+          attr: (interpolation
+            expression: (string_expression
+              (string_fragment)))
+          attr: (identifier))
+        expression: (integer_expression)))))
+
+================================================================================
+Recursive attribute set
+================================================================================
+
+rec { a = 1; b = a; }
+
+---
+
+(source_code
+  expression: (rec_attrset_expression
+    (binding_set
+      binding: (binding
+        attrpath: (attrpath
+          attr: (identifier))
+        expression: (integer_expression))
+      binding: (binding
+        attrpath: (attrpath
+          attr: (identifier))
+        expression: (variable_expression
+          name: (identifier))))))
+
+================================================================================
+Inherit
+================================================================================
+
+{
+  inherit a b;
+  inherit (lib) c "d";
+  inherit;
+}
+
+---
+
+(source_code
+  expression: (attrset_expression
+    (binding_set
+      binding: (inherit
+        attrs: (inherited_attrs
+          attr: (identifier)
+          attr: (identifier)))
+      binding: (inherit_from
+        expression: (variable_expression
+          name: (identifier))
+        attrs: (inherited_attrs
+          attr: (identifier)
+          attr: (string_expression
+            (string_fragment))))
+      binding: (inherit))))
+
+================================================================================
+Or as an attribute name
+================================================================================
+
+{ or = 1; inherit (lib) or; x = lib.or; }
+
+---
+
+(source_code
+  expression: (attrset_expression
+    (binding_set
+      binding: (binding
+        attrpath: (attrpath
+          attr: (identifier))
+        expression: (integer_expression))
+      binding: (inherit_from
+        expression: (variable_expression
+          name: (identifier))
+        attrs: (inherited_attrs
+          attr: (identifier)))
+      binding: (binding
+        attrpath: (attrpath
+          attr: (identifier))
+        expression: (select_expression
+          expression: (variable_expression
+            name: (identifier))
+          attrpath: (attrpath
+            attr: (identifier)))))))
+
+================================================================================
+Let
+================================================================================
+
+let
+  a = 1;
+  inherit (b) c;
+in
+a + c
+
+---
+
+(source_code
+  expression: (let_expression
+    (binding_set
+      binding: (binding
+        attrpath: (attrpath
+          attr: (identifier))
+        expression: (integer_expression))
+      binding: (inherit_from
+        expression: (variable_expression
+          name: (identifier))
+        attrs: (inherited_attrs
+          attr: (identifier))))
+    body: (binary_expression
+      left: (variable_expression
+        name: (identifier))
+      right: (variable_expression
+        name: (identifier)))))
+
+================================================================================
+Empty let
+================================================================================
+
+let in x
+
+---
+
+(source_code
+  expression: (let_expression
+    body: (variable_expression
+      name: (identifier))))
+
+================================================================================
+Let attribute set
+================================================================================
+
+let { x = 1; body = x; }
+
+---
+
+(source_code
+  expression: (let_attrset_expression
+    (binding_set
+      binding: (binding
+        attrpath: (attrpath
+          attr: (identifier))
+        expression: (integer_expression))
+      binding: (binding
+        attrpath: (attrpath
+          attr: (identifier))
+        expression: (variable_expression
+          name: (identifier))))))
+
+================================================================================
+Keyword-like identifiers
+================================================================================
+
+{ in-place = 1; if' = 2; letter = 3; }
+
+---
+
+(source_code
+  expression: (attrset_expression
+    (binding_set
+      binding: (binding
+        attrpath: (attrpath
+          attr: (identifier))
+        expression: (integer_expression))
+      binding: (binding
+        attrpath: (attrpath
+          attr: (identifier))
+        expression: (integer_expression))
+      binding: (binding
+        attrpath: (attrpath
+          attr: (identifier))
+        expression: (integer_expression)))))

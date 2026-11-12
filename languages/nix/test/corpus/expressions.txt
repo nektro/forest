@@ -1,0 +1,374 @@
+================================================================================
+Arithmetic precedence
+================================================================================
+
+1 + 2 * 3 - 4 / 5
+
+---
+
+(source_code
+  expression: (binary_expression
+    left: (binary_expression
+      left: (integer_expression)
+      right: (binary_expression
+        left: (integer_expression)
+        right: (integer_expression)))
+    right: (binary_expression
+      left: (integer_expression)
+      right: (integer_expression))))
+
+================================================================================
+Division needs spaces
+================================================================================
+
+[ (a / b) (a/b) (a /b) ]
+
+---
+
+(source_code
+  expression: (list_expression
+    element: (parenthesized_expression
+      expression: (binary_expression
+        left: (variable_expression
+          name: (identifier))
+        right: (variable_expression
+          name: (identifier))))
+    element: (parenthesized_expression
+      expression: (path_expression
+        (path_fragment)))
+    element: (parenthesized_expression
+      expression: (apply_expression
+        function: (variable_expression
+          name: (identifier))
+        argument: (path_expression
+          (path_fragment))))))
+
+================================================================================
+Negation
+================================================================================
+
+[ (-a * b) (- f x) (a - -b) ]
+
+---
+
+(source_code
+  expression: (list_expression
+    element: (parenthesized_expression
+      expression: (binary_expression
+        left: (unary_expression
+          argument: (variable_expression
+            name: (identifier)))
+        right: (variable_expression
+          name: (identifier))))
+    element: (parenthesized_expression
+      expression: (unary_expression
+        argument: (apply_expression
+          function: (variable_expression
+            name: (identifier))
+          argument: (variable_expression
+            name: (identifier)))))
+    element: (parenthesized_expression
+      expression: (binary_expression
+        left: (variable_expression
+          name: (identifier))
+        right: (unary_expression
+          argument: (variable_expression
+            name: (identifier)))))))
+
+================================================================================
+Application does not take a negated argument
+================================================================================
+
+f -1
+
+---
+
+(source_code
+  expression: (binary_expression
+    left: (variable_expression
+      name: (identifier))
+    right: (integer_expression)))
+
+================================================================================
+Logical operators
+================================================================================
+
+!a && b || c -> d -> e
+
+---
+
+(source_code
+  expression: (binary_expression
+    left: (binary_expression
+      left: (binary_expression
+        left: (unary_expression
+          argument: (variable_expression
+            name: (identifier)))
+        right: (variable_expression
+          name: (identifier)))
+      right: (variable_expression
+        name: (identifier)))
+    right: (binary_expression
+      left: (variable_expression
+        name: (identifier))
+      right: (variable_expression
+        name: (identifier)))))
+
+================================================================================
+Not is below arithmetic
+================================================================================
+
+!a + b == c
+
+---
+
+(source_code
+  expression: (binary_expression
+    left: (unary_expression
+      argument: (binary_expression
+        left: (variable_expression
+          name: (identifier))
+        right: (variable_expression
+          name: (identifier))))
+    right: (variable_expression
+      name: (identifier))))
+
+================================================================================
+Comparison
+================================================================================
+
+a < b && c >= d && e != f
+
+---
+
+(source_code
+  expression: (binary_expression
+    left: (binary_expression
+      left: (binary_expression
+        left: (variable_expression
+          name: (identifier))
+        right: (variable_expression
+          name: (identifier)))
+      right: (binary_expression
+        left: (variable_expression
+          name: (identifier))
+        right: (variable_expression
+          name: (identifier))))
+    right: (binary_expression
+      left: (variable_expression
+        name: (identifier))
+      right: (variable_expression
+        name: (identifier)))))
+
+================================================================================
+Update and concat are right associative
+================================================================================
+
+a // b // c ++ d ++ e
+
+---
+
+(source_code
+  expression: (binary_expression
+    left: (variable_expression
+      name: (identifier))
+    right: (binary_expression
+      left: (variable_expression
+        name: (identifier))
+      right: (binary_expression
+        left: (variable_expression
+          name: (identifier))
+        right: (binary_expression
+          left: (variable_expression
+            name: (identifier))
+          right: (variable_expression
+            name: (identifier)))))))
+
+================================================================================
+Pipe operators
+================================================================================
+
+[ (x |> f |> g) (g <| f <| x) ]
+
+---
+
+(source_code
+  expression: (list_expression
+    element: (parenthesized_expression
+      expression: (binary_expression
+        left: (binary_expression
+          left: (variable_expression
+            name: (identifier))
+          right: (variable_expression
+            name: (identifier)))
+        right: (variable_expression
+          name: (identifier))))
+    element: (parenthesized_expression
+      expression: (binary_expression
+        left: (variable_expression
+          name: (identifier))
+        right: (binary_expression
+          left: (variable_expression
+            name: (identifier))
+          right: (variable_expression
+            name: (identifier)))))))
+
+================================================================================
+Has attribute
+================================================================================
+
+a ? b.c && x ? "y".${z}
+
+---
+
+(source_code
+  expression: (binary_expression
+    left: (has_attr_expression
+      expression: (variable_expression
+        name: (identifier))
+      attrpath: (attrpath
+        attr: (identifier)
+        attr: (identifier)))
+    right: (has_attr_expression
+      expression: (variable_expression
+        name: (identifier))
+      attrpath: (attrpath
+        attr: (string_expression
+          (string_fragment))
+        attr: (interpolation
+          expression: (variable_expression
+            name: (identifier)))))))
+
+================================================================================
+Application
+================================================================================
+
+f a b.c (g d) [ e ]
+
+---
+
+(source_code
+  expression: (apply_expression
+    function: (apply_expression
+      function: (apply_expression
+        function: (apply_expression
+          function: (variable_expression
+            name: (identifier))
+          argument: (variable_expression
+            name: (identifier)))
+        argument: (select_expression
+          expression: (variable_expression
+            name: (identifier))
+          attrpath: (attrpath
+            attr: (identifier))))
+      argument: (parenthesized_expression
+        expression: (apply_expression
+          function: (variable_expression
+            name: (identifier))
+          argument: (variable_expression
+            name: (identifier)))))
+    argument: (list_expression
+      element: (variable_expression
+        name: (identifier)))))
+
+================================================================================
+Select
+================================================================================
+
+a.b."c".${d}.or
+
+---
+
+(source_code
+  expression: (select_expression
+    expression: (variable_expression
+      name: (identifier))
+    attrpath: (attrpath
+      attr: (identifier)
+      attr: (string_expression
+        (string_fragment))
+      attr: (interpolation
+        expression: (variable_expression
+          name: (identifier)))
+      attr: (identifier))))
+
+================================================================================
+Select with default
+================================================================================
+
+a.b or c.d or e
+
+---
+
+(source_code
+  expression: (select_expression
+    expression: (variable_expression
+      name: (identifier))
+    attrpath: (attrpath
+      attr: (identifier))
+    default: (select_expression
+      expression: (variable_expression
+        name: (identifier))
+      attrpath: (attrpath
+        attr: (identifier))
+      default: (variable_expression
+        name: (identifier)))))
+
+================================================================================
+List elements are not applications
+================================================================================
+
+[ f x a.b or c ]
+
+---
+
+(source_code
+  expression: (list_expression
+    element: (variable_expression
+      name: (identifier))
+    element: (variable_expression
+      name: (identifier))
+    element: (select_expression
+      expression: (variable_expression
+        name: (identifier))
+      attrpath: (attrpath
+        attr: (identifier))
+      default: (variable_expression
+        name: (identifier)))))
+
+================================================================================
+Search path applied
+================================================================================
+
+import <nixpkgs> { }
+
+---
+
+(source_code
+  expression: (apply_expression
+    function: (apply_expression
+      function: (variable_expression
+        name: (identifier))
+      argument: (spath_expression))
+    argument: (attrset_expression)))
+
+================================================================================
+Spaced less-than is not a search path
+================================================================================
+
+a < b && c > d
+
+---
+
+(source_code
+  expression: (binary_expression
+    left: (binary_expression
+      left: (variable_expression
+        name: (identifier))
+      right: (variable_expression
+        name: (identifier)))
+    right: (binary_expression
+      left: (variable_expression
+        name: (identifier))
+      right: (variable_expression
+        name: (identifier)))))

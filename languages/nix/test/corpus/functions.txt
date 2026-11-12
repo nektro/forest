@@ -1,0 +1,145 @@
+================================================================================
+Curried function
+================================================================================
+
+x: y: x + y
+
+---
+
+(source_code
+  expression: (function_expression
+    universal: (identifier)
+    body: (function_expression
+      universal: (identifier)
+      body: (binary_expression
+        left: (variable_expression
+          name: (identifier))
+        right: (variable_expression
+          name: (identifier))))))
+
+================================================================================
+Formals
+================================================================================
+
+{ a, b ? 1, ... }: a
+
+---
+
+(source_code
+  expression: (function_expression
+    formals: (formals
+      formal: (formal
+        name: (identifier))
+      formal: (formal
+        name: (identifier)
+        default: (integer_expression))
+      ellipses: (ellipses))
+    body: (variable_expression
+      name: (identifier))))
+
+================================================================================
+Formals with trailing comma
+================================================================================
+
+{ a, b, }: a
+
+---
+
+(source_code
+  expression: (function_expression
+    formals: (formals
+      formal: (formal
+        name: (identifier))
+      formal: (formal
+        name: (identifier)))
+    body: (variable_expression
+      name: (identifier))))
+
+================================================================================
+Empty formals
+================================================================================
+
+{ }: 1
+
+---
+
+(source_code
+  expression: (function_expression
+    formals: (formals)
+    body: (integer_expression)))
+
+================================================================================
+Formals with a name after
+================================================================================
+
+{ lib, ... }@args: args
+
+---
+
+(source_code
+  expression: (function_expression
+    formals: (formals
+      formal: (formal
+        name: (identifier))
+      ellipses: (ellipses))
+    universal: (identifier)
+    body: (variable_expression
+      name: (identifier))))
+
+================================================================================
+Formals with a name before
+================================================================================
+
+args@{ lib }: lib
+
+---
+
+(source_code
+  expression: (function_expression
+    universal: (identifier)
+    formals: (formals
+      formal: (formal
+        name: (identifier)))
+    body: (variable_expression
+      name: (identifier))))
+
+================================================================================
+Function body extends to the end
+================================================================================
+
+f (x: x + 1) 2
+
+---
+
+(source_code
+  expression: (apply_expression
+    function: (apply_expression
+      function: (variable_expression
+        name: (identifier))
+      argument: (parenthesized_expression
+        expression: (function_expression
+          universal: (identifier)
+          body: (binary_expression
+            left: (variable_expression
+              name: (identifier))
+            right: (integer_expression)))))
+    argument: (integer_expression)))
+
+================================================================================
+Function in a binding
+================================================================================
+
+{ f = x: x; }
+
+---
+
+(source_code
+  expression: (attrset_expression
+    (binding_set
+      binding: (binding
+        attrpath: (attrpath
+          attr: (identifier))
+        expression: (function_expression
+          universal: (identifier)
+          body: (variable_expression
+            name: (identifier)))))))

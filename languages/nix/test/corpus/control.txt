@@ -1,0 +1,210 @@
+================================================================================
+If
+================================================================================
+
+if a then b else if c then d else e
+
+---
+
+(source_code
+  expression: (if_expression
+    condition: (variable_expression
+      name: (identifier))
+    consequence: (variable_expression
+      name: (identifier))
+    alternative: (if_expression
+      condition: (variable_expression
+        name: (identifier))
+      consequence: (variable_expression
+        name: (identifier))
+      alternative: (variable_expression
+        name: (identifier)))))
+
+================================================================================
+Assert
+================================================================================
+
+assert x != null; x
+
+---
+
+(source_code
+  expression: (assert_expression
+    condition: (binary_expression
+      left: (variable_expression
+        name: (identifier))
+      right: (variable_expression
+        name: (identifier)))
+    body: (variable_expression
+      name: (identifier))))
+
+================================================================================
+With
+================================================================================
+
+with pkgs; [ hello ]
+
+---
+
+(source_code
+  expression: (with_expression
+    environment: (variable_expression
+      name: (identifier))
+    body: (list_expression
+      element: (variable_expression
+        name: (identifier)))))
+
+================================================================================
+Nested with, assert and let
+================================================================================
+
+with lib; assert a; let b = 1; in c: b
+
+---
+
+(source_code
+  expression: (with_expression
+    environment: (variable_expression
+      name: (identifier))
+    body: (assert_expression
+      condition: (variable_expression
+        name: (identifier))
+      body: (let_expression
+        (binding_set
+          binding: (binding
+            attrpath: (attrpath
+              attr: (identifier))
+            expression: (integer_expression)))
+        body: (function_expression
+          universal: (identifier)
+          body: (variable_expression
+            name: (identifier)))))))
+
+================================================================================
+Parentheses
+================================================================================
+
+(if a then b else c) d
+
+---
+
+(source_code
+  expression: (apply_expression
+    function: (parenthesized_expression
+      expression: (if_expression
+        condition: (variable_expression
+          name: (identifier))
+        consequence: (variable_expression
+          name: (identifier))
+        alternative: (variable_expression
+          name: (identifier))))
+    argument: (variable_expression
+      name: (identifier))))
+
+================================================================================
+Package
+================================================================================
+
+{ lib, stdenv, fetchurl }:
+
+stdenv.mkDerivation rec {
+  pname = "hello";
+  version = "2.12";
+
+  src = fetchurl {
+    url = "mirror://gnu/hello/hello-${version}.tar.gz";
+    hash = "sha256-AAAA";
+  };
+
+  postInstall = ''
+    mkdir -p $out/share
+  '';
+
+  meta = with lib; {
+    license = licenses.gpl3Plus;
+    platforms = platforms.all;
+  };
+}
+
+---
+
+(source_code
+  expression: (function_expression
+    formals: (formals
+      formal: (formal
+        name: (identifier))
+      formal: (formal
+        name: (identifier))
+      formal: (formal
+        name: (identifier)))
+    body: (apply_expression
+      function: (select_expression
+        expression: (variable_expression
+          name: (identifier))
+        attrpath: (attrpath
+          attr: (identifier)))
+      argument: (rec_attrset_expression
+        (binding_set
+          binding: (binding
+            attrpath: (attrpath
+              attr: (identifier))
+            expression: (string_expression
+              (string_fragment)))
+          binding: (binding
+            attrpath: (attrpath
+              attr: (identifier))
+            expression: (string_expression
+              (string_fragment)))
+          binding: (binding
+            attrpath: (attrpath
+              attr: (identifier))
+            expression: (apply_expression
+              function: (variable_expression
+                name: (identifier))
+              argument: (attrset_expression
+                (binding_set
+                  binding: (binding
+                    attrpath: (attrpath
+                      attr: (identifier))
+                    expression: (string_expression
+                      (string_fragment)
+                      (interpolation
+                        expression: (variable_expression
+                          name: (identifier)))
+                      (string_fragment)))
+                  binding: (binding
+                    attrpath: (attrpath
+                      attr: (identifier))
+                    expression: (string_expression
+                      (string_fragment)))))))
+          binding: (binding
+            attrpath: (attrpath
+              attr: (identifier))
+            expression: (indented_string_expression
+              (string_fragment)
+              (string_fragment)
+              (string_fragment)))
+          binding: (binding
+            attrpath: (attrpath
+              attr: (identifier))
+            expression: (with_expression
+              environment: (variable_expression
+                name: (identifier))
+              body: (attrset_expression
+                (binding_set
+                  binding: (binding
+                    attrpath: (attrpath
+                      attr: (identifier))
+                    expression: (select_expression
+                      expression: (variable_expression
+                        name: (identifier))
+                      attrpath: (attrpath
+                        attr: (identifier))))
+                  binding: (binding
+                    attrpath: (attrpath
+                      attr: (identifier))
+                    expression: (select_expression
+                      expression: (variable_expression
+                        name: (identifier))
+                      attrpath: (attrpath
+                        attr: (identifier)))))))))))))

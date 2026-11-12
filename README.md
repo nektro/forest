@@ -11,6 +11,7 @@ A bundle of tree-sitter grammars.
 | Java | [languages/java](languages/java) | none |
 | JSON (and JSONC, JSON Lines) | [languages/json](languages/json) | none |
 | Lua (5.1 to 5.5) | [languages/lua](languages/lua) | none |
+| Nix | [languages/nix](languages/nix) | none |
 | Swift | [languages/swift](languages/swift) | none |
 | Verilog (IEEE 1364-2005) | [languages/verilog](languages/verilog) | none |
 | Zig | [languages/zig](languages/zig) | none |

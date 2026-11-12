@@ -1,0 +1,371 @@
+================================================================================
+Empty file
+================================================================================
+
+
+
+---
+
+(source_code)
+
+================================================================================
+Integers and floats
+================================================================================
+
+[ 0 42 1.5 0.5 .5 1. 2.5e10 6.02E-23 ]
+
+---
+
+(source_code
+  expression: (list_expression
+    element: (integer_expression)
+    element: (integer_expression)
+    element: (float_expression)
+    element: (float_expression)
+    element: (float_expression)
+    element: (float_expression)
+    element: (float_expression)
+    element: (float_expression)))
+
+================================================================================
+An exponent needs a dot
+================================================================================
+
+[ 1e5 ]
+
+---
+
+(source_code
+  expression: (list_expression
+    element: (integer_expression)
+    element: (variable_expression
+      name: (identifier))))
+
+================================================================================
+Identifiers with dashes and quotes
+================================================================================
+
+[ foo-bar x' __curPos _a-b'c ]
+
+---
+
+(source_code
+  expression: (list_expression
+    element: (variable_expression
+      name: (identifier))
+    element: (variable_expression
+      name: (identifier))
+    element: (variable_expression
+      name: (identifier))
+    element: (variable_expression
+      name: (identifier))))
+
+================================================================================
+String with escapes
+================================================================================
+
+"tab\tnewline\nquote\"backslash\\dollar\${x}"
+
+---
+
+(source_code
+  expression: (string_expression
+    (string_fragment)
+    (escape_sequence)
+    (string_fragment)
+    (escape_sequence)
+    (string_fragment)
+    (escape_sequence)
+    (string_fragment)
+    (escape_sequence)
+    (string_fragment)
+    (escape_sequence)
+    (string_fragment)))
+
+================================================================================
+String with interpolations
+================================================================================
+
+"a ${b} c${d.e}${"f"}"
+
+---
+
+(source_code
+  expression: (string_expression
+    (string_fragment)
+    (interpolation
+      expression: (variable_expression
+        name: (identifier)))
+    (string_fragment)
+    (interpolation
+      expression: (select_expression
+        expression: (variable_expression
+          name: (identifier))
+        attrpath: (attrpath
+          attr: (identifier))))
+    (interpolation
+      expression: (string_expression
+        (string_fragment)))))
+
+================================================================================
+Dollar signs that do not interpolate
+================================================================================
+
+[ "$" "$$" "$${x}" "$$${x}" "a$b" "$\n" ]
+
+---
+
+(source_code
+  expression: (list_expression
+    element: (string_expression
+      (string_fragment))
+    element: (string_expression
+      (string_fragment))
+    element: (string_expression
+      (string_fragment)
+      (string_fragment))
+    element: (string_expression
+      (string_fragment)
+      (interpolation
+        expression: (variable_expression
+          name: (identifier))))
+    element: (string_expression
+      (string_fragment)
+      (string_fragment)
+      (string_fragment))
+    element: (string_expression
+      (string_fragment)
+      (escape_sequence))))
+
+================================================================================
+Comment markers in strings
+================================================================================
+
+[ "# not a comment" "/* nor this */" "${x} # still text" ]
+
+---
+
+(source_code
+  expression: (list_expression
+    element: (string_expression
+      (string_fragment))
+    element: (string_expression
+      (string_fragment))
+    element: (string_expression
+      (interpolation
+        expression: (variable_expression
+          name: (identifier)))
+      (string_fragment))))
+
+================================================================================
+Multi-line string
+================================================================================
+
+"first
+  second"
+
+---
+
+(source_code
+  expression: (string_expression
+    (string_fragment)))
+
+================================================================================
+Empty strings
+================================================================================
+
+[ "" '''' ]
+
+---
+
+(source_code
+  expression: (list_expression
+    element: (string_expression)
+    element: (indented_string_expression)))
+
+================================================================================
+Indented string
+================================================================================
+
+''
+  line one
+  it's ${x}, not $y
+  # text
+''
+
+---
+
+(source_code
+  expression: (indented_string_expression
+    (string_fragment)
+    (string_fragment)
+    (string_fragment)
+    (interpolation
+      expression: (variable_expression
+        name: (identifier)))
+    (string_fragment)
+    (string_fragment)
+    (string_fragment)))
+
+================================================================================
+Indented string escapes
+================================================================================
+
+''
+  ''${not} ''' ''\n ''\t $${literal}
+''
+
+---
+
+(source_code
+  expression: (indented_string_expression
+    (string_fragment)
+    (escape_sequence)
+    (string_fragment)
+    (escape_sequence)
+    (string_fragment)
+    (escape_sequence)
+    (string_fragment)
+    (escape_sequence)
+    (string_fragment)
+    (string_fragment)
+    (string_fragment)))
+
+================================================================================
+Paths
+================================================================================
+
+[ ./foo ../bar/baz.nix /etc/nixos foo/bar a.b/c ./. ]
+
+---
+
+(source_code
+  expression: (list_expression
+    element: (path_expression
+      (path_fragment))
+    element: (path_expression
+      (path_fragment))
+    element: (path_expression
+      (path_fragment))
+    element: (path_expression
+      (path_fragment))
+    element: (path_expression
+      (path_fragment))
+    element: (path_expression
+      (path_fragment))))
+
+================================================================================
+Home and search paths
+================================================================================
+
+[ ~/.config <nixpkgs> <nixpkgs/lib> ]
+
+---
+
+(source_code
+  expression: (list_expression
+    element: (hpath_expression
+      (path_fragment))
+    element: (spath_expression)
+    element: (spath_expression)))
+
+================================================================================
+Paths with interpolations
+================================================================================
+
+[ ./${x} ./foo/${x}.nix ../${x}/y ./a-${x}-b ~/${x} /nix/${x}/${"y"} ]
+
+---
+
+(source_code
+  expression: (list_expression
+    element: (path_expression
+      (path_fragment)
+      (interpolation
+        expression: (variable_expression
+          name: (identifier))))
+    element: (path_expression
+      (path_fragment)
+      (interpolation
+        expression: (variable_expression
+          name: (identifier)))
+      (path_fragment))
+    element: (path_expression
+      (path_fragment)
+      (interpolation
+        expression: (variable_expression
+          name: (identifier)))
+      (path_fragment))
+    element: (path_expression
+      (path_fragment)
+      (interpolation
+        expression: (variable_expression
+          name: (identifier)))
+      (path_fragment))
+    element: (hpath_expression
+      (path_fragment)
+      (interpolation
+        expression: (variable_expression
+          name: (identifier))))
+    element: (path_expression
+      (path_fragment)
+      (interpolation
+        expression: (variable_expression
+          name: (identifier)))
+      (path_fragment)
+      (interpolation
+        expression: (string_expression
+          (string_fragment))))))
+
+================================================================================
+Lone slash path after or
+================================================================================
+
+a.b or /${c}/d
+
+---
+
+(source_code
+  expression: (select_expression
+    expression: (variable_expression
+      name: (identifier))
+    attrpath: (attrpath
+      attr: (identifier))
+    default: (path_expression
+      (path_fragment)
+      (interpolation
+        expression: (variable_expression
+          name: (identifier)))
+      (path_fragment))))
+
+================================================================================
+URIs
+================================================================================
+
+[ https://example.com/a?b=c&d=e mirror://gnu/hello x:y ]
+
+---
+
+(source_code
+  expression: (list_expression
+    element: (uri_expression)
+    element: (uri_expression)
+    element: (uri_expression)))
+
+================================================================================
+Comments
+================================================================================
+
+# line
+/* block
+   comment */ x /**/ # trailing
+
+---
+
+(source_code
+  (comment)
+  (comment)
+  expression: (variable_expression
+    name: (identifier))
+  (comment)
+  (comment))
