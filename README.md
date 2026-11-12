@@ -64,12 +64,10 @@ A loaded grammar has `parse(source, oldTree?)`, `highlights(source, tree?)`
 `query(kind)` for `"highlights"`, `"locals"`, `"tags"`, `"folds"` or
 `"injections"`, and `language`.
 
-Highlight classes are `hl-` plus every prefix of the capture name, so
-`@function.builtin` becomes `class="hl-function hl-function-builtin"`.
+Highlight classes are `hl-` plus every prefix of the capture name, so `@function.builtin` becomes `class="hl-function hl-function-builtin"`.
 Injections are not applied yet.
 
-The page must be served over HTTP(S); browsers will not fetch the `.wasm`
-from `file://`.
+The page must be served over HTTP(S); browsers will not fetch the `.wasm` from `file://`.
 
 ### Building
 
@@ -92,15 +90,11 @@ bun run serve
 
 ### Adding a language
 
-The build has no per-language code. It picks up every
-`languages/*/tree-sitter.json` and, for each grammar in it:
+The build has no per-language code. It picks up every `languages/*/tree-sitter.json` and, for each grammar in it:
 
-- regenerates `src/parser.c` from `src/grammar.json` when needed and builds
-  `tree-sitter-<name>.wasm`
-- bundles its queries: the paths `tree-sitter.json` lists, or else
-  `queries/<kind>.scm` if it exists
+- regenerates `src/parser.c` from `src/grammar.json` when needed and builds `tree-sitter-<name>.wasm`
+- bundles its queries: the paths `tree-sitter.json` lists, or else `queries/<kind>.scm` if it exists
 - takes `title`, `scope` and `file-types` for `Arborist.languageForFile`
 - puts every file in `examples/` on the demo page
 
-The web-tree-sitter version in `package.json` should match the `tree-sitter`
-CLI's version, which sets the grammar ABI.
+The web-tree-sitter version in `package.json` should match the `tree-sitter` CLI's version, which sets the grammar ABI.
