@@ -1,0 +1,749 @@
+================================================================================
+Operators and precedence
+================================================================================
+
+class A {
+  void f() {
+    x = a + b * c - d / e % f;
+    x = a << 1 >> 2 >>> 3;
+    x = a < b == c > d;
+    x = a & b ^ c | d && e || f;
+    x = a ? b : c ? d : e;
+    x = y = z;
+    x += 1; x -= 1; x *= 1; x /= 1; x %= 1;
+    x &= 1; x |= 1; x ^= 1; x <<= 1; x >>= 1; x >>>= 1;
+    x = -a + +b - ~c;
+    b = !!b;
+    i = i++ + ++i - i-- - --i;
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (binary_expression
+                left: (binary_expression
+                  left: (identifier)
+                  right: (binary_expression
+                    left: (identifier)
+                    right: (identifier)))
+                right: (binary_expression
+                  left: (binary_expression
+                    left: (identifier)
+                    right: (identifier))
+                  right: (identifier)))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (binary_expression
+                left: (binary_expression
+                  left: (binary_expression
+                    left: (identifier)
+                    right: (integer_literal))
+                  right: (integer_literal))
+                right: (integer_literal))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (binary_expression
+                left: (binary_expression
+                  left: (identifier)
+                  right: (identifier))
+                right: (binary_expression
+                  left: (identifier)
+                  right: (identifier)))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (binary_expression
+                left: (binary_expression
+                  left: (binary_expression
+                    left: (binary_expression
+                      left: (binary_expression
+                        left: (identifier)
+                        right: (identifier))
+                      right: (identifier))
+                    right: (identifier))
+                  right: (identifier))
+                right: (identifier))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (ternary_expression
+                condition: (identifier)
+                consequence: (identifier)
+                alternative: (ternary_expression
+                  condition: (identifier)
+                  consequence: (identifier)
+                  alternative: (identifier)))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (assignment_expression
+                left: (identifier)
+                right: (identifier))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (integer_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (integer_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (integer_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (integer_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (integer_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (integer_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (integer_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (integer_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (integer_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (integer_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (integer_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (binary_expression
+                left: (binary_expression
+                  left: (unary_expression
+                    operand: (identifier))
+                  right: (unary_expression
+                    operand: (identifier)))
+                right: (unary_expression
+                  operand: (identifier)))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (unary_expression
+                operand: (unary_expression
+                  operand: (identifier)))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (binary_expression
+                left: (binary_expression
+                  left: (binary_expression
+                    left: (update_expression
+                      argument: (identifier))
+                    right: (update_expression
+                      argument: (identifier)))
+                  right: (update_expression
+                    argument: (identifier)))
+                right: (update_expression
+                  argument: (identifier))))))))))
+
+================================================================================
+Casts and parentheses
+================================================================================
+
+class A {
+  void f() {
+    x = (int) -d;
+    x = (a) - b;
+    x = (long) a + b;
+    x = (Foo) y;
+    x = (Foo) (y);
+    x = (List<String>) o;
+    x = (int[]) o;
+    x = (a.b.C) o;
+    x = (Runnable & Serializable) () -> {};
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (cast_expression
+                type: (primitive_type)
+                value: (unary_expression
+                  operand: (identifier)))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (binary_expression
+                left: (parenthesized_expression
+                  (identifier))
+                right: (identifier))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (binary_expression
+                left: (cast_expression
+                  type: (primitive_type)
+                  value: (identifier))
+                right: (identifier))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (cast_expression
+                type: (type_identifier)
+                value: (identifier))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (cast_expression
+                type: (type_identifier)
+                value: (parenthesized_expression
+                  (identifier)))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (cast_expression
+                type: (generic_type
+                  type: (type_identifier)
+                  arguments: (type_arguments
+                    (type_identifier)))
+                value: (identifier))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (cast_expression
+                type: (array_type
+                  element: (primitive_type)
+                  dimensions: (dimensions))
+                value: (identifier))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (cast_expression
+                type: (scoped_type_identifier
+                  scope: (scoped_type_identifier
+                    scope: (type_identifier)
+                    name: (type_identifier))
+                  name: (type_identifier))
+                value: (identifier))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (cast_expression
+                type: (type_identifier)
+                type: (type_identifier)
+                value: (lambda_expression
+                  parameters: (formal_parameters)
+                  body: (block))))))))))
+
+================================================================================
+Instanceof
+================================================================================
+
+class A {
+  void f() {
+    b = o instanceof String;
+    b = o instanceof String s && !s.isEmpty();
+    b = o instanceof final List<?> l;
+    b = o instanceof Point(int x, int y);
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (instanceof_expression
+                left: (identifier)
+                right: (type_identifier))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (binary_expression
+                left: (instanceof_expression
+                  left: (identifier)
+                  right: (type_identifier)
+                  name: (identifier))
+                right: (unary_expression
+                  operand: (method_invocation
+                    object: (identifier)
+                    name: (identifier)
+                    arguments: (argument_list))))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (instanceof_expression
+                left: (identifier)
+                right: (generic_type
+                  type: (type_identifier)
+                  arguments: (type_arguments
+                    (wildcard)))
+                name: (identifier))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (instanceof_expression
+                left: (identifier)
+                pattern: (record_pattern
+                  type: (type_identifier)
+                  (type_pattern
+                    type: (primitive_type)
+                    name: (identifier))
+                  (type_pattern
+                    type: (primitive_type)
+                    name: (identifier)))))))))))
+
+================================================================================
+Lambdas
+================================================================================
+
+class A {
+  void f() {
+    r = () -> {};
+    f = x -> x + 1;
+    g = (x, y) -> x * y;
+    h = (int x, int y) -> { return x; };
+    k = (var x, final var y) -> x;
+    c = x -> y -> x + y;
+    s = flag ? () -> 1 : () -> 2;
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (lambda_expression
+                parameters: (formal_parameters)
+                body: (block))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (lambda_expression
+                parameters: (identifier)
+                body: (binary_expression
+                  left: (identifier)
+                  right: (integer_literal)))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (lambda_expression
+                parameters: (inferred_parameters
+                  (identifier)
+                  (identifier))
+                body: (binary_expression
+                  left: (identifier)
+                  right: (identifier)))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (lambda_expression
+                parameters: (formal_parameters
+                  (formal_parameter
+                    type: (primitive_type)
+                    name: (identifier))
+                  (formal_parameter
+                    type: (primitive_type)
+                    name: (identifier)))
+                body: (block
+                  (return_statement
+                    (identifier))))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (lambda_expression
+                parameters: (formal_parameters
+                  (formal_parameter
+                    type: (type_identifier)
+                    name: (identifier))
+                  (formal_parameter
+                    (modifiers)
+                    type: (type_identifier)
+                    name: (identifier)))
+                body: (identifier))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (lambda_expression
+                parameters: (identifier)
+                body: (lambda_expression
+                  parameters: (identifier)
+                  body: (binary_expression
+                    left: (identifier)
+                    right: (identifier))))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (ternary_expression
+                condition: (identifier)
+                consequence: (lambda_expression
+                  parameters: (formal_parameters)
+                  body: (integer_literal))
+                alternative: (lambda_expression
+                  parameters: (formal_parameters)
+                  body: (integer_literal))))))))))
+
+================================================================================
+Method invocations and references
+================================================================================
+
+class A {
+  void f() {
+    foo();
+    a.b.c(1, "two");
+    this.<T>foo();
+    Collections.<String>emptyList();
+    super.toString();
+    A.super.run();
+    f(String::length, this::m, super::m, List<String>::new, int[]::new, Foo::<T>bar);
+    list.stream().map(String::valueOf).toList();
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (expression_statement
+            (method_invocation
+              name: (identifier)
+              arguments: (argument_list)))
+          (expression_statement
+            (method_invocation
+              object: (field_access
+                object: (identifier)
+                field: (identifier))
+              name: (identifier)
+              arguments: (argument_list
+                (integer_literal)
+                (string_literal
+                  (string_fragment)))))
+          (expression_statement
+            (method_invocation
+              object: (this)
+              type_arguments: (type_arguments
+                (type_identifier))
+              name: (identifier)
+              arguments: (argument_list)))
+          (expression_statement
+            (method_invocation
+              object: (identifier)
+              type_arguments: (type_arguments
+                (type_identifier))
+              name: (identifier)
+              arguments: (argument_list)))
+          (expression_statement
+            (method_invocation
+              object: (super)
+              name: (identifier)
+              arguments: (argument_list)))
+          (expression_statement
+            (method_invocation
+              object: (field_access
+                object: (identifier)
+                field: (super))
+              name: (identifier)
+              arguments: (argument_list)))
+          (expression_statement
+            (method_invocation
+              name: (identifier)
+              arguments: (argument_list
+                (method_reference
+                  object: (identifier)
+                  name: (identifier))
+                (method_reference
+                  object: (this)
+                  name: (identifier))
+                (method_reference
+                  object: (super)
+                  name: (identifier))
+                (method_reference
+                  object: (generic_type
+                    type: (type_identifier)
+                    arguments: (type_arguments
+                      (type_identifier))))
+                (method_reference
+                  object: (array_type
+                    element: (primitive_type)
+                    dimensions: (dimensions)))
+                (method_reference
+                  object: (identifier)
+                  type_arguments: (type_arguments
+                    (type_identifier))
+                  name: (identifier)))))
+          (expression_statement
+            (method_invocation
+              object: (method_invocation
+                object: (method_invocation
+                  object: (identifier)
+                  name: (identifier)
+                  arguments: (argument_list))
+                name: (identifier)
+                arguments: (argument_list
+                  (method_reference
+                    object: (identifier)
+                    name: (identifier))))
+              name: (identifier)
+              arguments: (argument_list))))))))
+
+================================================================================
+Object and array creation
+================================================================================
+
+class A {
+  void f() {
+    o = new Foo();
+    o = new Foo<>(1) { int x; };
+    o = new Outer.Inner();
+    o = outer.new Inner();
+    o = new Outer<T>.Inner<U>();
+    a = new int[3][4];
+    a = new int[3][];
+    a = new String[] {"a", "b"};
+    n = new int[] {1}.length;
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (object_creation_expression
+                type: (type_identifier)
+                arguments: (argument_list))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (object_creation_expression
+                type: (generic_type
+                  type: (type_identifier)
+                  arguments: (type_arguments))
+                arguments: (argument_list
+                  (integer_literal))
+                body: (class_body
+                  (field_declaration
+                    type: (primitive_type)
+                    declarator: (variable_declarator
+                      name: (identifier)))))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (object_creation_expression
+                type: (scoped_type_identifier
+                  scope: (type_identifier)
+                  name: (type_identifier))
+                arguments: (argument_list))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (object_creation_expression
+                object: (identifier)
+                type: (type_identifier)
+                arguments: (argument_list))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (object_creation_expression
+                type: (generic_type
+                  type: (scoped_type_identifier
+                    scope: (generic_type
+                      type: (type_identifier)
+                      arguments: (type_arguments
+                        (type_identifier)))
+                    name: (type_identifier))
+                  arguments: (type_arguments
+                    (type_identifier)))
+                arguments: (argument_list))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (array_creation_expression
+                type: (primitive_type)
+                dimensions: (dimensions_expr
+                  (integer_literal))
+                dimensions: (dimensions_expr
+                  (integer_literal)))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (array_creation_expression
+                type: (primitive_type)
+                dimensions: (dimensions_expr
+                  (integer_literal))
+                dimensions: (dimensions))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (array_creation_expression
+                type: (type_identifier)
+                dimensions: (dimensions)
+                value: (array_initializer
+                  (string_literal
+                    (string_fragment))
+                  (string_literal
+                    (string_fragment))))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (field_access
+                object: (array_creation_expression
+                  type: (primitive_type)
+                  dimensions: (dimensions)
+                  value: (array_initializer
+                    (integer_literal)))
+                field: (identifier)))))))))
+
+================================================================================
+Field access and array access
+================================================================================
+
+class A {
+  void f() {
+    x = a.b.c;
+    x = this.x;
+    x = A.this.x;
+    x = a[1][2];
+    x = foo()[0];
+    x = int.class;
+    x = String[].class;
+    x = void.class;
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (field_access
+                object: (field_access
+                  object: (identifier)
+                  field: (identifier))
+                field: (identifier))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (field_access
+                object: (this)
+                field: (identifier))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (field_access
+                object: (field_access
+                  object: (identifier)
+                  field: (this))
+                field: (identifier))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (array_access
+                array: (array_access
+                  array: (identifier)
+                  index: (integer_literal))
+                index: (integer_literal))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (array_access
+                array: (method_invocation
+                  name: (identifier)
+                  arguments: (argument_list))
+                index: (integer_literal))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (class_literal
+                type: (primitive_type))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (class_literal
+                type: (array_type
+                  element: (type_identifier)
+                  dimensions: (dimensions)))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (class_literal
+                type: (void_type)))))))))

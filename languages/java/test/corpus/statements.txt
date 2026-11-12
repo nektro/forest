@@ -1,0 +1,532 @@
+================================================================================
+Local variables
+================================================================================
+
+class A {
+  void f() {
+    int x = 1, y[] = {}, z;
+    final var list = new ArrayList<String>();
+    List<Map<String, List<Integer>>> nested = null;
+    Map.Entry<K, V> entry;
+    a.b.C<D>[] arr;
+    @SuppressWarnings("unchecked") T t = (T) o;
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (local_variable_declaration
+            type: (primitive_type)
+            declarator: (variable_declarator
+              name: (identifier)
+              value: (integer_literal))
+            declarator: (variable_declarator
+              name: (identifier)
+              dimensions: (dimensions)
+              value: (array_initializer))
+            declarator: (variable_declarator
+              name: (identifier)))
+          (local_variable_declaration
+            (modifiers)
+            type: (type_identifier)
+            declarator: (variable_declarator
+              name: (identifier)
+              value: (object_creation_expression
+                type: (generic_type
+                  type: (type_identifier)
+                  arguments: (type_arguments
+                    (type_identifier)))
+                arguments: (argument_list))))
+          (local_variable_declaration
+            type: (generic_type
+              type: (type_identifier)
+              arguments: (type_arguments
+                (generic_type
+                  type: (type_identifier)
+                  arguments: (type_arguments
+                    (type_identifier)
+                    (generic_type
+                      type: (type_identifier)
+                      arguments: (type_arguments
+                        (type_identifier)))))))
+            declarator: (variable_declarator
+              name: (identifier)
+              value: (null_literal)))
+          (local_variable_declaration
+            type: (generic_type
+              type: (scoped_type_identifier
+                scope: (type_identifier)
+                name: (type_identifier))
+              arguments: (type_arguments
+                (type_identifier)
+                (type_identifier)))
+            declarator: (variable_declarator
+              name: (identifier)))
+          (local_variable_declaration
+            type: (array_type
+              element: (generic_type
+                type: (scoped_type_identifier
+                  scope: (scoped_type_identifier
+                    scope: (type_identifier)
+                    name: (type_identifier))
+                  name: (type_identifier))
+                arguments: (type_arguments
+                  (type_identifier)))
+              dimensions: (dimensions))
+            declarator: (variable_declarator
+              name: (identifier)))
+          (local_variable_declaration
+            (modifiers
+              (annotation
+                name: (identifier)
+                arguments: (annotation_argument_list
+                  (string_literal
+                    (string_fragment)))))
+            type: (type_identifier)
+            declarator: (variable_declarator
+              name: (identifier)
+              value: (cast_expression
+                type: (type_identifier)
+                value: (identifier)))))))))
+
+================================================================================
+Declarations win over expressions
+================================================================================
+
+class A {
+  void f() {
+    Foo<Bar> x;
+    a < b;
+    Foo[] y;
+    a[0] = 1;
+    a.b c;
+    a.b();
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (local_variable_declaration
+            type: (generic_type
+              type: (type_identifier)
+              arguments: (type_arguments
+                (type_identifier)))
+            declarator: (variable_declarator
+              name: (identifier)))
+          (expression_statement
+            (binary_expression
+              left: (identifier)
+              right: (identifier)))
+          (local_variable_declaration
+            type: (array_type
+              element: (type_identifier)
+              dimensions: (dimensions))
+            declarator: (variable_declarator
+              name: (identifier)))
+          (expression_statement
+            (assignment_expression
+              left: (array_access
+                array: (identifier)
+                index: (integer_literal))
+              right: (integer_literal)))
+          (local_variable_declaration
+            type: (scoped_type_identifier
+              scope: (type_identifier)
+              name: (type_identifier))
+            declarator: (variable_declarator
+              name: (identifier)))
+          (expression_statement
+            (method_invocation
+              object: (identifier)
+              name: (identifier)
+              arguments: (argument_list))))))))
+
+================================================================================
+If, loops and labels
+================================================================================
+
+class A {
+  void f() {
+    if (a) b(); else if (c) d(); else { e(); }
+    while (x < 10) x++;
+    do { x--; } while (x > 0);
+    for (int i = 0, j = 10; i < j; i++, j--) {}
+    for (i = 0; ; ) break;
+    for (final Map.Entry<String, Integer> e : map.entrySet()) continue;
+    outer:
+    for (;;) { continue outer; }
+    lbl: { break lbl; }
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (if_statement
+            condition: (parenthesized_expression
+              (identifier))
+            consequence: (expression_statement
+              (method_invocation
+                name: (identifier)
+                arguments: (argument_list)))
+            alternative: (if_statement
+              condition: (parenthesized_expression
+                (identifier))
+              consequence: (expression_statement
+                (method_invocation
+                  name: (identifier)
+                  arguments: (argument_list)))
+              alternative: (block
+                (expression_statement
+                  (method_invocation
+                    name: (identifier)
+                    arguments: (argument_list))))))
+          (while_statement
+            condition: (parenthesized_expression
+              (binary_expression
+                left: (identifier)
+                right: (integer_literal)))
+            body: (expression_statement
+              (update_expression
+                argument: (identifier))))
+          (do_statement
+            body: (block
+              (expression_statement
+                (update_expression
+                  argument: (identifier))))
+            condition: (parenthesized_expression
+              (binary_expression
+                left: (identifier)
+                right: (integer_literal))))
+          (for_statement
+            init: (local_variable_declaration
+              type: (primitive_type)
+              declarator: (variable_declarator
+                name: (identifier)
+                value: (integer_literal))
+              declarator: (variable_declarator
+                name: (identifier)
+                value: (integer_literal)))
+            condition: (binary_expression
+              left: (identifier)
+              right: (identifier))
+            update: (update_expression
+              argument: (identifier))
+            update: (update_expression
+              argument: (identifier))
+            body: (block))
+          (for_statement
+            init: (assignment_expression
+              left: (identifier)
+              right: (integer_literal))
+            body: (break_statement))
+          (enhanced_for_statement
+            (modifiers)
+            type: (generic_type
+              type: (scoped_type_identifier
+                scope: (type_identifier)
+                name: (type_identifier))
+              arguments: (type_arguments
+                (type_identifier)
+                (type_identifier)))
+            name: (identifier)
+            value: (method_invocation
+              object: (identifier)
+              name: (identifier)
+              arguments: (argument_list))
+            body: (continue_statement))
+          (labeled_statement
+            label: (identifier)
+            (for_statement
+              body: (block
+                (continue_statement
+                  label: (identifier)))))
+          (labeled_statement
+            label: (identifier)
+            (block
+              (break_statement
+                label: (identifier)))))))))
+
+================================================================================
+Try, catch and resources
+================================================================================
+
+class A {
+  void f() {
+    try (var in = open(); Reader r = new StringReader(s); this.res; other) {
+      read(in);
+    } catch (IOException | RuntimeException e) {
+      throw new RuntimeException(e);
+    } finally {
+      cleanup();
+    }
+    try {} catch (final Exception _) {}
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (try_with_resources_statement
+            resources: (resource_specification
+              (resource
+                type: (type_identifier)
+                name: (identifier)
+                value: (method_invocation
+                  name: (identifier)
+                  arguments: (argument_list)))
+              (resource
+                type: (type_identifier)
+                name: (identifier)
+                value: (object_creation_expression
+                  type: (type_identifier)
+                  arguments: (argument_list
+                    (identifier))))
+              (resource
+                (field_access
+                  object: (this)
+                  field: (identifier)))
+              (resource
+                (identifier)))
+            body: (block
+              (expression_statement
+                (method_invocation
+                  name: (identifier)
+                  arguments: (argument_list
+                    (identifier)))))
+            (catch_clause
+              (catch_formal_parameter
+                type: (catch_type
+                  (type_identifier)
+                  (type_identifier))
+                name: (identifier))
+              body: (block
+                (throw_statement
+                  (object_creation_expression
+                    type: (type_identifier)
+                    arguments: (argument_list
+                      (identifier))))))
+            (finally_clause
+              body: (block
+                (expression_statement
+                  (method_invocation
+                    name: (identifier)
+                    arguments: (argument_list))))))
+          (try_statement
+            body: (block)
+            (catch_clause
+              (catch_formal_parameter
+                (modifiers)
+                type: (catch_type
+                  (type_identifier))
+                name: (identifier))
+              body: (block))))))))
+
+================================================================================
+Other statements
+================================================================================
+
+class A {
+  void f() {
+    assert x > 0 : "positive";
+    assert ok;
+    synchronized (this) { notify(); }
+    ;
+    return;
+  }
+  int g() { return 1; }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (assert_statement
+            condition: (binary_expression
+              left: (identifier)
+              right: (integer_literal))
+            message: (string_literal
+              (string_fragment)))
+          (assert_statement
+            condition: (identifier))
+          (synchronized_statement
+            lock: (parenthesized_expression
+              (this))
+            body: (block
+              (expression_statement
+                (method_invocation
+                  name: (identifier)
+                  arguments: (argument_list)))))
+          (empty_statement)
+          (return_statement)))
+      (method_declaration
+        type: (primitive_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (return_statement
+            (integer_literal)))))))
+
+================================================================================
+Local classes
+================================================================================
+
+class A {
+  void f() {
+    record Local(int a) {}
+    enum Color { RED, GREEN }
+    interface Shape {}
+    abstract class Base {}
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (record_declaration
+            name: (identifier)
+            parameters: (formal_parameters
+              (formal_parameter
+                type: (primitive_type)
+                name: (identifier)))
+            body: (class_body))
+          (enum_declaration
+            name: (identifier)
+            body: (enum_body
+              (enum_constant
+                name: (identifier))
+              (enum_constant
+                name: (identifier))))
+          (interface_declaration
+            name: (identifier)
+            body: (interface_body))
+          (class_declaration
+            (modifiers)
+            name: (identifier)
+            body: (class_body)))))))
+
+================================================================================
+Annotated multi-catch
+================================================================================
+
+class A {
+  void f() {
+    try {} catch (@A NullPointerException | @B IllegalStateException e) {}
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (try_statement
+            body: (block)
+            (catch_clause
+              (catch_formal_parameter
+                (modifiers
+                  (annotation
+                    name: (identifier)))
+                type: (catch_type
+                  (type_identifier)
+                  (annotated_type
+                    (annotation
+                      name: (identifier))
+                    (type_identifier)))
+                name: (identifier))
+              body: (block))))))))
+
+================================================================================
+Statements before super
+================================================================================
+
+class A extends B {
+  A(int x) {
+    if (x < 0) throw new IllegalArgumentException();
+    super(x);
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    superclass: (superclass
+      (type_identifier))
+    body: (class_body
+      (constructor_declaration
+        name: (identifier)
+        parameters: (formal_parameters
+          (formal_parameter
+            type: (primitive_type)
+            name: (identifier)))
+        body: (block
+          (if_statement
+            condition: (parenthesized_expression
+              (binary_expression
+                left: (identifier)
+                right: (integer_literal)))
+            consequence: (throw_statement
+              (object_creation_expression
+                type: (type_identifier)
+                arguments: (argument_list))))
+          (explicit_constructor_invocation
+            constructor: (super)
+            arguments: (argument_list
+              (identifier))))))))

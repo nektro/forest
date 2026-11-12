@@ -5,6 +5,7 @@ A bundle of tree-sitter grammars.
 | Language | Directory | External scanner |
 | --- | --- | --- |
 | Go | [languages/go](languages/go) | none |
+| Java | [languages/java](languages/java) | none |
 | JSON (and JSONC, JSON Lines) | [languages/json](languages/json) | none |
 | Verilog (IEEE 1364-2005) | [languages/verilog](languages/verilog) | none |
 | Zig | [languages/zig](languages/zig) | none |

@@ -1,0 +1,183 @@
+================================================================================
+Module declaration
+================================================================================
+
+@Deprecated
+open module com.example.app {
+  requires transitive java.sql;
+  requires static lombok;
+  exports com.example.api;
+  exports com.example.internal to com.example.test, com.example.other;
+  opens com.example.model;
+  uses com.example.spi.Plugin;
+  provides com.example.spi.Plugin with com.example.impl.A, com.example.impl.B;
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (module_declaration
+    (modifiers
+      (annotation
+        name: (identifier)))
+    name: (scoped_identifier
+      scope: (scoped_identifier
+        scope: (identifier)
+        name: (identifier))
+      name: (identifier))
+    body: (module_body
+      (requires_directive
+        modifier: (requires_modifier)
+        module: (scoped_identifier
+          scope: (identifier)
+          name: (identifier)))
+      (requires_directive
+        modifier: (requires_modifier)
+        module: (identifier))
+      (exports_directive
+        package: (scoped_identifier
+          scope: (scoped_identifier
+            scope: (identifier)
+            name: (identifier))
+          name: (identifier)))
+      (exports_directive
+        package: (scoped_identifier
+          scope: (scoped_identifier
+            scope: (identifier)
+            name: (identifier))
+          name: (identifier))
+        module: (scoped_identifier
+          scope: (scoped_identifier
+            scope: (identifier)
+            name: (identifier))
+          name: (identifier))
+        module: (scoped_identifier
+          scope: (scoped_identifier
+            scope: (identifier)
+            name: (identifier))
+          name: (identifier)))
+      (opens_directive
+        package: (scoped_identifier
+          scope: (scoped_identifier
+            scope: (identifier)
+            name: (identifier))
+          name: (identifier)))
+      (uses_directive
+        type: (scoped_identifier
+          scope: (scoped_identifier
+            scope: (scoped_identifier
+              scope: (identifier)
+              name: (identifier))
+            name: (identifier))
+          name: (identifier)))
+      (provides_directive
+        service: (scoped_identifier
+          scope: (scoped_identifier
+            scope: (scoped_identifier
+              scope: (identifier)
+              name: (identifier))
+            name: (identifier))
+          name: (identifier))
+        provider: (scoped_identifier
+          scope: (scoped_identifier
+            scope: (scoped_identifier
+              scope: (identifier)
+              name: (identifier))
+            name: (identifier))
+          name: (identifier))
+        provider: (scoped_identifier
+          scope: (scoped_identifier
+            scope: (scoped_identifier
+              scope: (identifier)
+              name: (identifier))
+            name: (identifier))
+          name: (identifier))))))
+
+================================================================================
+Contextual keywords as names
+================================================================================
+
+class A {
+  void f() {
+    int module = 1, open = 2, to = 3, with = 4, when = 5, permits = 6;
+    module = open + to * with;
+    String record = "r";
+    record.length();
+    LogRecord sealed = null;
+    sealed = null;
+    Thread.yield();
+  }
+}
+
+import module.foo.Bar;
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (local_variable_declaration
+            type: (primitive_type)
+            declarator: (variable_declarator
+              name: (identifier)
+              value: (integer_literal))
+            declarator: (variable_declarator
+              name: (identifier)
+              value: (integer_literal))
+            declarator: (variable_declarator
+              name: (identifier)
+              value: (integer_literal))
+            declarator: (variable_declarator
+              name: (identifier)
+              value: (integer_literal))
+            declarator: (variable_declarator
+              name: (identifier)
+              value: (integer_literal))
+            declarator: (variable_declarator
+              name: (identifier)
+              value: (integer_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (binary_expression
+                left: (identifier)
+                right: (binary_expression
+                  left: (identifier)
+                  right: (identifier)))))
+          (local_variable_declaration
+            type: (type_identifier)
+            declarator: (variable_declarator
+              name: (identifier)
+              value: (string_literal
+                (string_fragment))))
+          (expression_statement
+            (method_invocation
+              object: (identifier)
+              name: (identifier)
+              arguments: (argument_list)))
+          (local_variable_declaration
+            type: (type_identifier)
+            declarator: (variable_declarator
+              name: (identifier)
+              value: (null_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (null_literal)))
+          (expression_statement
+            (method_invocation
+              object: (identifier)
+              name: (identifier)
+              arguments: (argument_list)))))))
+  (import_declaration
+    name: (scoped_identifier
+      scope: (scoped_identifier
+        scope: (identifier)
+        name: (identifier))
+      name: (identifier))))

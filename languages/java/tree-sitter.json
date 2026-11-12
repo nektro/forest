@@ -1,0 +1,38 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "java",
+      "camelcase": "Java",
+      "title": "Java",
+      "scope": "source.java",
+      "file-types": [
+        "java"
+      ],
+      "highlights": "queries/highlights.scm",
+      "locals": "queries/locals.scm",
+      "tags": "queries/tags.scm",
+      "injections": "queries/injections.scm",
+      "injection-regex": "^java$",
+      "class-name": "TreeSitterJava"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "Java grammar for tree-sitter, without an external scanner",
+    "links": {
+      "repository": "https://github.com/OWNER/arborist"
+    }
+  },
+  "bindings": {
+    "c": false,
+    "go": false,
+    "java": false,
+    "node": false,
+    "python": false,
+    "rust": false,
+    "swift": false,
+    "zig": false
+  }
+}

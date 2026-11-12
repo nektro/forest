@@ -1,0 +1,15 @@
+[
+  (class_body)
+  (interface_body)
+  (enum_body)
+  (annotation_type_body)
+  (module_body)
+  (block)
+  (switch_block)
+  (array_initializer)
+  (element_value_array_initializer)
+  (argument_list)
+  (formal_parameters)
+  (text_block)
+  (block_comment)
+] @fold

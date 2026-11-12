@@ -1,0 +1,263 @@
+================================================================================
+Numbers
+================================================================================
+
+class A {
+  void f() {
+    n = 0; n = 123_456; n = 0777; n = 0xFF_FFL; n = 0b1010_1010; n = 9L;
+    d = 1.5; d = 1.; d = .5; d = 1e10; d = 1.5E-3; d = 2f; d = 3D;
+    d = 0x1.8p3; d = 0x1p-3f;
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (integer_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (integer_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (integer_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (integer_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (integer_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (integer_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (floating_point_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (floating_point_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (floating_point_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (floating_point_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (floating_point_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (floating_point_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (floating_point_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (floating_point_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (floating_point_literal))))))))
+
+================================================================================
+Characters and strings
+================================================================================
+
+class A {
+  void f() {
+    c = 'a'; c = '\n'; c = '\''; c = '\\'; c = '\u0041'; c = '\177';
+    s = "";
+    s = "plain";
+    s = "tab\t quote\" back\\ octal\0\377 space\s unicode\u00e9";
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (character_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (character_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (character_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (character_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (character_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (character_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (string_literal)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (string_literal
+                (string_fragment))))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (string_literal
+                (string_fragment)
+                (escape_sequence)
+                (string_fragment)
+                (escape_sequence)
+                (string_fragment)
+                (escape_sequence)
+                (string_fragment)
+                (escape_sequence)
+                (escape_sequence)
+                (string_fragment)
+                (escape_sequence)
+                (string_fragment)
+                (escape_sequence)))))))))
+
+================================================================================
+Text blocks
+================================================================================
+
+class A {
+  String s = """
+      Text with "quotes" and ""two"" and // not a comment
+      escaped \""" and a line \
+      continued\n
+      """;
+  String empty = """
+      """;
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (field_declaration
+        type: (type_identifier)
+        declarator: (variable_declarator
+          name: (identifier)
+          value: (text_block
+            (string_fragment)
+            (escape_sequence)
+            (string_fragment)
+            (escape_sequence)
+            (string_fragment)
+            (escape_sequence)
+            (string_fragment))))
+      (field_declaration
+        type: (type_identifier)
+        declarator: (variable_declarator
+          name: (identifier)
+          value: (text_block
+            (string_fragment)))))))
+
+================================================================================
+Booleans and null
+================================================================================
+
+class A {
+  void f() {
+    b = true; b = false; o = null;
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (true)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (false)))
+          (expression_statement
+            (assignment_expression
+              left: (identifier)
+              right: (null_literal))))))))
+
+================================================================================
+Comments
+================================================================================
+
+// Line comment
+/* Block comment */
+/** Javadoc. */
+class A /* inline */ {
+  int x = 1 // trailing
+    + /* inside */ 2;
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (line_comment)
+  (block_comment)
+  (block_comment)
+  (class_declaration
+    name: (identifier)
+    (block_comment)
+    body: (class_body
+      (field_declaration
+        type: (primitive_type)
+        declarator: (variable_declarator
+          name: (identifier)
+          value: (binary_expression
+            left: (integer_literal)
+            (line_comment)
+            (block_comment)
+            right: (integer_literal)))))))

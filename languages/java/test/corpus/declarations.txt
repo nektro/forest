@@ -1,0 +1,819 @@
+================================================================================
+Package and imports
+================================================================================
+
+package com.example.app;
+
+import java.util.List;
+import java.util.*;
+import static java.lang.Math.max;
+import static java.util.Map.*;
+import module java.base;
+
+--------------------------------------------------------------------------------
+
+(program
+  (package_declaration
+    name: (scoped_identifier
+      scope: (scoped_identifier
+        scope: (identifier)
+        name: (identifier))
+      name: (identifier)))
+  (import_declaration
+    name: (scoped_identifier
+      scope: (scoped_identifier
+        scope: (identifier)
+        name: (identifier))
+      name: (identifier)))
+  (import_declaration
+    name: (scoped_identifier
+      scope: (identifier)
+      name: (identifier))
+    (asterisk))
+  (import_declaration
+    name: (scoped_identifier
+      scope: (scoped_identifier
+        scope: (scoped_identifier
+          scope: (identifier)
+          name: (identifier))
+        name: (identifier))
+      name: (identifier)))
+  (import_declaration
+    name: (scoped_identifier
+      scope: (scoped_identifier
+        scope: (identifier)
+        name: (identifier))
+      name: (identifier))
+    (asterisk))
+  (import_declaration
+    module: (scoped_identifier
+      scope: (identifier)
+      name: (identifier))))
+
+================================================================================
+Annotated package
+================================================================================
+
+/** Package docs. */
+@Deprecated
+package com.example.api;
+
+--------------------------------------------------------------------------------
+
+(program
+  (block_comment)
+  (package_declaration
+    (modifiers
+      (annotation
+        name: (identifier)))
+    name: (scoped_identifier
+      scope: (scoped_identifier
+        scope: (identifier)
+        name: (identifier))
+      name: (identifier))))
+
+================================================================================
+Class with generics, superclass, interfaces and permits
+================================================================================
+
+public sealed abstract class Shape<T extends Comparable<? super T> & Cloneable>
+    extends Base<T> implements Runnable, Map.Entry<String, T> permits Circle, Square {}
+
+non-sealed class Square extends Shape<Integer> {}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    (modifiers)
+    name: (identifier)
+    type_parameters: (type_parameters
+      (type_parameter
+        name: (type_identifier)
+        bound: (type_bound
+          (generic_type
+            type: (type_identifier)
+            arguments: (type_arguments
+              (wildcard
+                bound: (type_identifier))))
+          (type_identifier))))
+    superclass: (superclass
+      (generic_type
+        type: (type_identifier)
+        arguments: (type_arguments
+          (type_identifier))))
+    interfaces: (super_interfaces
+      (type_list
+        (type_identifier)
+        (generic_type
+          type: (scoped_type_identifier
+            scope: (type_identifier)
+            name: (type_identifier))
+          arguments: (type_arguments
+            (type_identifier)
+            (type_identifier)))))
+    permits: (permits
+      (type_list
+        (type_identifier)
+        (type_identifier)))
+    body: (class_body))
+  (class_declaration
+    (modifiers)
+    name: (identifier)
+    superclass: (superclass
+      (generic_type
+        type: (type_identifier)
+        arguments: (type_arguments
+          (type_identifier))))
+    body: (class_body)))
+
+================================================================================
+Fields
+================================================================================
+
+class A {
+  private static final long serialVersionUID = 1L;
+  int[] a = {1, 2, 3,}, b[] = new int[3][];
+  transient volatile Map<String, List<int[]>> m;
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (field_declaration
+        (modifiers)
+        type: (primitive_type)
+        declarator: (variable_declarator
+          name: (identifier)
+          value: (integer_literal)))
+      (field_declaration
+        type: (array_type
+          element: (primitive_type)
+          dimensions: (dimensions))
+        declarator: (variable_declarator
+          name: (identifier)
+          value: (array_initializer
+            (integer_literal)
+            (integer_literal)
+            (integer_literal)))
+        declarator: (variable_declarator
+          name: (identifier)
+          dimensions: (dimensions)
+          value: (array_creation_expression
+            type: (primitive_type)
+            dimensions: (dimensions_expr
+              (integer_literal))
+            dimensions: (dimensions))))
+      (field_declaration
+        (modifiers)
+        type: (generic_type
+          type: (type_identifier)
+          arguments: (type_arguments
+            (type_identifier)
+            (generic_type
+              type: (type_identifier)
+              arguments: (type_arguments
+                (array_type
+                  element: (primitive_type)
+                  dimensions: (dimensions))))))
+        declarator: (variable_declarator
+          name: (identifier))))))
+
+================================================================================
+Methods
+================================================================================
+
+abstract class A {
+  @Override
+  public <R> List<R> map(Function<? super T, ? extends R> f, final int... rest)
+      throws IOException, E {
+    return null;
+  }
+  abstract void run();
+  native int peer();
+  int legacy()[] { return null; }
+  void receiver(A this, @Ann String @NonNull ... args) {}
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    (modifiers)
+    name: (identifier)
+    body: (class_body
+      (method_declaration
+        (modifiers
+          (annotation
+            name: (identifier)))
+        type_parameters: (type_parameters
+          (type_parameter
+            name: (type_identifier)))
+        type: (generic_type
+          type: (type_identifier)
+          arguments: (type_arguments
+            (type_identifier)))
+        name: (identifier)
+        parameters: (formal_parameters
+          (formal_parameter
+            type: (generic_type
+              type: (type_identifier)
+              arguments: (type_arguments
+                (wildcard
+                  bound: (type_identifier))
+                (wildcard
+                  bound: (type_identifier))))
+            name: (identifier))
+          (spread_parameter
+            (modifiers)
+            type: (primitive_type)
+            name: (identifier)))
+        (throws
+          (type_identifier)
+          (type_identifier))
+        body: (block
+          (return_statement
+            (null_literal))))
+      (method_declaration
+        (modifiers)
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters))
+      (method_declaration
+        (modifiers)
+        type: (primitive_type)
+        name: (identifier)
+        parameters: (formal_parameters))
+      (method_declaration
+        type: (primitive_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        dimensions: (dimensions)
+        body: (block
+          (return_statement
+            (null_literal))))
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters
+          (receiver_parameter
+            type: (type_identifier)
+            (this))
+          (spread_parameter
+            (modifiers
+              (annotation
+                name: (identifier)))
+            type: (type_identifier)
+            (annotation
+              name: (identifier))
+            name: (identifier)))
+        body: (block)))))
+
+================================================================================
+Constructors and initializers
+================================================================================
+
+class A {
+  static { init(); }
+  { ready = true; }
+  public A(int x) throws Exception {
+    super(x);
+  }
+  A() { this(0); }
+  <T> A(T t) { <T>this(t, 0); }
+  class Inner {
+    Inner(A A.this) { outer.super(); }
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (static_initializer
+        (block
+          (expression_statement
+            (method_invocation
+              name: (identifier)
+              arguments: (argument_list)))))
+      (block
+        (expression_statement
+          (assignment_expression
+            left: (identifier)
+            right: (true))))
+      (constructor_declaration
+        (modifiers)
+        name: (identifier)
+        parameters: (formal_parameters
+          (formal_parameter
+            type: (primitive_type)
+            name: (identifier)))
+        (throws
+          (type_identifier))
+        body: (block
+          (explicit_constructor_invocation
+            constructor: (super)
+            arguments: (argument_list
+              (identifier)))))
+      (constructor_declaration
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (explicit_constructor_invocation
+            constructor: (this)
+            arguments: (argument_list
+              (integer_literal)))))
+      (constructor_declaration
+        type_parameters: (type_parameters
+          (type_parameter
+            name: (type_identifier)))
+        name: (identifier)
+        parameters: (formal_parameters
+          (formal_parameter
+            type: (type_identifier)
+            name: (identifier)))
+        body: (block
+          (explicit_constructor_invocation
+            type_arguments: (type_arguments
+              (type_identifier))
+            constructor: (this)
+            arguments: (argument_list
+              (identifier)
+              (integer_literal)))))
+      (class_declaration
+        name: (identifier)
+        body: (class_body
+          (constructor_declaration
+            name: (identifier)
+            parameters: (formal_parameters
+              (receiver_parameter
+                type: (type_identifier)
+                (identifier)
+                (this)))
+            body: (block
+              (explicit_constructor_invocation
+                object: (identifier)
+                constructor: (super)
+                arguments: (argument_list)))))))))
+
+================================================================================
+Records
+================================================================================
+
+record Point(int x, int y) implements Comparable<Point> {
+  Point {
+    if (x < 0) throw new IllegalArgumentException();
+  }
+  static Point origin() { return new Point(0, 0); }
+}
+
+record Box<T>(T value) {}
+
+--------------------------------------------------------------------------------
+
+(program
+  (record_declaration
+    name: (identifier)
+    parameters: (formal_parameters
+      (formal_parameter
+        type: (primitive_type)
+        name: (identifier))
+      (formal_parameter
+        type: (primitive_type)
+        name: (identifier)))
+    interfaces: (super_interfaces
+      (type_list
+        (generic_type
+          type: (type_identifier)
+          arguments: (type_arguments
+            (type_identifier)))))
+    body: (class_body
+      (compact_constructor_declaration
+        name: (identifier)
+        body: (block
+          (if_statement
+            condition: (parenthesized_expression
+              (binary_expression
+                left: (identifier)
+                right: (integer_literal)))
+            consequence: (throw_statement
+              (object_creation_expression
+                type: (type_identifier)
+                arguments: (argument_list))))))
+      (method_declaration
+        (modifiers)
+        type: (type_identifier)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (return_statement
+            (object_creation_expression
+              type: (type_identifier)
+              arguments: (argument_list
+                (integer_literal)
+                (integer_literal))))))))
+  (record_declaration
+    name: (identifier)
+    type_parameters: (type_parameters
+      (type_parameter
+        name: (type_identifier)))
+    parameters: (formal_parameters
+      (formal_parameter
+        type: (type_identifier)
+        name: (identifier)))
+    body: (class_body)))
+
+================================================================================
+Enums
+================================================================================
+
+enum Planet implements Body {
+  MERCURY(3.303e+23, 2.4397e6),
+  @Deprecated PLUTO(1.0, 1.0),
+  EARTH(5.976e+24, 6.37814e6) {
+    @Override double g() { return 9.8; }
+  };
+
+  private final double mass;
+  Planet(double mass, double radius) { this.mass = mass; }
+  abstract double g();
+}
+
+enum Empty { ; }
+enum Trailing { A, B, }
+
+--------------------------------------------------------------------------------
+
+(program
+  (enum_declaration
+    name: (identifier)
+    interfaces: (super_interfaces
+      (type_list
+        (type_identifier)))
+    body: (enum_body
+      (enum_constant
+        name: (identifier)
+        arguments: (argument_list
+          (floating_point_literal)
+          (floating_point_literal)))
+      (enum_constant
+        (modifiers
+          (annotation
+            name: (identifier)))
+        name: (identifier)
+        arguments: (argument_list
+          (floating_point_literal)
+          (floating_point_literal)))
+      (enum_constant
+        name: (identifier)
+        arguments: (argument_list
+          (floating_point_literal)
+          (floating_point_literal))
+        body: (class_body
+          (method_declaration
+            (modifiers
+              (annotation
+                name: (identifier)))
+            type: (primitive_type)
+            name: (identifier)
+            parameters: (formal_parameters)
+            body: (block
+              (return_statement
+                (floating_point_literal))))))
+      (enum_body_declarations
+        (field_declaration
+          (modifiers)
+          type: (primitive_type)
+          declarator: (variable_declarator
+            name: (identifier)))
+        (constructor_declaration
+          name: (identifier)
+          parameters: (formal_parameters
+            (formal_parameter
+              type: (primitive_type)
+              name: (identifier))
+            (formal_parameter
+              type: (primitive_type)
+              name: (identifier)))
+          body: (block
+            (expression_statement
+              (assignment_expression
+                left: (field_access
+                  object: (this)
+                  field: (identifier))
+                right: (identifier)))))
+        (method_declaration
+          (modifiers)
+          type: (primitive_type)
+          name: (identifier)
+          parameters: (formal_parameters)))))
+  (enum_declaration
+    name: (identifier)
+    body: (enum_body
+      (enum_body_declarations)))
+  (enum_declaration
+    name: (identifier)
+    body: (enum_body
+      (enum_constant
+        name: (identifier))
+      (enum_constant
+        name: (identifier)))))
+
+================================================================================
+Interfaces
+================================================================================
+
+sealed interface Shape<T> extends Base, Other<T> permits Circle {
+  double PI2 = Math.PI * 2;
+  default double area() { return 0; }
+  static Shape unit() { return null; }
+  private void helper() {}
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (interface_declaration
+    (modifiers)
+    name: (identifier)
+    type_parameters: (type_parameters
+      (type_parameter
+        name: (type_identifier)))
+    interfaces: (extends_interfaces
+      (type_list
+        (type_identifier)
+        (generic_type
+          type: (type_identifier)
+          arguments: (type_arguments
+            (type_identifier)))))
+    permits: (permits
+      (type_list
+        (type_identifier)))
+    body: (interface_body
+      (field_declaration
+        type: (primitive_type)
+        declarator: (variable_declarator
+          name: (identifier)
+          value: (binary_expression
+            left: (field_access
+              object: (identifier)
+              field: (identifier))
+            right: (integer_literal))))
+      (method_declaration
+        (modifiers)
+        type: (primitive_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (return_statement
+            (integer_literal))))
+      (method_declaration
+        (modifiers)
+        type: (type_identifier)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (return_statement
+            (null_literal))))
+      (method_declaration
+        (modifiers)
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block)))))
+
+================================================================================
+Annotation types
+================================================================================
+
+@Retention(RUNTIME)
+public @interface Anno {
+  String value() default "";
+  int[] nums() default {1, 2};
+  Class<?> type() default Object.class;
+  Nested nested() default @Nested(key = "a", values = {"x", "y"});
+  enum Kind { A, B }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (annotation_type_declaration
+    (modifiers
+      (annotation
+        name: (identifier)
+        arguments: (annotation_argument_list
+          (identifier))))
+    name: (identifier)
+    body: (annotation_type_body
+      (annotation_type_element_declaration
+        type: (type_identifier)
+        name: (identifier)
+        value: (string_literal))
+      (annotation_type_element_declaration
+        type: (array_type
+          element: (primitive_type)
+          dimensions: (dimensions))
+        name: (identifier)
+        value: (element_value_array_initializer
+          (integer_literal)
+          (integer_literal)))
+      (annotation_type_element_declaration
+        type: (generic_type
+          type: (type_identifier)
+          arguments: (type_arguments
+            (wildcard)))
+        name: (identifier)
+        value: (class_literal
+          type: (type_identifier)))
+      (annotation_type_element_declaration
+        type: (type_identifier)
+        name: (identifier)
+        value: (annotation
+          name: (identifier)
+          arguments: (annotation_argument_list
+            (element_value_pair
+              key: (identifier)
+              value: (string_literal
+                (string_fragment)))
+            (element_value_pair
+              key: (identifier)
+              value: (element_value_array_initializer
+                (string_literal
+                  (string_fragment))
+                (string_literal
+                  (string_fragment)))))))
+      (enum_declaration
+        name: (identifier)
+        body: (enum_body
+          (enum_constant
+            name: (identifier))
+          (enum_constant
+            name: (identifier)))))))
+
+================================================================================
+Compact source file
+================================================================================
+
+String greeting = "Hello";
+
+void main() {
+  IO.println(greeting);
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (field_declaration
+    type: (type_identifier)
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (string_literal
+        (string_fragment))))
+  (method_declaration
+    type: (void_type)
+    name: (identifier)
+    parameters: (formal_parameters)
+    body: (block
+      (expression_statement
+        (method_invocation
+          object: (identifier)
+          name: (identifier)
+          arguments: (argument_list
+            (identifier)))))))
+
+================================================================================
+Value classes
+================================================================================
+
+value class Complex {
+  double re, im;
+}
+static abstract value class Base {}
+value record Point(int x, int y) {}
+class A {
+  int value() { return value; }
+  void f(int value) { value++; value.g(); }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    (modifiers)
+    name: (identifier)
+    body: (class_body
+      (field_declaration
+        type: (primitive_type)
+        declarator: (variable_declarator
+          name: (identifier))
+        declarator: (variable_declarator
+          name: (identifier)))))
+  (class_declaration
+    (modifiers)
+    name: (identifier)
+    body: (class_body))
+  (record_declaration
+    (modifiers)
+    name: (identifier)
+    parameters: (formal_parameters
+      (formal_parameter
+        type: (primitive_type)
+        name: (identifier))
+      (formal_parameter
+        type: (primitive_type)
+        name: (identifier)))
+    body: (class_body))
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (method_declaration
+        type: (primitive_type)
+        name: (identifier)
+        parameters: (formal_parameters)
+        body: (block
+          (return_statement
+            (identifier))))
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters
+          (formal_parameter
+            type: (primitive_type)
+            name: (identifier)))
+        body: (block
+          (expression_statement
+            (update_expression
+              argument: (identifier)))
+          (expression_statement
+            (method_invocation
+              object: (identifier)
+              name: (identifier)
+              arguments: (argument_list))))))))
+
+================================================================================
+Type annotations on parameters
+================================================================================
+
+class A {
+  class B {
+    B(A.B A.B.this) {}
+  }
+  void f(@X String @Y [] @Z ... args) {}
+  void g(String[] @Z ... args) {}
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (identifier)
+    body: (class_body
+      (class_declaration
+        name: (identifier)
+        body: (class_body
+          (constructor_declaration
+            name: (identifier)
+            parameters: (formal_parameters
+              (receiver_parameter
+                type: (scoped_type_identifier
+                  scope: (type_identifier)
+                  name: (type_identifier))
+                (identifier)
+                (identifier)
+                (this)))
+            body: (block))))
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters
+          (spread_parameter
+            (modifiers
+              (annotation
+                name: (identifier)))
+            type: (array_type
+              element: (type_identifier)
+              dimensions: (dimensions
+                (annotation
+                  name: (identifier))))
+            (annotation
+              name: (identifier))
+            name: (identifier)))
+        body: (block))
+      (method_declaration
+        type: (void_type)
+        name: (identifier)
+        parameters: (formal_parameters
+          (spread_parameter
+            type: (array_type
+              element: (type_identifier)
+              dimensions: (dimensions))
+            (annotation
+              name: (identifier))
+            name: (identifier)))
+        body: (block)))))
