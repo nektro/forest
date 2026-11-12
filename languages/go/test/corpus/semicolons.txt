@@ -1,0 +1,138 @@
+================================================================================
+Newlines end statements
+================================================================================
+
+func f() {
+	x := a +
+		b
+	y := g(
+		1,
+		2,
+	)
+	z := s.
+		Method()
+	return
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (short_var_declaration
+        left: (expression_list
+          (identifier))
+        right: (expression_list
+          (binary_expression
+            left: (identifier)
+            right: (identifier))))
+      (short_var_declaration
+        left: (expression_list
+          (identifier))
+        right: (expression_list
+          (call_expression
+            function: (identifier)
+            arguments: (argument_list
+              (int_literal)
+              (int_literal)))))
+      (short_var_declaration
+        left: (expression_list
+          (identifier))
+        right: (expression_list
+          (call_expression
+            function: (selector_expression
+              operand: (identifier)
+              field: (field_identifier))
+            arguments: (argument_list))))
+      (return_statement))))
+
+================================================================================
+Semicolons
+================================================================================
+
+func f() { a(); b(); }
+var x = 1; var y = 2
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (argument_list)))
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (argument_list)))))
+  (var_declaration
+    (var_spec
+      name: (identifier)
+      value: (expression_list
+        (int_literal))))
+  (var_declaration
+    (var_spec
+      name: (identifier)
+      value: (expression_list
+        (int_literal)))))
+
+================================================================================
+Extra semicolons are empty statements
+================================================================================
+
+func f() {
+	a()
+	;
+	b();;
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (argument_list)))
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (argument_list))))))
+
+================================================================================
+A statement may span lines inside brackets
+================================================================================
+
+var m = map[string]int{
+	"a": 1,
+	"b": 2,
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (var_declaration
+    (var_spec
+      name: (identifier)
+      value: (expression_list
+        (composite_literal
+          type: (map_type
+            key: (type_identifier)
+            value: (type_identifier))
+          body: (literal_value
+            (keyed_element
+              key: (interpreted_string_literal
+                (string_content))
+              value: (int_literal))
+            (keyed_element
+              key: (interpreted_string_literal
+                (string_content))
+              value: (int_literal))))))))

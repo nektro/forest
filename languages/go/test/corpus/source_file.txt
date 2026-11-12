@@ -1,0 +1,73 @@
+================================================================================
+Package clause and imports
+================================================================================
+
+package main
+
+import "fmt"
+import (
+	"os"
+	f "fmt"
+	. "strings"
+	_ "embed"
+)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (package_clause
+    name: (package_identifier))
+  (import_declaration
+    (import_spec
+      path: (interpreted_string_literal
+        (string_content))))
+  (import_declaration
+    (import_spec_list
+      (import_spec
+        path: (interpreted_string_literal
+          (string_content)))
+      (import_spec
+        name: (package_identifier)
+        path: (interpreted_string_literal
+          (string_content)))
+      (import_spec
+        name: (dot)
+        path: (interpreted_string_literal
+          (string_content)))
+      (import_spec
+        name: (package_identifier)
+        path: (interpreted_string_literal
+          (string_content))))))
+
+================================================================================
+Top-level statements in a snippet
+================================================================================
+
+x := 1
+fmt.Println(x)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (short_var_declaration
+    left: (expression_list
+      (identifier))
+    right: (expression_list
+      (int_literal)))
+  (expression_statement
+    (call_expression
+      function: (selector_expression
+        operand: (identifier)
+        field: (field_identifier))
+      arguments: (argument_list
+        (identifier)))))
+
+================================================================================
+Empty file
+================================================================================
+
+
+
+--------------------------------------------------------------------------------
+
+(source_file)

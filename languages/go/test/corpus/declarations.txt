@@ -1,0 +1,352 @@
+================================================================================
+Constants and iota
+================================================================================
+
+const Pi = 3.14
+const (
+	A = iota
+	B
+	C int = 3
+	D, E = 4, 5
+)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (const_declaration
+    (const_spec
+      name: (identifier)
+      value: (expression_list
+        (float_literal))))
+  (const_declaration
+    (const_spec
+      name: (identifier)
+      value: (expression_list
+        (identifier)))
+    (const_spec
+      name: (identifier))
+    (const_spec
+      name: (identifier)
+      type: (type_identifier)
+      value: (expression_list
+        (int_literal)))
+    (const_spec
+      name: (identifier)
+      name: (identifier)
+      value: (expression_list
+        (int_literal)
+        (int_literal)))))
+
+================================================================================
+Variables
+================================================================================
+
+var x int
+var y, z = 1, 2
+var (
+	a []int
+	b = map[string]int{}
+)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (var_declaration
+    (var_spec
+      name: (identifier)
+      type: (type_identifier)))
+  (var_declaration
+    (var_spec
+      name: (identifier)
+      name: (identifier)
+      value: (expression_list
+        (int_literal)
+        (int_literal))))
+  (var_declaration
+    (var_spec_list
+      (var_spec
+        name: (identifier)
+        type: (slice_type
+          element: (type_identifier)))
+      (var_spec
+        name: (identifier)
+        value: (expression_list
+          (composite_literal
+            type: (map_type
+              key: (type_identifier)
+              value: (type_identifier))
+            body: (literal_value)))))))
+
+================================================================================
+Type definitions and aliases
+================================================================================
+
+type A int
+type B = string
+type (
+	C struct{}
+	D = []byte
+)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (type_declaration
+    (type_spec
+      name: (type_identifier)
+      type: (type_identifier)))
+  (type_declaration
+    (type_alias
+      name: (type_identifier)
+      type: (type_identifier)))
+  (type_declaration
+    (type_spec
+      name: (type_identifier)
+      type: (struct_type
+        (field_declaration_list)))
+    (type_alias
+      name: (type_identifier)
+      type: (slice_type
+        element: (type_identifier)))))
+
+================================================================================
+Array type versus type parameters
+================================================================================
+
+type A [N]int
+type B[N any] []N
+type C[P *T] struct{}
+type D[K comparable, V any] map[K]V
+type E[T any] = []T
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (type_declaration
+    (type_spec
+      name: (type_identifier)
+      type: (array_type
+        length: (identifier)
+        element: (type_identifier))))
+  (type_declaration
+    (type_spec
+      name: (type_identifier)
+      type_parameters: (type_parameter_list
+        (type_parameter_declaration
+          name: (identifier)
+          type: (type_constraint
+            (type_identifier))))
+      type: (slice_type
+        element: (type_identifier))))
+  (type_declaration
+    (type_spec
+      name: (type_identifier)
+      type_parameters: (type_parameter_list
+        (type_parameter_declaration
+          name: (identifier)
+          type: (type_constraint
+            (pointer_type
+              (type_identifier)))))
+      type: (struct_type
+        (field_declaration_list))))
+  (type_declaration
+    (type_spec
+      name: (type_identifier)
+      type_parameters: (type_parameter_list
+        (type_parameter_declaration
+          name: (identifier)
+          type: (type_constraint
+            (type_identifier)))
+        (type_parameter_declaration
+          name: (identifier)
+          type: (type_constraint
+            (type_identifier))))
+      type: (map_type
+        key: (type_identifier)
+        value: (type_identifier))))
+  (type_declaration
+    (type_alias
+      name: (type_identifier)
+      type_parameters: (type_parameter_list
+        (type_parameter_declaration
+          name: (identifier)
+          type: (type_constraint
+            (type_identifier))))
+      type: (slice_type
+        element: (type_identifier)))))
+
+================================================================================
+Functions
+================================================================================
+
+func f() {}
+func g(a, b int, c ...string) (int, error) { return 0, nil }
+func h(int, string) bool
+func i() (n int, err error) { return }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block))
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list
+      (parameter_declaration
+        type: (type_identifier))
+      (parameter_declaration
+        name: (identifier)
+        type: (type_identifier))
+      (variadic_parameter_declaration
+        name: (identifier)
+        type: (type_identifier)))
+    result: (parameter_list
+      (parameter_declaration
+        type: (type_identifier))
+      (parameter_declaration
+        type: (type_identifier)))
+    body: (block
+      (return_statement
+        (expression_list
+          (int_literal)
+          (identifier)))))
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list
+      (parameter_declaration
+        type: (type_identifier))
+      (parameter_declaration
+        type: (type_identifier)))
+    result: (type_identifier))
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    result: (parameter_list
+      (parameter_declaration
+        name: (identifier)
+        type: (type_identifier))
+      (parameter_declaration
+        name: (identifier)
+        type: (type_identifier)))
+    body: (block
+      (return_statement))))
+
+================================================================================
+Generic functions
+================================================================================
+
+func Map[T, U any](xs []T, f func(T) U) []U {
+	return nil
+}
+
+func Sum[N ~int | ~float64](xs ...N) N { return 0 }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    type_parameters: (type_parameter_list
+      (type_parameter_declaration
+        name: (identifier)
+        name: (identifier)
+        type: (type_constraint
+          (type_identifier))))
+    parameters: (parameter_list
+      (parameter_declaration
+        name: (identifier)
+        type: (slice_type
+          element: (type_identifier)))
+      (parameter_declaration
+        name: (identifier)
+        type: (function_type
+          parameters: (parameter_list
+            (parameter_declaration
+              type: (type_identifier)))
+          result: (type_identifier))))
+    result: (slice_type
+      element: (type_identifier))
+    body: (block
+      (return_statement
+        (expression_list
+          (identifier)))))
+  (function_declaration
+    name: (identifier)
+    type_parameters: (type_parameter_list
+      (type_parameter_declaration
+        name: (identifier)
+        type: (type_constraint
+          (negated_type
+            (type_identifier))
+          (negated_type
+            (type_identifier)))))
+    parameters: (parameter_list
+      (variadic_parameter_declaration
+        name: (identifier)
+        type: (type_identifier)))
+    result: (type_identifier)
+    body: (block
+      (return_statement
+        (expression_list
+          (int_literal))))))
+
+================================================================================
+Methods
+================================================================================
+
+func (p *Point) Move(dx int) {}
+func (List[T]) Len() int { return 0 }
+func (r *Rand) N[Int intType](n Int) Int { return n }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (method_declaration
+    receiver: (parameter_list
+      (parameter_declaration
+        name: (identifier)
+        type: (pointer_type
+          (type_identifier))))
+    name: (field_identifier)
+    parameters: (parameter_list
+      (parameter_declaration
+        name: (identifier)
+        type: (type_identifier)))
+    body: (block))
+  (method_declaration
+    receiver: (parameter_list
+      (parameter_declaration
+        type: (generic_type
+          type: (type_identifier)
+          type_arguments: (type_arguments
+            (type_identifier)))))
+    name: (field_identifier)
+    parameters: (parameter_list)
+    result: (type_identifier)
+    body: (block
+      (return_statement
+        (expression_list
+          (int_literal)))))
+  (method_declaration
+    receiver: (parameter_list
+      (parameter_declaration
+        name: (identifier)
+        type: (pointer_type
+          (type_identifier))))
+    name: (field_identifier)
+    type_parameters: (type_parameter_list
+      (type_parameter_declaration
+        name: (identifier)
+        type: (type_constraint
+          (type_identifier))))
+    parameters: (parameter_list
+      (parameter_declaration
+        name: (identifier)
+        type: (type_identifier)))
+    result: (type_identifier)
+    body: (block
+      (return_statement
+        (expression_list
+          (identifier))))))

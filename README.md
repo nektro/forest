@@ -4,6 +4,7 @@ A bundle of tree-sitter grammars.
 
 | Language | Directory | External scanner |
 | --- | --- | --- |
+| Go | [languages/go](languages/go) | none |
 | JSON (and JSONC, JSON Lines) | [languages/json](languages/json) | none |
 | Zig | [languages/zig](languages/zig) | none |
 

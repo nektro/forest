@@ -1,0 +1,139 @@
+================================================================================
+Integers
+================================================================================
+
+var x = []int{0, 42, 1_000, 0b1010, 0B_1, 0o17, 0O_7, 017, 0xBEEF, 0X_ff}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (var_declaration
+    (var_spec
+      name: (identifier)
+      value: (expression_list
+        (composite_literal
+          type: (slice_type
+            element: (type_identifier))
+          body: (literal_value
+            (int_literal)
+            (int_literal)
+            (int_literal)
+            (int_literal)
+            (int_literal)
+            (int_literal)
+            (int_literal)
+            (int_literal)
+            (int_literal)
+            (int_literal)))))))
+
+================================================================================
+Floats and imaginary numbers
+================================================================================
+
+var x = []any{1.5, 1., .5, 1e9, 1.5E-3, 0x1p-2, 0x1.8P+3, 0x.1p0, 3i, 1.5i, 0x10i, 017i}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (var_declaration
+    (var_spec
+      name: (identifier)
+      value: (expression_list
+        (composite_literal
+          type: (slice_type
+            element: (type_identifier))
+          body: (literal_value
+            (float_literal)
+            (float_literal)
+            (float_literal)
+            (float_literal)
+            (float_literal)
+            (float_literal)
+            (float_literal)
+            (float_literal)
+            (imaginary_literal)
+            (imaginary_literal)
+            (imaginary_literal)
+            (imaginary_literal)))))))
+
+================================================================================
+Runes
+================================================================================
+
+var x = []rune{'a', 'ä', '\n', '\'', '\x41', '\101', '\u00e4', '\U0001F600'}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (var_declaration
+    (var_spec
+      name: (identifier)
+      value: (expression_list
+        (composite_literal
+          type: (slice_type
+            element: (type_identifier))
+          body: (literal_value
+            (rune_literal)
+            (rune_literal)
+            (rune_literal)
+            (rune_literal)
+            (rune_literal)
+            (rune_literal)
+            (rune_literal)
+            (rune_literal)))))))
+
+================================================================================
+Strings
+================================================================================
+
+var x = []string{"", "plain", "esc\t\"\\", "\u00e4", `raw
+string \n`, ``}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (var_declaration
+    (var_spec
+      name: (identifier)
+      value: (expression_list
+        (composite_literal
+          type: (slice_type
+            element: (type_identifier))
+          body: (literal_value
+            (interpreted_string_literal)
+            (interpreted_string_literal
+              (string_content))
+            (interpreted_string_literal
+              (string_content)
+              (escape_sequence)
+              (escape_sequence)
+              (escape_sequence))
+            (interpreted_string_literal
+              (escape_sequence))
+            (raw_string_literal
+              (string_content))
+            (raw_string_literal)))))))
+
+================================================================================
+Comments
+================================================================================
+
+// line comment
+/* block
+   comment */
+var x = 1 /* inline */ + 2 // trailing
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (comment)
+  (comment)
+  (var_declaration
+    (var_spec
+      name: (identifier)
+      value: (expression_list
+        (binary_expression
+          left: (int_literal)
+          (comment)
+          right: (int_literal)))))
+  (comment))

@@ -1,0 +1,419 @@
+================================================================================
+Simple statements
+================================================================================
+
+func f() {
+	x := 1
+	x = 2
+	a, b = b, a
+	x += 3
+	x &^= 4
+	x++
+	y--
+	ch <- x
+	f()
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (short_var_declaration
+        left: (expression_list
+          (identifier))
+        right: (expression_list
+          (int_literal)))
+      (assignment_statement
+        left: (expression_list
+          (identifier))
+        right: (expression_list
+          (int_literal)))
+      (assignment_statement
+        left: (expression_list
+          (identifier)
+          (identifier))
+        right: (expression_list
+          (identifier)
+          (identifier)))
+      (assignment_statement
+        left: (expression_list
+          (identifier))
+        right: (expression_list
+          (int_literal)))
+      (assignment_statement
+        left: (expression_list
+          (identifier))
+        right: (expression_list
+          (int_literal)))
+      (inc_statement
+        (identifier))
+      (dec_statement
+        (identifier))
+      (send_statement
+        channel: (identifier)
+        value: (identifier))
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (argument_list))))))
+
+================================================================================
+If statements
+================================================================================
+
+func f() {
+	if x {
+	}
+	if v, ok := m[k]; ok {
+	} else if y {
+	} else {
+	}
+	if ; z {
+	}
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (if_statement
+        condition: (identifier)
+        consequence: (block))
+      (if_statement
+        initializer: (short_var_declaration
+          left: (expression_list
+            (identifier)
+            (identifier))
+          right: (expression_list
+            (index_expression
+              operand: (identifier)
+              index: (identifier))))
+        condition: (identifier)
+        consequence: (block)
+        alternative: (if_statement
+          condition: (identifier)
+          consequence: (block)
+          alternative: (block)))
+      (if_statement
+        condition: (identifier)
+        consequence: (block)))))
+
+================================================================================
+For statements
+================================================================================
+
+func f() {
+	for {
+	}
+	for x < 10 {
+	}
+	for i := 0; i < 10; i++ {
+	}
+	for ;; {
+	}
+	for k, v := range m {
+	}
+	for range 10 {
+	}
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (for_statement
+        body: (block))
+      (for_statement
+        condition: (binary_expression
+          left: (identifier)
+          right: (int_literal))
+        body: (block))
+      (for_statement
+        (for_clause
+          initializer: (short_var_declaration
+            left: (expression_list
+              (identifier))
+            right: (expression_list
+              (int_literal)))
+          condition: (binary_expression
+            left: (identifier)
+            right: (int_literal))
+          update: (inc_statement
+            (identifier)))
+        body: (block))
+      (for_statement
+        (for_clause)
+        body: (block))
+      (for_statement
+        (range_clause
+          left: (expression_list
+            (identifier)
+            (identifier))
+          right: (identifier))
+        body: (block))
+      (for_statement
+        (range_clause
+          right: (int_literal))
+        body: (block)))))
+
+================================================================================
+Switch statements
+================================================================================
+
+func f() {
+	switch x {
+	case 1, 2:
+		g()
+		fallthrough
+	case 3:
+	default:
+	}
+	switch {
+	case a > b:
+	}
+	switch y := f(); y {
+	}
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (expression_switch_statement
+        value: (identifier)
+        (expression_case
+          value: (expression_list
+            (int_literal)
+            (int_literal))
+          (expression_statement
+            (call_expression
+              function: (identifier)
+              arguments: (argument_list)))
+          (fallthrough_statement))
+        (expression_case
+          value: (expression_list
+            (int_literal)))
+        (default_case))
+      (expression_switch_statement
+        (expression_case
+          value: (expression_list
+            (binary_expression
+              left: (identifier)
+              right: (identifier)))))
+      (expression_switch_statement
+        initializer: (short_var_declaration
+          left: (expression_list
+            (identifier))
+          right: (expression_list
+            (call_expression
+              function: (identifier)
+              arguments: (argument_list))))
+        value: (identifier)))))
+
+================================================================================
+Type switch statements
+================================================================================
+
+func f() {
+	switch v := x.(type) {
+	case nil:
+	case int, *T:
+		return
+	case []pkg.T:
+	default:
+	}
+	switch x.(type) {
+	}
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (type_switch_statement
+        alias: (expression_list
+          (identifier))
+        value: (identifier)
+        (type_case
+          type: (type_identifier))
+        (type_case
+          type: (type_identifier)
+          type: (pointer_type
+            (type_identifier))
+          (return_statement))
+        (type_case
+          type: (slice_type
+            element: (qualified_type
+              package: (package_identifier)
+              name: (type_identifier))))
+        (default_case))
+      (type_switch_statement
+        value: (identifier)))))
+
+================================================================================
+Select statements
+================================================================================
+
+func f() {
+	select {
+	case v := <-ch:
+	case v, ok = <-ch:
+	case <-done:
+		return
+	case out <- 1:
+	default:
+	}
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (select_statement
+        (communication_case
+          communication: (receive_statement
+            left: (expression_list
+              (identifier))
+            right: (unary_expression
+              operand: (identifier))))
+        (communication_case
+          communication: (receive_statement
+            left: (expression_list
+              (identifier)
+              (identifier))
+            right: (unary_expression
+              operand: (identifier))))
+        (communication_case
+          communication: (receive_statement
+            right: (unary_expression
+              operand: (identifier)))
+          (return_statement))
+        (communication_case
+          communication: (send_statement
+            channel: (identifier)
+            value: (int_literal)))
+        (default_case)))))
+
+================================================================================
+Jumps, labels, go and defer
+================================================================================
+
+func f() {
+outer:
+	for {
+		break outer
+		continue outer
+		goto outer
+	}
+	go g()
+	defer h()
+	return 1, 2
+done:
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (labeled_statement
+        label: (label_name)
+        (for_statement
+          body: (block
+            (break_statement
+              label: (label_name))
+            (continue_statement
+              label: (label_name))
+            (goto_statement
+              label: (label_name)))))
+      (go_statement
+        (call_expression
+          function: (identifier)
+          arguments: (argument_list)))
+      (defer_statement
+        (call_expression
+          function: (identifier)
+          arguments: (argument_list)))
+      (return_statement
+        (expression_list
+          (int_literal)
+          (int_literal)))
+      (labeled_statement
+        label: (label_name)))))
+
+================================================================================
+Labels on empty statements
+================================================================================
+
+func f() {
+a:
+	;
+	b()
+c:
+d:
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (labeled_statement
+        label: (label_name)
+        (empty_statement))
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (argument_list)))
+      (labeled_statement
+        label: (label_name)
+        (labeled_statement
+          label: (label_name))))))
+
+================================================================================
+Blocks
+================================================================================
+
+func f() {
+	{
+	}
+	{
+		x()
+	}
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (block)
+      (block
+        (expression_statement
+          (call_expression
+            function: (identifier)
+            arguments: (argument_list)))))))

@@ -1,0 +1,491 @@
+================================================================================
+Operator precedence
+================================================================================
+
+var x = a || b && c == d + e * -f
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (var_declaration
+    (var_spec
+      name: (identifier)
+      value: (expression_list
+        (binary_expression
+          left: (identifier)
+          right: (binary_expression
+            left: (identifier)
+            right: (binary_expression
+              left: (identifier)
+              right: (binary_expression
+                left: (identifier)
+                right: (binary_expression
+                  left: (identifier)
+                  right: (unary_expression
+                    operand: (identifier)))))))))))
+
+================================================================================
+Unary operators
+================================================================================
+
+var x = !a + -b + ^c + *d + &e + <-f
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (var_declaration
+    (var_spec
+      name: (identifier)
+      value: (expression_list
+        (binary_expression
+          left: (binary_expression
+            left: (binary_expression
+              left: (binary_expression
+                left: (binary_expression
+                  left: (unary_expression
+                    operand: (identifier))
+                  right: (unary_expression
+                    operand: (identifier)))
+                right: (unary_expression
+                  operand: (identifier)))
+              right: (unary_expression
+                operand: (identifier)))
+            right: (unary_expression
+              operand: (identifier)))
+          right: (unary_expression
+            operand: (identifier)))))))
+
+================================================================================
+Selectors, calls and indexing
+================================================================================
+
+var x = a.b.c(d, e...)[f][g:h][:i][j:k:l]
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (var_declaration
+    (var_spec
+      name: (identifier)
+      value: (expression_list
+        (slice_expression
+          operand: (slice_expression
+            operand: (slice_expression
+              operand: (index_expression
+                operand: (call_expression
+                  function: (selector_expression
+                    operand: (selector_expression
+                      operand: (identifier)
+                      field: (field_identifier))
+                    field: (field_identifier))
+                  arguments: (argument_list
+                    (identifier)
+                    (identifier)))
+                index: (identifier))
+              start: (identifier)
+              end: (identifier))
+            end: (identifier))
+          start: (identifier)
+          end: (identifier)
+          capacity: (identifier))))))
+
+================================================================================
+Type assertions and conversions
+================================================================================
+
+var (
+	a = x.(T)
+	b = x.(*pkg.T)
+	c = []byte(s)
+	d = (*T)(p)
+	e = (<-chan int)(ch)
+	f = interface{}(x)
+)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (var_declaration
+    (var_spec_list
+      (var_spec
+        name: (identifier)
+        value: (expression_list
+          (type_assertion_expression
+            operand: (identifier)
+            type: (type_identifier))))
+      (var_spec
+        name: (identifier)
+        value: (expression_list
+          (type_assertion_expression
+            operand: (identifier)
+            type: (pointer_type
+              (qualified_type
+                package: (package_identifier)
+                name: (type_identifier))))))
+      (var_spec
+        name: (identifier)
+        value: (expression_list
+          (call_expression
+            function: (slice_type
+              element: (type_identifier))
+            arguments: (argument_list
+              (identifier)))))
+      (var_spec
+        name: (identifier)
+        value: (expression_list
+          (call_expression
+            function: (parenthesized_expression
+              (unary_expression
+                operand: (identifier)))
+            arguments: (argument_list
+              (identifier)))))
+      (var_spec
+        name: (identifier)
+        value: (expression_list
+          (call_expression
+            function: (parenthesized_expression
+              (channel_type
+                value: (type_identifier)))
+            arguments: (argument_list
+              (identifier)))))
+      (var_spec
+        name: (identifier)
+        value: (expression_list
+          (call_expression
+            function: (interface_type)
+            arguments: (argument_list
+              (identifier))))))))
+
+================================================================================
+Generic instantiation
+================================================================================
+
+var (
+	a = Map[int, string](xs, f)
+	b = pkg.F[int]
+	c = List[int]{}
+)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (var_declaration
+    (var_spec_list
+      (var_spec
+        name: (identifier)
+        value: (expression_list
+          (call_expression
+            function: (index_expression
+              operand: (identifier)
+              index: (identifier)
+              index: (identifier))
+            arguments: (argument_list
+              (identifier)
+              (identifier)))))
+      (var_spec
+        name: (identifier)
+        value: (expression_list
+          (index_expression
+            operand: (selector_expression
+              operand: (identifier)
+              field: (field_identifier))
+            index: (identifier))))
+      (var_spec
+        name: (identifier)
+        value: (expression_list
+          (composite_literal
+            type: (generic_type
+              type: (type_identifier)
+              type_arguments: (type_arguments
+                (type_identifier)))
+            body: (literal_value)))))))
+
+================================================================================
+Builtins with type arguments
+================================================================================
+
+var (
+	a = make([]int, 0, 10)
+	b = make(map[string]int)
+	c = make(chan<- chan int)
+	d = new(struct{})
+)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (var_declaration
+    (var_spec_list
+      (var_spec
+        name: (identifier)
+        value: (expression_list
+          (call_expression
+            function: (identifier)
+            arguments: (argument_list
+              (slice_type
+                element: (type_identifier))
+              (int_literal)
+              (int_literal)))))
+      (var_spec
+        name: (identifier)
+        value: (expression_list
+          (call_expression
+            function: (identifier)
+            arguments: (argument_list
+              (map_type
+                key: (type_identifier)
+                value: (type_identifier))))))
+      (var_spec
+        name: (identifier)
+        value: (expression_list
+          (call_expression
+            function: (identifier)
+            arguments: (argument_list
+              (channel_type
+                value: (channel_type
+                  value: (type_identifier)))))))
+      (var_spec
+        name: (identifier)
+        value: (expression_list
+          (call_expression
+            function: (identifier)
+            arguments: (argument_list
+              (struct_type
+                (field_declaration_list)))))))))
+
+================================================================================
+Composite literals
+================================================================================
+
+var (
+	a = []int{1, 2, 3}
+	b = [...]string{"a", "b"}
+	c = map[string]Point{"o": {0, 0}}
+	d = Point{X: 1, Y: 2}
+	e = &pkg.T{}
+	f = struct{ a int }{1}
+	g = [][]int{{1}, {2, 3}}
+)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (var_declaration
+    (var_spec_list
+      (var_spec
+        name: (identifier)
+        value: (expression_list
+          (composite_literal
+            type: (slice_type
+              element: (type_identifier))
+            body: (literal_value
+              (int_literal)
+              (int_literal)
+              (int_literal)))))
+      (var_spec
+        name: (identifier)
+        value: (expression_list
+          (composite_literal
+            type: (implicit_length_array_type
+              element: (type_identifier))
+            body: (literal_value
+              (interpreted_string_literal
+                (string_content))
+              (interpreted_string_literal
+                (string_content))))))
+      (var_spec
+        name: (identifier)
+        value: (expression_list
+          (composite_literal
+            type: (map_type
+              key: (type_identifier)
+              value: (type_identifier))
+            body: (literal_value
+              (keyed_element
+                key: (interpreted_string_literal
+                  (string_content))
+                value: (literal_value
+                  (int_literal)
+                  (int_literal)))))))
+      (var_spec
+        name: (identifier)
+        value: (expression_list
+          (composite_literal
+            type: (type_identifier)
+            body: (literal_value
+              (keyed_element
+                key: (identifier)
+                value: (int_literal))
+              (keyed_element
+                key: (identifier)
+                value: (int_literal))))))
+      (var_spec
+        name: (identifier)
+        value: (expression_list
+          (unary_expression
+            operand: (composite_literal
+              type: (qualified_type
+                package: (package_identifier)
+                name: (type_identifier))
+              body: (literal_value)))))
+      (var_spec
+        name: (identifier)
+        value: (expression_list
+          (composite_literal
+            type: (struct_type
+              (field_declaration_list
+                (field_declaration
+                  name: (field_identifier)
+                  type: (type_identifier))))
+            body: (literal_value
+              (int_literal)))))
+      (var_spec
+        name: (identifier)
+        value: (expression_list
+          (composite_literal
+            type: (slice_type
+              element: (slice_type
+                element: (type_identifier)))
+            body: (literal_value
+              (literal_value
+                (int_literal))
+              (literal_value
+                (int_literal)
+                (int_literal)))))))))
+
+================================================================================
+Untyped composite literals
+================================================================================
+
+func f() {
+	g(ctx, {A: 1}, {1, 2})
+	var p Point = {1, 2}
+	return {}
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (argument_list
+            (identifier)
+            (literal_value
+              (keyed_element
+                key: (identifier)
+                value: (int_literal)))
+            (literal_value
+              (int_literal)
+              (int_literal)))))
+      (var_declaration
+        (var_spec
+          name: (identifier)
+          type: (type_identifier)
+          value: (expression_list
+            (literal_value
+              (int_literal)
+              (int_literal)))))
+      (return_statement
+        (expression_list
+          (literal_value))))))
+
+================================================================================
+Composite literals in headers
+================================================================================
+
+func f() {
+	if x == (T{}) {
+	}
+	for _, v := range []T{a, b} {
+	}
+	if x == pkg.T {
+	}
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (if_statement
+        condition: (binary_expression
+          left: (identifier)
+          right: (parenthesized_expression
+            (composite_literal
+              type: (type_identifier)
+              body: (literal_value))))
+        consequence: (block))
+      (for_statement
+        (range_clause
+          left: (expression_list
+            (identifier)
+            (identifier))
+          right: (composite_literal
+            type: (slice_type
+              element: (type_identifier))
+            body: (literal_value
+              (identifier)
+              (identifier))))
+        body: (block))
+      (if_statement
+        condition: (binary_expression
+          left: (identifier)
+          right: (selector_expression
+            operand: (identifier)
+            field: (field_identifier)))
+        consequence: (block)))))
+
+================================================================================
+Function literals
+================================================================================
+
+var f = func(x int) int { return x * 2 }
+
+func g() {
+	go func() {
+		defer wg.Done()
+	}()
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (var_declaration
+    (var_spec
+      name: (identifier)
+      value: (expression_list
+        (func_literal
+          parameters: (parameter_list
+            (parameter_declaration
+              name: (identifier)
+              type: (type_identifier)))
+          result: (type_identifier)
+          body: (block
+            (return_statement
+              (expression_list
+                (binary_expression
+                  left: (identifier)
+                  right: (int_literal)))))))))
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (go_statement
+        (call_expression
+          function: (func_literal
+            parameters: (parameter_list)
+            body: (block
+              (defer_statement
+                (call_expression
+                  function: (selector_expression
+                    operand: (identifier)
+                    field: (field_identifier))
+                  arguments: (argument_list)))))
+          arguments: (argument_list))))))

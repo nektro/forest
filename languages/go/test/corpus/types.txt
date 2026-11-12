@@ -1,0 +1,168 @@
+================================================================================
+Struct types
+================================================================================
+
+type S struct {
+	a, b int
+	c    []string `json:"c"`
+	*Embedded
+	pkg.Type
+	Generic[int]
+	arr [4]byte
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (type_declaration
+    (type_spec
+      name: (type_identifier)
+      type: (struct_type
+        (field_declaration_list
+          (field_declaration
+            name: (field_identifier)
+            name: (field_identifier)
+            type: (type_identifier))
+          (field_declaration
+            name: (field_identifier)
+            type: (slice_type
+              element: (type_identifier))
+            tag: (raw_string_literal
+              (string_content)))
+          (field_declaration
+            type: (type_identifier))
+          (field_declaration
+            type: (qualified_type
+              package: (package_identifier)
+              name: (type_identifier)))
+          (field_declaration
+            type: (generic_type
+              type: (type_identifier)
+              type_arguments: (type_arguments
+                (type_identifier))))
+          (field_declaration
+            name: (field_identifier)
+            type: (array_type
+              length: (int_literal)
+              element: (type_identifier))))))))
+
+================================================================================
+Interface types
+================================================================================
+
+type I interface {
+	io.Reader
+	Read(p []byte) (n int, err error)
+	~int | ~string
+	String() string
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (type_declaration
+    (type_spec
+      name: (type_identifier)
+      type: (interface_type
+        (type_elem
+          (qualified_type
+            package: (package_identifier)
+            name: (type_identifier)))
+        (method_elem
+          name: (field_identifier)
+          parameters: (parameter_list
+            (parameter_declaration
+              name: (identifier)
+              type: (slice_type
+                element: (type_identifier))))
+          result: (parameter_list
+            (parameter_declaration
+              name: (identifier)
+              type: (type_identifier))
+            (parameter_declaration
+              name: (identifier)
+              type: (type_identifier))))
+        (type_elem
+          (negated_type
+            (type_identifier))
+          (negated_type
+            (type_identifier)))
+        (method_elem
+          name: (field_identifier)
+          parameters: (parameter_list)
+          result: (type_identifier))))))
+
+================================================================================
+Channel, map, pointer and function types
+================================================================================
+
+var (
+	a chan int
+	b chan<- int
+	c <-chan int
+	d chan<- chan int
+	e map[string][]*T
+	f func(int) (string, error)
+	g func(func() int) func()
+	h *pkg.T[int]
+)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (var_declaration
+    (var_spec_list
+      (var_spec
+        name: (identifier)
+        type: (channel_type
+          value: (type_identifier)))
+      (var_spec
+        name: (identifier)
+        type: (channel_type
+          value: (type_identifier)))
+      (var_spec
+        name: (identifier)
+        type: (channel_type
+          value: (type_identifier)))
+      (var_spec
+        name: (identifier)
+        type: (channel_type
+          value: (channel_type
+            value: (type_identifier))))
+      (var_spec
+        name: (identifier)
+        type: (map_type
+          key: (type_identifier)
+          value: (slice_type
+            element: (pointer_type
+              (type_identifier)))))
+      (var_spec
+        name: (identifier)
+        type: (function_type
+          parameters: (parameter_list
+            (parameter_declaration
+              type: (type_identifier)))
+          result: (parameter_list
+            (parameter_declaration
+              type: (type_identifier))
+            (parameter_declaration
+              type: (type_identifier)))))
+      (var_spec
+        name: (identifier)
+        type: (function_type
+          parameters: (parameter_list
+            (parameter_declaration
+              type: (function_type
+                parameters: (parameter_list)
+                result: (type_identifier))))
+          result: (function_type
+            parameters: (parameter_list))))
+      (var_spec
+        name: (identifier)
+        type: (pointer_type
+          (generic_type
+            type: (qualified_type
+              package: (package_identifier)
+              name: (type_identifier))
+            type_arguments: (type_arguments
+              (type_identifier))))))))
