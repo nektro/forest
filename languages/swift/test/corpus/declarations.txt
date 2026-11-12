@@ -1,0 +1,698 @@
+================================================================================
+Imports
+================================================================================
+
+import Foundation
+import struct Swift.Array
+@testable import MyModule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (import_declaration
+    path: (import_path
+      (identifier)))
+  (import_declaration
+    path: (import_path
+      (identifier)
+      (identifier)))
+  (import_declaration
+    (attributes
+      (attribute
+        name: (type_identifier)))
+    path: (import_path
+      (identifier))))
+
+================================================================================
+Constants and variables
+================================================================================
+
+let a = 1, b: Int = 2
+var (x, y) = (1, 2)
+let _ = f()
+var total: Double
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (integer_literal))
+    binding: (pattern_binding
+      pattern: (identifier)
+      type: (type_identifier)
+      value: (integer_literal)))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (tuple_pattern
+        element: (identifier)
+        element: (identifier))
+      value: (tuple_expression
+        element: (tuple_element
+          value: (integer_literal))
+        element: (tuple_element
+          value: (integer_literal)))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (wildcard)
+      value: (call_expression
+        function: (identifier)
+        arguments: (argument_list))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      type: (type_identifier))))
+
+================================================================================
+Computed properties and accessors
+================================================================================
+
+var area: Double { width * height }
+var name: String {
+  get { _name }
+  set(newValue) { _name = newValue }
+}
+var count = 0 {
+  willSet { print(newValue) }
+  didSet { print(oldValue) }
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      type: (type_identifier)
+      accessors: (block
+        (binary_expression
+          left: (identifier)
+          right: (identifier)))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      type: (type_identifier)
+      accessors: (accessor_block
+        (accessor
+          body: (block
+            (identifier)))
+        (accessor
+          parameter: (identifier)
+          body: (block
+            (assignment_expression
+              target: (identifier)
+              value: (identifier)))))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (integer_literal)
+      accessors: (accessor_block
+        (accessor
+          body: (block
+            (call_expression
+              function: (identifier)
+              arguments: (argument_list
+                argument: (argument
+                  value: (identifier))))))
+        (accessor
+          body: (block
+            (call_expression
+              function: (identifier)
+              arguments: (argument_list
+                argument: (argument
+                  value: (identifier))))))))))
+
+================================================================================
+Functions
+================================================================================
+
+func greet(_ name: String, from place: String = "here") -> String {
+  return "Hello \(name)"
+}
+func fetch() async throws -> Data {}
+func apply<T, U>(_ f: (T) -> U, to x: T) -> U where T: Hashable { f(x) }
+static func == (lhs: Self, rhs: Self) -> Bool { true }
+func log(_ items: Any..., separator: String = " ") {}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_clause
+      (parameter
+        external_name: (identifier)
+        name: (identifier)
+        type: (type_identifier))
+      (parameter
+        external_name: (identifier)
+        name: (identifier)
+        type: (type_identifier)
+        default_value: (string_literal
+          (string_content))))
+    return_type: (type_identifier)
+    body: (block
+      (return_statement
+        value: (string_literal
+          (string_content)
+          (interpolation
+            argument: (argument
+              value: (identifier)))))))
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_clause)
+    (throws_clause)
+    return_type: (type_identifier)
+    body: (block))
+  (function_declaration
+    name: (identifier)
+    generic_parameters: (generic_parameter_clause
+      (generic_parameter
+        name: (type_identifier))
+      (generic_parameter
+        name: (type_identifier)))
+    parameters: (parameter_clause
+      (parameter
+        external_name: (identifier)
+        name: (identifier)
+        type: (function_type
+          parameters: (tuple_type
+            element: (tuple_type_element
+              type: (type_identifier)))
+          return_type: (type_identifier)))
+      (parameter
+        external_name: (identifier)
+        name: (identifier)
+        type: (type_identifier)))
+    return_type: (type_identifier)
+    (where_clause
+      (conformance_requirement
+        left: (type_identifier)
+        right: (type_identifier)))
+    body: (block
+      (call_expression
+        function: (identifier)
+        arguments: (argument_list
+          argument: (argument
+            value: (identifier))))))
+  (function_declaration
+    (modifiers
+      (modifier))
+    name: (operator)
+    parameters: (parameter_clause
+      (parameter
+        name: (identifier)
+        type: (type_identifier))
+      (parameter
+        name: (identifier)
+        type: (type_identifier)))
+    return_type: (type_identifier)
+    body: (block
+      (boolean_literal)))
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_clause
+      (parameter
+        external_name: (identifier)
+        name: (identifier)
+        type: (type_identifier))
+      (parameter
+        name: (identifier)
+        type: (type_identifier)
+        default_value: (string_literal
+          (string_content))))
+    body: (block)))
+
+================================================================================
+Types
+================================================================================
+
+public final class Box<T>: Base, Codable where T: Sendable {
+  private(set) var value: T
+  init(_ value: T) { self.value = value }
+  convenience init?() { return nil }
+  deinit {}
+  subscript(index: Int) -> T { value }
+}
+struct Point: Equatable { var x, y: Double }
+actor Counter { var n = 0 }
+extension Array: P where Element: Q {}
+protocol Shape<Unit>: AnyObject {
+  associatedtype Unit
+  var area: Double { get }
+  mutating func scale(by factor: Double)
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (class_declaration
+    (modifiers
+      (modifier)
+      (modifier))
+    name: (type_identifier)
+    generic_parameters: (generic_parameter_clause
+      (generic_parameter
+        name: (type_identifier)))
+    (inheritance_clause
+      type: (type_identifier)
+      type: (type_identifier))
+    (where_clause
+      (conformance_requirement
+        left: (type_identifier)
+        right: (type_identifier)))
+    body: (member_block
+      (variable_declaration
+        (modifiers
+          (modifier))
+        binding: (pattern_binding
+          pattern: (identifier)
+          type: (type_identifier)))
+      (initializer_declaration
+        parameters: (parameter_clause
+          (parameter
+            external_name: (identifier)
+            name: (identifier)
+            type: (type_identifier)))
+        body: (block
+          (assignment_expression
+            target: (member_expression
+              object: (self_expression)
+              name: (identifier))
+            value: (identifier))))
+      (initializer_declaration
+        (modifiers
+          (modifier))
+        parameters: (parameter_clause)
+        body: (block
+          (return_statement
+            value: (nil_literal))))
+      (deinitializer_declaration
+        body: (block))
+      (subscript_declaration
+        parameters: (parameter_clause
+          (parameter
+            name: (identifier)
+            type: (type_identifier)))
+        return_type: (type_identifier)
+        accessors: (block
+          (identifier)))))
+  (struct_declaration
+    name: (type_identifier)
+    (inheritance_clause
+      type: (type_identifier))
+    body: (member_block
+      (variable_declaration
+        binding: (pattern_binding
+          pattern: (identifier))
+        binding: (pattern_binding
+          pattern: (identifier)
+          type: (type_identifier)))))
+  (actor_declaration
+    name: (type_identifier)
+    body: (member_block
+      (variable_declaration
+        binding: (pattern_binding
+          pattern: (identifier)
+          value: (integer_literal)))))
+  (extension_declaration
+    type: (type_identifier)
+    (inheritance_clause
+      type: (type_identifier))
+    (where_clause
+      (conformance_requirement
+        left: (type_identifier)
+        right: (type_identifier)))
+    body: (member_block))
+  (protocol_declaration
+    name: (type_identifier)
+    primary_associated_types: (primary_associated_types
+      (type_identifier))
+    (inheritance_clause
+      type: (type_identifier))
+    body: (member_block
+      (associatedtype_declaration
+        name: (type_identifier))
+      (variable_declaration
+        binding: (pattern_binding
+          pattern: (identifier)
+          type: (type_identifier)
+          accessors: (accessor_block
+            (accessor))))
+      (function_declaration
+        (modifiers
+          (modifier))
+        name: (identifier)
+        parameters: (parameter_clause
+          (parameter
+            external_name: (identifier)
+            name: (identifier)
+            type: (type_identifier)))))))
+
+================================================================================
+Enums
+================================================================================
+
+indirect enum Tree<T> {
+  case leaf
+  case node(Tree, value: T, Tree)
+}
+enum Planet: Int, CaseIterable {
+  case mercury = 1, venus, earth
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (enum_declaration
+    (modifiers
+      (modifier))
+    name: (type_identifier)
+    generic_parameters: (generic_parameter_clause
+      (generic_parameter
+        name: (type_identifier)))
+    body: (member_block
+      (enum_case_declaration
+        element: (enum_case_element
+          name: (identifier)))
+      (enum_case_declaration
+        element: (enum_case_element
+          name: (identifier)
+          parameters: (enum_case_parameter_clause
+            (enum_case_parameter
+              type: (type_identifier))
+            (enum_case_parameter
+              name: (identifier)
+              type: (type_identifier))
+            (enum_case_parameter
+              type: (type_identifier)))))))
+  (enum_declaration
+    name: (type_identifier)
+    (inheritance_clause
+      type: (type_identifier)
+      type: (type_identifier))
+    body: (member_block
+      (enum_case_declaration
+        element: (enum_case_element
+          name: (identifier)
+          raw_value: (integer_literal))
+        element: (enum_case_element
+          name: (identifier))
+        element: (enum_case_element
+          name: (identifier))))))
+
+================================================================================
+Typealias, operators and precedence groups
+================================================================================
+
+typealias Handler<T> = (Result<T, Error>) -> Void
+infix operator <>: AdditionPrecedence
+precedencegroup Compose {
+  associativity: left
+  higherThan: AdditionPrecedence
+}
+prefix func √ (x: Double) -> Double { x }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (typealias_declaration
+    name: (type_identifier)
+    generic_parameters: (generic_parameter_clause
+      (generic_parameter
+        name: (type_identifier)))
+    value: (function_type
+      parameters: (tuple_type
+        element: (tuple_type_element
+          type: (generic_type
+            name: (type_identifier)
+            arguments: (type_arguments
+              (type_identifier)
+              (type_identifier)))))
+      return_type: (type_identifier)))
+  (operator_declaration
+    (modifiers
+      (modifier))
+    name: (operator
+      (custom_operator))
+    precedence_group: (identifier))
+  (precedence_group_declaration
+    name: (identifier)
+    (precedence_group_attribute
+      name: (identifier)
+      value: (identifier))
+    (precedence_group_attribute
+      name: (identifier)
+      value: (identifier)))
+  (function_declaration
+    (modifiers
+      (modifier))
+    name: (operator
+      (custom_operator))
+    parameters: (parameter_clause
+      (parameter
+        name: (identifier)
+        type: (type_identifier)))
+    return_type: (type_identifier)
+    body: (block
+      (identifier))))
+
+================================================================================
+Attributes and modifiers
+================================================================================
+
+@available(iOS 13.0, macOS 10.15, *)
+@MainActor
+public struct ContentView: View {
+  @State private var isOn = false
+  @Environment(\.dismiss) var dismiss
+  nonisolated(unsafe) static var shared: Self?
+  @objc(doThing:with:) dynamic func doThing(_ a: Int, with b: Int) {}
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (struct_declaration
+    (attributes
+      (attribute
+        name: (type_identifier)
+        arguments: (attribute_arguments
+          argument: (attribute_argument
+            name: (identifier)
+            value: (float_literal))
+          argument: (attribute_argument
+            name: (identifier)
+            value: (float_literal))
+          argument: (attribute_argument)))
+      (attribute
+        name: (type_identifier)))
+    (modifiers
+      (modifier))
+    name: (type_identifier)
+    (inheritance_clause
+      type: (type_identifier))
+    body: (member_block
+      (variable_declaration
+        (attributes
+          (attribute
+            name: (type_identifier)))
+        (modifiers
+          (modifier))
+        binding: (pattern_binding
+          pattern: (identifier)
+          value: (boolean_literal)))
+      (variable_declaration
+        (attributes
+          (attribute
+            name: (type_identifier)
+            arguments: (attribute_arguments
+              argument: (attribute_argument
+                value: (key_path_expression
+                  member: (identifier))))))
+        binding: (pattern_binding
+          pattern: (identifier)))
+      (variable_declaration
+        (modifiers
+          (modifier
+            (identifier))
+          (modifier))
+        binding: (pattern_binding
+          pattern: (identifier)
+          type: (optional_type
+            wrapped: (type_identifier))))
+      (function_declaration
+        (attributes
+          (attribute
+            name: (type_identifier)
+            arguments: (attribute_arguments
+              argument: (attribute_argument
+                name: (identifier)
+                name: (identifier)))))
+        (modifiers
+          (modifier))
+        name: (identifier)
+        parameters: (parameter_clause
+          (parameter
+            external_name: (identifier)
+            name: (identifier)
+            type: (type_identifier))
+          (parameter
+            external_name: (identifier)
+            name: (identifier)
+            type: (type_identifier)))
+        body: (block)))))
+
+================================================================================
+Macros
+================================================================================
+
+@freestanding(expression)
+macro stringify<T>(_ value: T) -> (T, String) = #externalMacro(module: "M", type: "S")
+let (v, s) = #stringify(1 + 2)
+#Preview {
+  ContentView()
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_declaration
+    (attributes
+      (attribute
+        name: (type_identifier)
+        arguments: (attribute_arguments
+          argument: (attribute_argument
+            value: (identifier)))))
+    name: (identifier)
+    generic_parameters: (generic_parameter_clause
+      (generic_parameter
+        name: (type_identifier)))
+    parameters: (parameter_clause
+      (parameter
+        external_name: (identifier)
+        name: (identifier)
+        type: (type_identifier)))
+    return_type: (tuple_type
+      element: (tuple_type_element
+        type: (type_identifier))
+      element: (tuple_type_element
+        type: (type_identifier)))
+    definition: (call_expression
+      function: (macro_expansion)
+      arguments: (argument_list
+        argument: (argument
+          label: (identifier)
+          value: (string_literal
+            (string_content)))
+        argument: (argument
+          label: (identifier)
+          value: (string_literal
+            (string_content))))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (tuple_pattern
+        element: (identifier)
+        element: (identifier))
+      value: (call_expression
+        function: (macro_expansion)
+        arguments: (argument_list
+          argument: (argument
+            value: (binary_expression
+              left: (integer_literal)
+              right: (integer_literal)))))))
+  (call_expression
+    function: (macro_expansion)
+    trailing_closure: (closure_expression
+      (call_expression
+        function: (identifier)
+        arguments: (argument_list)))))
+
+================================================================================
+Conditional compilation
+================================================================================
+
+#if os(iOS) || targetEnvironment(macCatalyst)
+import UIKit
+#elseif canImport(AppKit) && swift(>=5.9)
+import AppKit
+#else
+let platform = "other"
+#endif
+struct S {
+  #if DEBUG
+  var debug = true
+  #endif
+  #if compiler(>=6)
+  @available(macOS 15, *)
+  #endif
+  func f() {}
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (if_config
+    condition: (binary_expression
+      left: (call_expression
+        function: (identifier)
+        arguments: (argument_list
+          argument: (argument
+            value: (identifier))))
+      right: (call_expression
+        function: (identifier)
+        arguments: (argument_list
+          argument: (argument
+            value: (identifier)))))
+    (import_declaration
+      path: (import_path
+        (identifier)))
+    condition: (binary_expression
+      left: (call_expression
+        function: (identifier)
+        arguments: (argument_list
+          argument: (argument
+            value: (identifier))))
+      right: (call_expression
+        function: (identifier)
+        arguments: (argument_list
+          argument: (argument
+            value: (prefix_expression
+              operand: (float_literal))))))
+    (import_declaration
+      path: (import_path
+        (identifier)))
+    (variable_declaration
+      binding: (pattern_binding
+        pattern: (identifier)
+        value: (string_literal
+          (string_content)))))
+  (struct_declaration
+    name: (type_identifier)
+    body: (member_block
+      (if_config
+        condition: (identifier)
+        (variable_declaration
+          binding: (pattern_binding
+            pattern: (identifier)
+            value: (boolean_literal))))
+      (function_declaration
+        (attributes
+          (if_config
+            condition: (call_expression
+              function: (identifier)
+              arguments: (argument_list
+                argument: (argument
+                  value: (prefix_expression
+                    operand: (integer_literal)))))
+            (attribute
+              name: (type_identifier)
+              arguments: (attribute_arguments
+                argument: (attribute_argument
+                  name: (identifier)
+                  value: (integer_literal))
+                argument: (attribute_argument)))))
+        name: (identifier)
+        parameters: (parameter_clause)
+        body: (block)))))

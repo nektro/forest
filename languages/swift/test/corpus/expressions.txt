@@ -1,0 +1,603 @@
+================================================================================
+Calls and trailing closures
+================================================================================
+
+print("hi", terminator: "")
+items.map { $0 * 2 }.filter { x in x > 2 }
+UIView.animate(withDuration: 0.3) {
+  view.alpha = 0
+} completion: { _ in
+  done()
+}
+let sorted = names.sorted(by: <)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (call_expression
+    function: (identifier)
+    arguments: (argument_list
+      argument: (argument
+        value: (string_literal
+          (string_content)))
+      argument: (argument
+        label: (identifier)
+        value: (string_literal))))
+  (call_expression
+    function: (member_expression
+      object: (call_expression
+        function: (member_expression
+          object: (identifier)
+          name: (identifier))
+        trailing_closure: (closure_expression
+          (binary_expression
+            left: (identifier)
+            right: (integer_literal))))
+      name: (identifier))
+    trailing_closure: (closure_expression
+      signature: (closure_signature
+        parameter: (closure_parameter
+          name: (identifier)))
+      (binary_expression
+        left: (identifier)
+        right: (integer_literal))))
+  (call_expression
+    function: (member_expression
+      object: (identifier)
+      name: (identifier))
+    arguments: (argument_list
+      argument: (argument
+        label: (identifier)
+        value: (float_literal)))
+    trailing_closure: (closure_expression
+      (assignment_expression
+        target: (member_expression
+          object: (identifier)
+          name: (identifier))
+        value: (integer_literal)))
+    trailing_closure: (labeled_trailing_closure
+      label: (identifier)
+      closure: (closure_expression
+        signature: (closure_signature
+          parameter: (closure_parameter
+            name: (identifier)))
+        (call_expression
+          function: (identifier)
+          arguments: (argument_list)))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (call_expression
+        function: (member_expression
+          object: (identifier)
+          name: (identifier))
+        arguments: (argument_list
+          argument: (argument
+            label: (identifier)
+            value: (operator)))))))
+
+================================================================================
+Calls need the paren on the same line
+================================================================================
+
+let f = makeHandler
+(a, b) = (b, a)
+foo
+[1, 2].forEach { print($0) }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (identifier)))
+  (assignment_expression
+    target: (tuple_expression
+      element: (tuple_element
+        value: (identifier))
+      element: (tuple_element
+        value: (identifier)))
+    value: (tuple_expression
+      element: (tuple_element
+        value: (identifier))
+      element: (tuple_element
+        value: (identifier))))
+  (identifier)
+  (call_expression
+    function: (member_expression
+      object: (array_literal
+        element: (integer_literal)
+        element: (integer_literal))
+      name: (identifier))
+    trailing_closure: (closure_expression
+      (call_expression
+        function: (identifier)
+        arguments: (argument_list
+          argument: (argument
+            value: (identifier)))))))
+
+================================================================================
+Member chains across lines
+================================================================================
+
+let result = values
+  .map { $0 + 1 }
+  .reduce(0, +)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (call_expression
+        function: (member_expression
+          object: (call_expression
+            function: (member_expression
+              object: (identifier)
+              name: (identifier))
+            trailing_closure: (closure_expression
+              (binary_expression
+                left: (identifier)
+                right: (integer_literal))))
+          name: (identifier))
+        arguments: (argument_list
+          argument: (argument
+            value: (integer_literal))
+          argument: (argument
+            value: (operator)))))))
+
+================================================================================
+Operators and precedence
+================================================================================
+
+x = a + b * c - d
+ok = a < b && b <= c || !flag
+v = optional ?? fallback ?? 0
+r = 0..<n
+s = a ... b
+t = arr[i...]
+u = x as? Int ?? 0
+w = cond ? .yes : .no
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (assignment_expression
+    target: (identifier)
+    value: (binary_expression
+      left: (binary_expression
+        left: (identifier)
+        right: (binary_expression
+          left: (identifier)
+          right: (identifier)))
+      right: (identifier)))
+  (assignment_expression
+    target: (identifier)
+    value: (binary_expression
+      left: (binary_expression
+        left: (binary_expression
+          left: (identifier)
+          right: (identifier))
+        right: (binary_expression
+          left: (identifier)
+          right: (identifier)))
+      right: (prefix_expression
+        operand: (identifier))))
+  (assignment_expression
+    target: (identifier)
+    value: (binary_expression
+      left: (identifier)
+      right: (binary_expression
+        left: (identifier)
+        right: (integer_literal))))
+  (assignment_expression
+    target: (identifier)
+    value: (binary_expression
+      left: (integer_literal)
+      right: (identifier)))
+  (assignment_expression
+    target: (identifier)
+    value: (binary_expression
+      left: (identifier)
+      right: (identifier)))
+  (assignment_expression
+    target: (identifier)
+    value: (subscript_expression
+      object: (identifier)
+      argument: (argument
+        value: (postfix_expression
+          operand: (identifier)))))
+  (assignment_expression
+    target: (identifier)
+    value: (binary_expression
+      left: (cast_expression
+        value: (identifier)
+        type: (type_identifier))
+      right: (integer_literal)))
+  (assignment_expression
+    target: (identifier)
+    value: (ternary_expression
+      condition: (identifier)
+      consequence: (implicit_member_expression
+        name: (identifier))
+      alternative: (implicit_member_expression
+        name: (identifier)))))
+
+================================================================================
+Optional chaining and force unwrap
+================================================================================
+
+let n = person?.address?.street!.count
+let m = dict["key"]!
+let ok = a!=b
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (member_expression
+        object: (force_unwrap_expression
+          (member_expression
+            object: (optional_chaining_expression
+              (member_expression
+                object: (optional_chaining_expression
+                  (identifier))
+                name: (identifier)))
+            name: (identifier)))
+        name: (identifier))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (force_unwrap_expression
+        (subscript_expression
+          object: (identifier)
+          argument: (argument
+            value: (string_literal
+              (string_content)))))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (binary_expression
+        left: (identifier)
+        right: (identifier)))))
+
+================================================================================
+Generic arguments in expressions
+================================================================================
+
+let xs = Array<Int>()
+let d = Dictionary<String, Array<Int>>()
+let less = a<b
+let lt = a < b
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (call_expression
+        function: (specialize_expression
+          expression: (identifier)
+          arguments: (type_arguments
+            (type_identifier)))
+        arguments: (argument_list))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (call_expression
+        function: (specialize_expression
+          expression: (identifier)
+          arguments: (type_arguments
+            (type_identifier)
+            (generic_type
+              name: (type_identifier)
+              arguments: (type_arguments
+                (type_identifier)))))
+        arguments: (argument_list))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (binary_expression
+        left: (identifier)
+        right: (identifier))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (binary_expression
+        left: (identifier)
+        right: (identifier)))))
+
+================================================================================
+Try, await and casts
+================================================================================
+
+let data = try await session.data(from: url)
+let maybe = try? decode(json)
+let x = value as! String
+if obj is NSView {}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (try_expression
+        (await_expression
+          (call_expression
+            function: (member_expression
+              object: (identifier)
+              name: (identifier))
+            arguments: (argument_list
+              argument: (argument
+                label: (identifier)
+                value: (identifier))))))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (try_expression
+        (call_expression
+          function: (identifier)
+          arguments: (argument_list
+            argument: (argument
+              value: (identifier)))))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (cast_expression
+        value: (identifier)
+        type: (type_identifier))))
+  (if_statement
+    condition: (cast_expression
+      value: (identifier)
+      type: (type_identifier))
+    consequence: (block)))
+
+================================================================================
+Closures
+================================================================================
+
+let add: (Int, Int) -> Int = { a, b in a + b }
+let c = { [weak self, count = n] (x: Int) async throws -> Int in
+  return x
+}
+handler = { _ in }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      type: (function_type
+        parameters: (tuple_type
+          element: (tuple_type_element
+            type: (type_identifier))
+          element: (tuple_type_element
+            type: (type_identifier)))
+        return_type: (type_identifier))
+      value: (closure_expression
+        signature: (closure_signature
+          parameter: (closure_parameter
+            name: (identifier))
+          parameter: (closure_parameter
+            name: (identifier)))
+        (binary_expression
+          left: (identifier)
+          right: (identifier)))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (closure_expression
+        signature: (closure_signature
+          captures: (capture_list
+            (capture_item
+              value: (self_expression))
+            (capture_item
+              name: (identifier)
+              value: (identifier)))
+          parameters: (closure_parameter_clause
+            (closure_parameter
+              name: (identifier)
+              type: (type_identifier)))
+          (throws_clause)
+          return_type: (type_identifier))
+        (return_statement
+          value: (identifier)))))
+  (assignment_expression
+    target: (identifier)
+    value: (closure_expression
+      signature: (closure_signature
+        parameter: (closure_parameter
+          name: (identifier))))))
+
+================================================================================
+Literals
+================================================================================
+
+let a = [1, 2, 3,]
+let d = ["a": 1, "b": 2]
+let e: [String: Int] = [:]
+let t = (x: 1, y: 2)
+let n = (0x1F, 0b1010, 0o17, 1_000_000, 3.14, 1e-3, 0x1p4)
+let k = \Person.name
+let k2 = \.address?.city
+let sel = #selector(tap(_:))
+let rx = #/[a-z]+/#
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (array_literal
+        element: (integer_literal)
+        element: (integer_literal)
+        element: (integer_literal))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (dictionary_literal
+        element: (dictionary_element
+          key: (string_literal
+            (string_content))
+          value: (integer_literal))
+        element: (dictionary_element
+          key: (string_literal
+            (string_content))
+          value: (integer_literal)))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      type: (dictionary_type
+        key: (type_identifier)
+        value: (type_identifier))
+      value: (dictionary_literal)))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (tuple_expression
+        element: (tuple_element
+          label: (identifier)
+          value: (integer_literal))
+        element: (tuple_element
+          label: (identifier)
+          value: (integer_literal)))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (tuple_expression
+        element: (tuple_element
+          value: (integer_literal))
+        element: (tuple_element
+          value: (integer_literal))
+        element: (tuple_element
+          value: (integer_literal))
+        element: (tuple_element
+          value: (integer_literal))
+        element: (tuple_element
+          value: (float_literal))
+        element: (tuple_element
+          value: (float_literal))
+        element: (tuple_element
+          value: (float_literal)))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (key_path_expression
+        root: (type_identifier)
+        member: (identifier))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (key_path_expression
+        member: (identifier)
+        member: (identifier))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (call_expression
+        function: (macro_expansion)
+        arguments: (argument_list
+          argument: (argument
+            value: (function_reference
+              function: (identifier)
+              arguments: (argument_names
+                name: (identifier))))))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (regex_literal))))
+
+================================================================================
+Implicit members and self
+================================================================================
+
+view.backgroundColor = .systemBlue
+let p = Point.init(x: 1, y: 2)
+self.value = super.description
+_ = .some(1)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (assignment_expression
+    target: (member_expression
+      object: (identifier)
+      name: (identifier))
+    value: (implicit_member_expression
+      name: (identifier)))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (call_expression
+        function: (member_expression
+          object: (identifier)
+          name: (identifier))
+        arguments: (argument_list
+          argument: (argument
+            label: (identifier)
+            value: (integer_literal))
+          argument: (argument
+            label: (identifier)
+            value: (integer_literal))))))
+  (assignment_expression
+    target: (member_expression
+      object: (self_expression)
+      name: (identifier))
+    value: (member_expression
+      object: (super_expression)
+      name: (identifier)))
+  (assignment_expression
+    target: (wildcard)
+    value: (call_expression
+      function: (implicit_member_expression
+        name: (identifier))
+      arguments: (argument_list
+        argument: (argument
+          value: (integer_literal))))))
+
+================================================================================
+If and switch expressions
+================================================================================
+
+let s = if x > 0 { "pos" } else { "neg" }
+let n = switch v {
+  case .a: 1
+  default: 2
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (if_statement
+        condition: (binary_expression
+          left: (identifier)
+          right: (integer_literal))
+        consequence: (block
+          (string_literal
+            (string_content)))
+        alternative: (block
+          (string_literal
+            (string_content))))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (switch_statement
+        subject: (identifier)
+        (switch_case
+          item: (case_item
+            pattern: (implicit_member_expression
+              name: (identifier)))
+          (integer_literal))
+        (switch_case
+          (integer_literal))))))

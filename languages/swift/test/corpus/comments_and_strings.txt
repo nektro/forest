@@ -1,0 +1,139 @@
+================================================================================
+Comments
+================================================================================
+
+// line
+/// doc
+/* block /* nested */ still comment */
+/** doc block */
+let x = 1 // trailing
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (comment)
+  (comment)
+  (multiline_comment
+    (multiline_comment))
+  (multiline_comment)
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (integer_literal)))
+  (comment))
+
+================================================================================
+Strings and interpolation
+================================================================================
+
+let s = "a \(b) \(c, format: .x) \n\u{1F600}"
+let url = "http://example.com/*not a comment*/"
+let empty = ""
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (string_literal
+        (string_content)
+        (interpolation
+          argument: (argument
+            value: (identifier)))
+        (string_content)
+        (interpolation
+          argument: (argument
+            value: (identifier))
+          argument: (argument
+            label: (identifier)
+            value: (implicit_member_expression
+              name: (identifier))))
+        (string_content)
+        (escape_sequence)
+        (escape_sequence))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (string_literal
+        (string_content))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (string_literal))))
+
+================================================================================
+Multiline strings
+================================================================================
+
+let m = """
+  Hello "quoted" ""
+  \(name) \
+  end
+  """
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (multiline_string_literal
+        (string_content)
+        (string_content)
+        (string_content)
+        (string_content)
+        (string_content)
+        (string_content)
+        (string_content)
+        (string_content)
+        (interpolation
+          argument: (argument
+            value: (identifier)))
+        (string_content)
+        (escape_sequence)
+        (string_content)))))
+
+================================================================================
+Raw strings
+================================================================================
+
+let r = #"a "quoted" \n \#(x)"#
+let r2 = ##"contains "# inside"##
+let r3 = #"""
+  raw "multi"
+  """#
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (raw_string_literal
+        (string_content)
+        (string_content)
+        (string_content)
+        (string_content)
+        (string_content)
+        (string_content)
+        (string_content)
+        (interpolation
+          argument: (argument
+            value: (identifier))))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (raw_string_literal
+        (string_content)
+        (string_content)
+        (string_content))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (raw_string_literal
+        (string_content)
+        (string_content)
+        (string_content)
+        (string_content)
+        (string_content)))))

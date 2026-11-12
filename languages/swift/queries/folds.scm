@@ -1,0 +1,16 @@
+[
+  (block)
+  (member_block)
+  (accessor_block)
+  (closure_expression)
+  (switch_statement)
+  (switch_case)
+  (if_config)
+  (argument_list)
+  (parameter_clause)
+  (array_literal)
+  (dictionary_literal)
+  (multiline_string_literal)
+  (multiline_comment)
+  (import_declaration)
+] @fold

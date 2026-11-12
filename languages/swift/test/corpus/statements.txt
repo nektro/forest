@@ -1,0 +1,355 @@
+================================================================================
+If, guard and optional binding
+================================================================================
+
+if let x = maybe, var y = other, x > y {
+} else if case .some(let z) = w {
+} else {
+}
+guard let url else { return }
+if #available(iOS 15, *) {}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (if_statement
+    condition: (optional_binding_condition
+      pattern: (identifier)
+      value: (identifier))
+    condition: (optional_binding_condition
+      pattern: (identifier)
+      value: (identifier))
+    condition: (binary_expression
+      left: (identifier)
+      right: (identifier))
+    consequence: (block)
+    alternative: (if_statement
+      condition: (matching_condition
+        pattern: (enum_case_pattern
+          name: (identifier)
+          arguments: (tuple_pattern
+            element: (tuple_pattern_element
+              pattern: (value_binding_pattern
+                pattern: (identifier)))))
+        value: (identifier))
+      consequence: (block)
+      alternative: (block)))
+  (guard_statement
+    condition: (optional_binding_condition
+      pattern: (identifier))
+    body: (block
+      (return_statement)))
+  (if_statement
+    condition: (availability_condition
+      argument: (attribute_argument
+        name: (identifier)
+        value: (integer_literal))
+      argument: (attribute_argument))
+    consequence: (block)))
+
+================================================================================
+Trailing closures are not allowed in conditions
+================================================================================
+
+if items.isEmpty {
+  reload()
+}
+while queue.isEmpty { wait() }
+for x in xs where x > 0 { use(x) }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (if_statement
+    condition: (member_expression
+      object: (identifier)
+      name: (identifier))
+    consequence: (block
+      (call_expression
+        function: (identifier)
+        arguments: (argument_list))))
+  (while_statement
+    condition: (member_expression
+      object: (identifier)
+      name: (identifier))
+    body: (block
+      (call_expression
+        function: (identifier)
+        arguments: (argument_list))))
+  (for_statement
+    pattern: (identifier)
+    sequence: (identifier)
+    where: (binary_expression
+      left: (identifier)
+      right: (integer_literal))
+    body: (block
+      (call_expression
+        function: (identifier)
+        arguments: (argument_list
+          argument: (argument
+            value: (identifier)))))))
+
+================================================================================
+Loops
+================================================================================
+
+for (i, x) in xs.enumerated() {
+  if i == 0 { continue }
+  break
+}
+for case let .some(v) in values {}
+for try await line in lines {}
+outer: while true {
+  repeat { n -= 1 } while n > 0
+  break outer
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (for_statement
+    pattern: (tuple_pattern
+      element: (tuple_pattern_element
+        pattern: (identifier))
+      element: (tuple_pattern_element
+        pattern: (identifier)))
+    sequence: (call_expression
+      function: (member_expression
+        object: (identifier)
+        name: (identifier))
+      arguments: (argument_list))
+    body: (block
+      (if_statement
+        condition: (binary_expression
+          left: (identifier)
+          right: (integer_literal))
+        consequence: (block
+          (continue_statement)))
+      (break_statement)))
+  (for_statement
+    pattern: (value_binding_pattern
+      pattern: (enum_case_pattern
+        name: (identifier)
+        arguments: (tuple_pattern
+          element: (tuple_pattern_element
+            pattern: (identifier)))))
+    sequence: (identifier)
+    body: (block))
+  (for_statement
+    pattern: (identifier)
+    sequence: (identifier)
+    body: (block))
+  (labeled_statement
+    label: (identifier)
+    statement: (while_statement
+      condition: (boolean_literal)
+      body: (block
+        (repeat_while_statement
+          body: (block
+            (assignment_expression
+              target: (identifier)
+              value: (integer_literal)))
+          condition: (binary_expression
+            left: (identifier)
+            right: (integer_literal)))
+        (break_statement
+          label: (identifier))))))
+
+================================================================================
+Switch
+================================================================================
+
+switch value {
+case 0, 1:
+  print("small")
+case let n where n < 0:
+  fallthrough
+case .pair(let a, _), .single(let a):
+  use(a)
+case is String:
+  break
+case let s as Int:
+  print(s)
+@unknown default:
+  break
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (switch_statement
+    subject: (identifier)
+    (switch_case
+      item: (case_item
+        pattern: (integer_literal))
+      item: (case_item
+        pattern: (integer_literal))
+      (call_expression
+        function: (identifier)
+        arguments: (argument_list
+          argument: (argument
+            value: (string_literal
+              (string_content))))))
+    (switch_case
+      item: (case_item
+        pattern: (value_binding_pattern
+          pattern: (identifier))
+        where: (binary_expression
+          left: (identifier)
+          right: (integer_literal)))
+      (fallthrough_statement))
+    (switch_case
+      item: (case_item
+        pattern: (enum_case_pattern
+          name: (identifier)
+          arguments: (tuple_pattern
+            element: (tuple_pattern_element
+              pattern: (value_binding_pattern
+                pattern: (identifier)))
+            element: (tuple_pattern_element
+              pattern: (wildcard)))))
+      item: (case_item
+        pattern: (enum_case_pattern
+          name: (identifier)
+          arguments: (tuple_pattern
+            element: (tuple_pattern_element
+              pattern: (value_binding_pattern
+                pattern: (identifier))))))
+      (call_expression
+        function: (identifier)
+        arguments: (argument_list
+          argument: (argument
+            value: (identifier)))))
+    (switch_case
+      item: (case_item
+        pattern: (is_pattern
+          type: (type_identifier)))
+      (break_statement))
+    (switch_case
+      item: (case_item
+        pattern: (value_binding_pattern
+          pattern: (cast_expression
+            value: (identifier)
+            type: (type_identifier))))
+      (call_expression
+        function: (identifier)
+        arguments: (argument_list
+          argument: (argument
+            value: (identifier)))))
+    (switch_case
+      (attribute
+        name: (type_identifier))
+      (break_statement))))
+
+================================================================================
+Do and catch
+================================================================================
+
+do {
+  try work()
+} catch let error as URLError where error.code == .timedOut {
+  retry()
+} catch MyError.failed {
+} catch {
+  print(error)
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (do_statement
+    body: (block
+      (try_expression
+        (call_expression
+          function: (identifier)
+          arguments: (argument_list))))
+    (catch_clause
+      item: (case_item
+        pattern: (value_binding_pattern
+          pattern: (cast_expression
+            value: (identifier)
+            type: (type_identifier)))
+        where: (binary_expression
+          left: (member_expression
+            object: (identifier)
+            name: (identifier))
+          right: (implicit_member_expression
+            name: (identifier))))
+      body: (block
+        (call_expression
+          function: (identifier)
+          arguments: (argument_list))))
+    (catch_clause
+      item: (case_item
+        pattern: (member_expression
+          object: (identifier)
+          name: (identifier)))
+      body: (block))
+    (catch_clause
+      body: (block
+        (call_expression
+          function: (identifier)
+          arguments: (argument_list
+            argument: (argument
+              value: (identifier))))))))
+
+================================================================================
+Defer, throw and return
+================================================================================
+
+func f() throws -> Int {
+  defer { cleanup() }
+  if bad { throw MyError.bad }
+  return 1
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_clause)
+    (throws_clause)
+    return_type: (type_identifier)
+    body: (block
+      (defer_statement
+        body: (block
+          (call_expression
+            function: (identifier)
+            arguments: (argument_list))))
+      (if_statement
+        condition: (identifier)
+        consequence: (block
+          (throw_statement
+            value: (member_expression
+              object: (identifier)
+              name: (identifier)))))
+      (return_statement
+        value: (integer_literal)))))
+
+================================================================================
+Statements separated by newlines and semicolons
+================================================================================
+
+let a = 1; let b = 2
+a
+-b
+x += 1
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (integer_literal)))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      value: (integer_literal)))
+  (binary_expression
+    left: (identifier)
+    right: (identifier))
+  (assignment_expression
+    target: (identifier)
+    value: (integer_literal)))

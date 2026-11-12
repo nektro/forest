@@ -1,0 +1,102 @@
+================================================================================
+Type annotations
+================================================================================
+
+let a: [Int]
+let b: [String: [Int]]
+let c: (Int, label: String)
+let d: Int?
+let e: String!
+let f: @escaping @Sendable (Int) async throws -> Void
+let g: some View
+let h: any Error & Sendable
+let i: Foo.Bar<Baz>.Type
+let j: (inout Int) -> ()
+let k: ~Copyable
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      type: (array_type
+        element: (type_identifier))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      type: (dictionary_type
+        key: (type_identifier)
+        value: (array_type
+          element: (type_identifier)))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      type: (tuple_type
+        element: (tuple_type_element
+          type: (type_identifier))
+        element: (tuple_type_element
+          name: (identifier)
+          type: (type_identifier)))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      type: (optional_type
+        wrapped: (type_identifier))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      type: (implicitly_unwrapped_optional_type
+        wrapped: (type_identifier))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      type: (attributed_type
+        (attribute
+          name: (type_identifier))
+        type: (attributed_type
+          (attribute
+            name: (type_identifier))
+          type: (function_type
+            parameters: (tuple_type
+              element: (tuple_type_element
+                type: (type_identifier)))
+            (throws_clause)
+            return_type: (type_identifier))))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      type: (opaque_type
+        constraint: (type_identifier))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      type: (existential_type
+        constraint: (composition_type
+          left: (type_identifier)
+          right: (type_identifier)))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      type: (metatype_type
+        base: (member_type
+          base: (type_identifier)
+          name: (generic_type
+            name: (type_identifier)
+            arguments: (type_arguments
+              (type_identifier)))))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      type: (function_type
+        parameters: (tuple_type
+          element: (tuple_type_element
+            type: (attributed_type
+              (type_specifier)
+              type: (type_identifier))))
+        return_type: (tuple_type))))
+  (variable_declaration
+    binding: (pattern_binding
+      pattern: (identifier)
+      type: (suppressed_type
+        type: (type_identifier)))))
