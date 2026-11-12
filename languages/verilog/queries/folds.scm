@@ -1,0 +1,18 @@
+[
+  (module_declaration)
+  (udp_declaration)
+  (config_declaration)
+  (function_declaration)
+  (task_declaration)
+  (seq_block)
+  (par_block)
+  (generate_region)
+  (generate_block)
+  (case_statement)
+  (case_generate_construct)
+  (specify_block)
+  (udp_table)
+  (port_list)
+  (port_connection_list)
+  (parameter_port_list)
+] @fold

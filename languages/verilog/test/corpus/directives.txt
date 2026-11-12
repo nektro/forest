@@ -1,0 +1,208 @@
+================================================================================
+Defines
+================================================================================
+
+`define WIDTH 8
+`define EMPTY
+`define MAX(a, b) ((a) > (b) ? (a) : (b))
+`define MULTI(x) \
+  x + \
+  1
+`undef WIDTH
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (define_directive
+    name: (identifier)
+    value: (macro_text))
+  (define_directive
+    name: (identifier))
+  (define_directive
+    name: (identifier)
+    parameters: (macro_parameters
+      (macro_parameter
+        name: (identifier))
+      (macro_parameter
+        name: (identifier)))
+    value: (macro_text))
+  (define_directive
+    name: (identifier)
+    parameters: (macro_parameters
+      (macro_parameter
+        name: (identifier)))
+    value: (macro_text))
+  (undef_directive
+    name: (identifier)))
+
+================================================================================
+Conditional compilation
+================================================================================
+
+module m;
+`ifdef FOO
+  wire a;
+`elsif BAR
+  wire b;
+`else
+  wire c;
+`endif
+`ifndef BAZ
+`endif
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (ifdef_directive
+      name: (identifier))
+    (net_declaration
+      declarator: (identifier))
+    (elsif_directive
+      name: (identifier))
+    (net_declaration
+      declarator: (identifier))
+    (else_directive)
+    (net_declaration
+      declarator: (identifier))
+    (endif_directive)
+    (ifdef_directive
+      name: (identifier))
+    (endif_directive)))
+
+================================================================================
+Other directives
+================================================================================
+
+`timescale 1ns / 10 ps
+`include "defs.vh"
+`include <lib.vh>
+`default_nettype none
+`resetall
+`celldefine
+`endcelldefine
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (timescale_directive
+    unit: (time_literal)
+    precision: (time_literal))
+  (include_directive
+    path: (string
+      (string_content)))
+  (include_directive
+    path: (system_lib_string))
+  (directive)
+  (directive)
+  (directive)
+  (directive))
+
+================================================================================
+Macro uses
+================================================================================
+
+module m;
+  wire [`WIDTH-1:0] a = `MAX(1, 2);
+  `ASSERT(a)
+  initial begin
+    `debug($display("x");)
+    x = `W'b0;
+  end
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (net_declaration
+      range: (range
+        msb: (binary_expression
+          left: (macro_usage
+            name: (macro_identifier))
+          right: (number))
+        lsb: (number))
+      declarator: (declarator
+        name: (identifier)
+        value: (macro_usage
+          name: (macro_identifier)
+          arguments: (argument_list
+            (number)
+            (number)))))
+    (macro_usage
+      name: (macro_identifier)
+      arguments: (argument_list
+        (identifier)))
+    (initial_construct
+      body: (seq_block
+        (macro_statement
+          (macro_usage
+            name: (macro_identifier)
+            arguments: (argument_list
+              (system_task_enable
+                name: (system_identifier)
+                arguments: (argument_list
+                  (string
+                    (string_content)))))))
+        (blocking_assignment
+          left: (identifier)
+          right: (number
+            (macro_usage
+              name: (macro_identifier))))))))
+
+================================================================================
+Macro names that start with directive names
+================================================================================
+
+module m;
+  assign a = `define_width + `else_x + `resetall_y;
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (continuous_assign
+      (assignment
+        left: (identifier)
+        right: (binary_expression
+          left: (binary_expression
+            left: (macro_usage
+              name: (macro_identifier))
+            right: (macro_usage
+              name: (macro_identifier)))
+          right: (macro_usage
+            name: (macro_identifier)))))))
+
+================================================================================
+Directive inside a port list
+================================================================================
+
+module m(
+  input a,
+`ifdef EXTRA
+  input b,
+`endif
+  output c
+);
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    ports: (port_list
+      (port_declaration
+        name: (identifier))
+      (ifdef_directive
+        name: (identifier))
+      (port_declaration
+        name: (identifier))
+      (endif_directive)
+      (port_declaration
+        name: (identifier)))))

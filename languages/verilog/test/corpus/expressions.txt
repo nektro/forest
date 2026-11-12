@@ -1,0 +1,327 @@
+================================================================================
+Numbers
+================================================================================
+
+module m;
+  initial begin
+    x = 42;
+    x = 1_000;
+    x = 8'hFF;
+    x = 4'sb1x0z;
+    x = 'd10;
+    x = 8 'h 1F;
+    x = 4'b10??;
+    x = 1.5;
+    x = 2e-3;
+    x = 3.0E+2;
+  end
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (initial_construct
+      body: (seq_block
+        (blocking_assignment
+          left: (identifier)
+          right: (number))
+        (blocking_assignment
+          left: (identifier)
+          right: (number))
+        (blocking_assignment
+          left: (identifier)
+          right: (number))
+        (blocking_assignment
+          left: (identifier)
+          right: (number))
+        (blocking_assignment
+          left: (identifier)
+          right: (number))
+        (blocking_assignment
+          left: (identifier)
+          right: (number))
+        (blocking_assignment
+          left: (identifier)
+          right: (number))
+        (blocking_assignment
+          left: (identifier)
+          right: (real_number))
+        (blocking_assignment
+          left: (identifier)
+          right: (real_number))
+        (blocking_assignment
+          left: (identifier)
+          right: (real_number))))))
+
+================================================================================
+Delay before a based number
+================================================================================
+
+module m;
+  initial x = #1 'h0F;
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (initial_construct
+      body: (blocking_assignment
+        left: (identifier)
+        control: (delay
+          (number))
+        right: (number)))))
+
+================================================================================
+Strings
+================================================================================
+
+module m;
+  initial $display("tab\there \"quoted\" \\ \101");
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (initial_construct
+      body: (system_task_enable
+        name: (system_identifier)
+        arguments: (argument_list
+          (string
+            (string_content)
+            (escape_sequence)
+            (string_content)
+            (escape_sequence)
+            (string_content)
+            (escape_sequence)
+            (string_content)
+            (escape_sequence)
+            (string_content)
+            (escape_sequence)))))))
+
+================================================================================
+Operators
+================================================================================
+
+module m;
+  assign a = -b + c * d ** 2 >>> 1;
+  assign e = !f && g || h;
+  assign i = &j | ~&k ^ ~^l;
+  assign m = n === o ? p : q;
+  assign r = s <= t;
+  assign u = a ? b : c ? d : e;
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (continuous_assign
+      (assignment
+        left: (identifier)
+        right: (binary_expression
+          left: (binary_expression
+            left: (unary_expression
+              operand: (identifier))
+            right: (binary_expression
+              left: (identifier)
+              right: (binary_expression
+                left: (identifier)
+                right: (number))))
+          right: (number))))
+    (continuous_assign
+      (assignment
+        left: (identifier)
+        right: (binary_expression
+          left: (binary_expression
+            left: (unary_expression
+              operand: (identifier))
+            right: (identifier))
+          right: (identifier))))
+    (continuous_assign
+      (assignment
+        left: (identifier)
+        right: (binary_expression
+          left: (unary_expression
+            operand: (identifier))
+          right: (binary_expression
+            left: (unary_expression
+              operand: (identifier))
+            right: (unary_expression
+              operand: (identifier))))))
+    (continuous_assign
+      (assignment
+        left: (identifier)
+        right: (conditional_expression
+          condition: (binary_expression
+            left: (identifier)
+            right: (identifier))
+          consequence: (identifier)
+          alternative: (identifier))))
+    (continuous_assign
+      (assignment
+        left: (identifier)
+        right: (binary_expression
+          left: (identifier)
+          right: (identifier))))
+    (continuous_assign
+      (assignment
+        left: (identifier)
+        right: (conditional_expression
+          condition: (identifier)
+          consequence: (identifier)
+          alternative: (conditional_expression
+            condition: (identifier)
+            consequence: (identifier)
+            alternative: (identifier)))))))
+
+================================================================================
+Selects and names
+================================================================================
+
+module m;
+  assign a = b[3];
+  assign a = b[7:0];
+  assign a = b[i +: 4];
+  assign a = b[i -: 4];
+  assign a = mem[i][j];
+  assign a = top.u1.sig;
+  assign a = gen[2].inst.sig;
+  assign a = \bus+index ;
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (continuous_assign
+      (assignment
+        left: (identifier)
+        right: (bit_select
+          value: (identifier)
+          index: (number))))
+    (continuous_assign
+      (assignment
+        left: (identifier)
+        right: (part_select
+          value: (identifier)
+          msb: (number)
+          lsb: (number))))
+    (continuous_assign
+      (assignment
+        left: (identifier)
+        right: (part_select
+          value: (identifier)
+          base: (identifier)
+          width: (number))))
+    (continuous_assign
+      (assignment
+        left: (identifier)
+        right: (part_select
+          value: (identifier)
+          base: (identifier)
+          width: (number))))
+    (continuous_assign
+      (assignment
+        left: (identifier)
+        right: (bit_select
+          value: (bit_select
+            value: (identifier)
+            index: (identifier))
+          index: (identifier))))
+    (continuous_assign
+      (assignment
+        left: (identifier)
+        right: (hierarchical_identifier
+          scope: (hierarchical_identifier
+            scope: (identifier)
+            name: (identifier))
+          name: (identifier))))
+    (continuous_assign
+      (assignment
+        left: (identifier)
+        right: (hierarchical_identifier
+          scope: (hierarchical_identifier
+            scope: (bit_select
+              value: (identifier)
+              index: (number))
+            name: (identifier))
+          name: (identifier))))
+    (continuous_assign
+      (assignment
+        left: (identifier)
+        right: (escaped_identifier)))))
+
+================================================================================
+Concatenation and calls
+================================================================================
+
+module m;
+  assign a = {b, c[1:0], 2'b0};
+  assign d = {4{e}};
+  assign f = g(h, i);
+  assign j = $clog2(W) + $time;
+  assign k = (l);
+  assign l = (1:2:3);
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (continuous_assign
+      (assignment
+        left: (identifier)
+        right: (concatenation
+          (identifier)
+          (part_select
+            value: (identifier)
+            msb: (number)
+            lsb: (number))
+          (number))))
+    (continuous_assign
+      (assignment
+        left: (identifier)
+        right: (replication
+          count: (number)
+          value: (concatenation
+            (identifier)))))
+    (continuous_assign
+      (assignment
+        left: (identifier)
+        right: (function_call
+          function: (identifier)
+          arguments: (argument_list
+            (identifier)
+            (identifier)))))
+    (continuous_assign
+      (assignment
+        left: (identifier)
+        right: (binary_expression
+          left: (system_function_call
+            function: (system_identifier)
+            arguments: (argument_list
+              (identifier)))
+          right: (system_function_call
+            function: (system_identifier)))))
+    (continuous_assign
+      (assignment
+        left: (identifier)
+        right: (parenthesized_expression
+          (identifier))))
+    (continuous_assign
+      (assignment
+        left: (identifier)
+        right: (parenthesized_expression
+          (mintypmax_expression
+            min: (number)
+            typ: (number)
+            max: (number)))))))

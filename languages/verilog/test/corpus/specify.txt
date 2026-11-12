@@ -1,0 +1,215 @@
+================================================================================
+Specify block
+================================================================================
+
+module m;
+  specify
+    specparam tRise = 1:2:3, PATHPULSE$ = (1, 2);
+    (a => b) = 1;
+    (a, b *> c, d) = (1, 2, 3);
+    if (en) (posedge clk => (q +: d)) = (1:2:3, 4:5:6);
+    ifnone (a -=> b) = 2;
+    showcancelled q;
+  endspecify
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (specify_block
+      (specparam_declaration
+        (specparam_assignment
+          name: (identifier)
+          value: (mintypmax_expression
+            min: (number)
+            typ: (number)
+            max: (number)))
+        (specparam_assignment
+          name: (identifier)
+          value: (pulse_control
+            reject: (number)
+            error: (number))))
+      (path_declaration
+        source: (identifier)
+        destination: (identifier)
+        delay: (path_delay_value
+          (number)))
+      (path_declaration
+        source: (identifier)
+        source: (identifier)
+        destination: (identifier)
+        destination: (identifier)
+        delay: (path_delay_value
+          (number)
+          (number)
+          (number)))
+      (path_declaration
+        condition: (identifier)
+        source: (identifier)
+        destination: (identifier)
+        data_source: (identifier)
+        delay: (path_delay_value
+          (mintypmax_expression
+            min: (number)
+            typ: (number)
+            max: (number))
+          (mintypmax_expression
+            min: (number)
+            typ: (number)
+            max: (number))))
+      (path_declaration
+        source: (identifier)
+        destination: (identifier)
+        delay: (path_delay_value
+          (number)))
+      (showcancelled_declaration
+        (identifier)))))
+
+================================================================================
+Timing checks
+================================================================================
+
+module m;
+  specify
+    $setup(d, posedge clk &&& en, 10, notifier);
+    $hold(posedge clk, d, 2);
+    $width(edge [01, x1] clk, 5);
+  endspecify
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (specify_block
+      (system_timing_check
+        name: (system_identifier)
+        (identifier)
+        (timing_check_event
+          signal: (identifier)
+          condition: (identifier))
+        (number)
+        (identifier))
+      (system_timing_check
+        name: (system_identifier)
+        (timing_check_event
+          signal: (identifier))
+        (identifier)
+        (number))
+      (system_timing_check
+        name: (system_identifier)
+        (timing_check_event
+          edge: (edge_control_specifier
+            (edge_descriptor)
+            (edge_descriptor))
+          signal: (identifier))
+        (number)))))
+
+================================================================================
+Combinational primitive
+================================================================================
+
+primitive mux (y, s, a, b);
+  output y;
+  input s, a, b;
+  table
+    0 1 ? : 1;
+    0 0 ? : 0;
+    1 ? 1 : 1;
+  endtable
+endprimitive
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (udp_declaration
+    name: (identifier)
+    ports: (port_list
+      (identifier)
+      (identifier)
+      (identifier)
+      (identifier))
+    (port_declaration
+      declarator: (identifier))
+    (port_declaration
+      declarator: (identifier)
+      declarator: (identifier)
+      declarator: (identifier))
+    (udp_table
+      (table_entry
+        inputs: (table_inputs
+          (level_symbol)
+          (level_symbol)
+          (level_symbol))
+        output: (level_symbol))
+      (table_entry
+        inputs: (table_inputs
+          (level_symbol)
+          (level_symbol)
+          (level_symbol))
+        output: (level_symbol))
+      (table_entry
+        inputs: (table_inputs
+          (level_symbol)
+          (level_symbol)
+          (level_symbol))
+        output: (level_symbol)))))
+
+================================================================================
+Sequential primitive
+================================================================================
+
+primitive dff (output reg q, input d, clk);
+  initial q = 1'b0;
+  table
+    ? (01) : ? : -;
+    0 r : ? : 0 ;
+    1r:?:1;
+    * ? : ? : x;
+  endtable
+endprimitive
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (udp_declaration
+    name: (identifier)
+    ports: (port_list
+      (port_declaration
+        name: (identifier))
+      (port_declaration
+        name: (identifier))
+      (identifier))
+    (udp_initial_statement
+      name: (identifier)
+      value: (number))
+    (udp_table
+      (table_entry
+        inputs: (table_inputs
+          (level_symbol)
+          (edge_indicator
+            (level_symbol)
+            (level_symbol)))
+        current_state: (level_symbol)
+        next_state: (no_change))
+      (table_entry
+        inputs: (table_inputs
+          (level_symbol)
+          (edge_symbol))
+        current_state: (level_symbol)
+        next_state: (level_symbol))
+      (table_entry
+        inputs: (table_inputs
+          (level_symbol)
+          (edge_symbol))
+        current_state: (level_symbol)
+        next_state: (level_symbol))
+      (table_entry
+        inputs: (table_inputs
+          (edge_symbol)
+          (level_symbol))
+        current_state: (level_symbol)
+        next_state: (level_symbol)))))

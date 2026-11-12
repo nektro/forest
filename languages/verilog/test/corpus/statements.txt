@@ -1,0 +1,430 @@
+================================================================================
+Always blocks
+================================================================================
+
+module m;
+  always @(posedge clk or negedge rst_n)
+    if (!rst_n) q <= 0;
+    else q <= d;
+  always @* y = a;
+  always @(*) y = a;
+  always @(a, b) y = a & b;
+  always #5 clk = ~clk;
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (always_construct
+      body: (timing_control_statement
+        control: (event_control
+          (event_or
+            left: (edge_event
+              signal: (identifier))
+            right: (edge_event
+              signal: (identifier))))
+        body: (if_statement
+          condition: (unary_expression
+            operand: (identifier))
+          consequence: (nonblocking_assignment
+            left: (identifier)
+            right: (number))
+          alternative: (nonblocking_assignment
+            left: (identifier)
+            right: (identifier)))))
+    (always_construct
+      body: (timing_control_statement
+        control: (event_control)
+        body: (blocking_assignment
+          left: (identifier)
+          right: (identifier))))
+    (always_construct
+      body: (timing_control_statement
+        control: (event_control)
+        body: (blocking_assignment
+          left: (identifier)
+          right: (identifier))))
+    (always_construct
+      body: (timing_control_statement
+        control: (event_control
+          (event_or
+            left: (identifier)
+            right: (identifier)))
+        body: (blocking_assignment
+          left: (identifier)
+          right: (binary_expression
+            left: (identifier)
+            right: (identifier)))))
+    (always_construct
+      body: (timing_control_statement
+        control: (delay
+          (number))
+        body: (blocking_assignment
+          left: (identifier)
+          right: (unary_expression
+            operand: (identifier)))))))
+
+================================================================================
+Assignments
+================================================================================
+
+module m;
+  initial begin
+    a = 1;
+    b <= 2;
+    c = #1 d;
+    e <= @(posedge clk) f;
+    g = repeat (2) @(posedge clk) h;
+    {i, j[3:0]} = k;
+    top.u.x = 0;
+  end
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (initial_construct
+      body: (seq_block
+        (blocking_assignment
+          left: (identifier)
+          right: (number))
+        (nonblocking_assignment
+          left: (identifier)
+          right: (number))
+        (blocking_assignment
+          left: (identifier)
+          control: (delay
+            (number))
+          right: (identifier))
+        (nonblocking_assignment
+          left: (identifier)
+          control: (event_control
+            (edge_event
+              signal: (identifier)))
+          right: (identifier))
+        (blocking_assignment
+          left: (identifier)
+          control: (repeat_event_control
+            count: (number)
+            event: (event_control
+              (edge_event
+                signal: (identifier))))
+          right: (identifier))
+        (blocking_assignment
+          left: (concatenation
+            (identifier)
+            (part_select
+              value: (identifier)
+              msb: (number)
+              lsb: (number)))
+          right: (identifier))
+        (blocking_assignment
+          left: (hierarchical_identifier
+            scope: (hierarchical_identifier
+              scope: (identifier)
+              name: (identifier))
+            name: (identifier))
+          right: (number))))))
+
+================================================================================
+Procedural continuous assignments
+================================================================================
+
+module m;
+  initial begin
+    assign q = 1;
+    deassign q;
+    force a.b = 0;
+    release a.b;
+  end
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (initial_construct
+      body: (seq_block
+        (procedural_continuous_assignment
+          (assignment
+            left: (identifier)
+            right: (number)))
+        (procedural_continuous_assignment
+          left: (identifier))
+        (procedural_continuous_assignment
+          (assignment
+            left: (hierarchical_identifier
+              scope: (identifier)
+              name: (identifier))
+            right: (number)))
+        (procedural_continuous_assignment
+          left: (hierarchical_identifier
+            scope: (identifier)
+            name: (identifier)))))))
+
+================================================================================
+Conditionals
+================================================================================
+
+module m;
+  initial begin
+    if (a) b = 1;
+    if (a) if (b) c = 1; else c = 2;
+    case (sel)
+      2'b00, 2'b01: q = d;
+      default: ;
+    endcase
+    casez (x) 4'b1???: y = 1; endcase
+    casex (x) default q = 0; endcase
+  end
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (initial_construct
+      body: (seq_block
+        (if_statement
+          condition: (identifier)
+          consequence: (blocking_assignment
+            left: (identifier)
+            right: (number)))
+        (if_statement
+          condition: (identifier)
+          consequence: (if_statement
+            condition: (identifier)
+            consequence: (blocking_assignment
+              left: (identifier)
+              right: (number))
+            alternative: (blocking_assignment
+              left: (identifier)
+              right: (number))))
+        (case_statement
+          value: (identifier)
+          (case_item
+            match: (number)
+            match: (number)
+            body: (blocking_assignment
+              left: (identifier)
+              right: (identifier)))
+          (case_item
+            body: (null_statement)))
+        (case_statement
+          value: (identifier)
+          (case_item
+            match: (number)
+            body: (blocking_assignment
+              left: (identifier)
+              right: (number))))
+        (case_statement
+          value: (identifier)
+          (case_item
+            body: (blocking_assignment
+              left: (identifier)
+              right: (number))))))))
+
+================================================================================
+Loops
+================================================================================
+
+module m;
+  initial begin
+    for (i = 0; i < 4; i = i + 1) mem[i] = 0;
+    while (i > 0) i = i - 1;
+    repeat (3) @(posedge clk);
+    forever #5 clk = ~clk;
+  end
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (initial_construct
+      body: (seq_block
+        (for_statement
+          initializer: (assignment
+            left: (identifier)
+            right: (number))
+          condition: (binary_expression
+            left: (identifier)
+            right: (number))
+          update: (assignment
+            left: (identifier)
+            right: (binary_expression
+              left: (identifier)
+              right: (number)))
+          body: (blocking_assignment
+            left: (bit_select
+              value: (identifier)
+              index: (identifier))
+            right: (number)))
+        (while_statement
+          condition: (binary_expression
+            left: (identifier)
+            right: (number))
+          body: (blocking_assignment
+            left: (identifier)
+            right: (binary_expression
+              left: (identifier)
+              right: (number))))
+        (repeat_statement
+          count: (number)
+          body: (timing_control_statement
+            control: (event_control
+              (edge_event
+                signal: (identifier)))
+            body: (null_statement)))
+        (forever_statement
+          body: (timing_control_statement
+            control: (delay
+              (number))
+            body: (blocking_assignment
+              left: (identifier)
+              right: (unary_expression
+                operand: (identifier)))))))))
+
+================================================================================
+Blocks
+================================================================================
+
+module m;
+  initial begin : named
+    reg [3:0] tmp;
+    fork : f
+      #1 x = 1;
+      #2 y = 2;
+    join
+  end
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (initial_construct
+      body: (seq_block
+        name: (identifier)
+        (variable_declaration
+          range: (range
+            msb: (number)
+            lsb: (number))
+          declarator: (identifier))
+        (par_block
+          name: (identifier)
+          (timing_control_statement
+            control: (delay
+              (number))
+            body: (blocking_assignment
+              left: (identifier)
+              right: (number)))
+          (timing_control_statement
+            control: (delay
+              (number))
+            body: (blocking_assignment
+              left: (identifier)
+              right: (number))))))))
+
+================================================================================
+Timing and events
+================================================================================
+
+module m;
+  initial begin
+    #10;
+    #(1:2:3) a = 1;
+    @(e);
+    @e;
+    wait (done) -> e;
+    disable named;
+  end
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (initial_construct
+      body: (seq_block
+        (timing_control_statement
+          control: (delay
+            (number))
+          body: (null_statement))
+        (timing_control_statement
+          control: (delay
+            (mintypmax_expression
+              min: (number)
+              typ: (number)
+              max: (number)))
+          body: (blocking_assignment
+            left: (identifier)
+            right: (number)))
+        (timing_control_statement
+          control: (event_control
+            (identifier))
+          body: (null_statement))
+        (timing_control_statement
+          control: (event_control
+            (identifier))
+          body: (null_statement))
+        (wait_statement
+          condition: (identifier)
+          body: (event_trigger
+            name: (identifier)))
+        (disable_statement
+          name: (identifier))))))
+
+================================================================================
+Task calls
+================================================================================
+
+module m;
+  initial begin
+    my_task;
+    my_task(a, b);
+    top.t(1);
+    $display("x=%d", x, , $time);
+    $finish;
+  end
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (initial_construct
+      body: (seq_block
+        (task_enable
+          name: (identifier))
+        (task_enable
+          name: (identifier)
+          arguments: (argument_list
+            (identifier)
+            (identifier)))
+        (task_enable
+          name: (hierarchical_identifier
+            scope: (identifier)
+            name: (identifier))
+          arguments: (argument_list
+            (number)))
+        (system_task_enable
+          name: (system_identifier)
+          arguments: (argument_list
+            (string
+              (string_content))
+            (identifier)
+            (system_function_call
+              function: (system_identifier))))
+        (system_task_enable
+          name: (system_identifier))))))

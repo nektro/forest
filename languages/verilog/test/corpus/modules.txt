@@ -1,0 +1,404 @@
+================================================================================
+Empty module
+================================================================================
+
+module m;
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)))
+
+================================================================================
+Non-ANSI ports
+================================================================================
+
+module m(a, b[3:0], {c, d}, .e(f), , g);
+  input a;
+  output [3:0] b;
+  inout c, d;
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    ports: (port_list
+      (identifier)
+      (port
+        expression: (part_select
+          value: (identifier)
+          msb: (number)
+          lsb: (number)))
+      (port
+        expression: (concatenation
+          (identifier)
+          (identifier)))
+      (port
+        name: (identifier)
+        expression: (identifier))
+      (identifier))
+    (port_declaration
+      declarator: (identifier))
+    (port_declaration
+      range: (range
+        msb: (number)
+        lsb: (number))
+      declarator: (identifier))
+    (port_declaration
+      declarator: (identifier)
+      declarator: (identifier))))
+
+================================================================================
+ANSI ports and parameters
+================================================================================
+
+module m #(parameter W = 8, N = 2, parameter signed [3:0] S = -1)
+  (input wire clk, rst,
+   input [W-1:0] d,
+   output reg [W-1:0] q = 0,
+   output integer n);
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    parameters: (parameter_port_list
+      (parameter_declaration
+        (parameter_assignment
+          name: (identifier)
+          value: (number)))
+      (parameter_assignment
+        name: (identifier)
+        value: (number))
+      (parameter_declaration
+        range: (range
+          msb: (number)
+          lsb: (number))
+        (parameter_assignment
+          name: (identifier)
+          value: (unary_expression
+            operand: (number)))))
+    ports: (port_list
+      (port_declaration
+        name: (identifier))
+      (identifier)
+      (port_declaration
+        range: (range
+          msb: (binary_expression
+            left: (identifier)
+            right: (number))
+          lsb: (number))
+        name: (identifier))
+      (port_declaration
+        range: (range
+          msb: (binary_expression
+            left: (identifier)
+            right: (number))
+          lsb: (number))
+        name: (identifier)
+        value: (number))
+      (port_declaration
+        name: (identifier)))))
+
+================================================================================
+Attributes
+================================================================================
+
+(* keep, mode = "fast" *) module m;
+  (* full_case *) wire w;
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    (attribute_instance
+      (attribute_spec
+        name: (identifier))
+      (attribute_spec
+        name: (identifier)
+        value: (string
+          (string_content))))
+    name: (identifier)
+    (net_declaration
+      (attribute_instance
+        (attribute_spec
+          name: (identifier)))
+      declarator: (identifier))))
+
+================================================================================
+Module instances
+================================================================================
+
+module top;
+  sub u1 (.clk(clk), .q(), .d(d[3]));
+  sub #(.W(8), .N()) u2 (a, , b), u3 (c, d);
+  sub #8 u4 [3:0] ((* attr *) a, b);
+  udp_and (y, a, b);
+  defparam u1.W = 16;
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (module_instantiation
+      type: (identifier)
+      (instance
+        name: (identifier)
+        ports: (port_connection_list
+          (named_port_connection
+            name: (identifier)
+            value: (identifier))
+          (named_port_connection
+            name: (identifier))
+          (named_port_connection
+            name: (identifier)
+            value: (bit_select
+              value: (identifier)
+              index: (number))))))
+    (module_instantiation
+      type: (identifier)
+      parameters: (parameter_value_assignment
+        (named_parameter_assignment
+          name: (identifier)
+          value: (number))
+        (named_parameter_assignment
+          name: (identifier)))
+      (instance
+        name: (identifier)
+        ports: (port_connection_list
+          (identifier)
+          (identifier)))
+      (instance
+        name: (identifier)
+        ports: (port_connection_list
+          (identifier)
+          (identifier))))
+    (module_instantiation
+      type: (identifier)
+      parameters: (parameter_value_assignment
+        (number))
+      (instance
+        name: (identifier)
+        range: (range
+          msb: (number)
+          lsb: (number))
+        ports: (port_connection_list
+          (attribute_instance
+            (attribute_spec
+              name: (identifier)))
+          (identifier)
+          (identifier))))
+    (module_instantiation
+      type: (identifier)
+      (instance
+        ports: (port_connection_list
+          (identifier)
+          (identifier)
+          (identifier))))
+    (defparam_declaration
+      (defparam_assignment
+        name: (hierarchical_identifier
+          scope: (identifier)
+          name: (identifier))
+        value: (number)))))
+
+================================================================================
+Gates
+================================================================================
+
+module m;
+  and #3 g1 (y, a, b), g2 (z, c, d);
+  bufif0 (strong0, weak1) (o, i, en);
+  pullup (p);
+  nmos #(1, 2) (out, data, ctl);
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (gate_instantiation
+      delay: (delay
+        (number))
+      (instance
+        name: (identifier)
+        ports: (port_connection_list
+          (identifier)
+          (identifier)
+          (identifier)))
+      (instance
+        name: (identifier)
+        ports: (port_connection_list
+          (identifier)
+          (identifier)
+          (identifier))))
+    (gate_instantiation
+      strength: (strength)
+      (instance
+        ports: (port_connection_list
+          (identifier)
+          (identifier)
+          (identifier))))
+    (gate_instantiation
+      (instance
+        ports: (port_connection_list
+          (identifier))))
+    (gate_instantiation
+      delay: (delay
+        (number)
+        (number))
+      (instance
+        ports: (port_connection_list
+          (identifier)
+          (identifier)
+          (identifier))))))
+
+================================================================================
+Generate constructs
+================================================================================
+
+module m;
+  genvar i;
+  generate
+    for (i = 0; i < 4; i = i + 1) begin : gen
+      assign a[i] = b[i];
+    end
+  endgenerate
+  if (W > 8) begin : wide
+    wire x;
+  end else
+    wire y;
+  case (N)
+    1, 2: assign c = 0;
+    default: begin end
+  endcase
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (genvar_declaration
+      name: (identifier))
+    (generate_region
+      (loop_generate_construct
+        initializer: (genvar_initialization
+          name: (identifier)
+          value: (number))
+        condition: (binary_expression
+          left: (identifier)
+          right: (number))
+        update: (genvar_iteration
+          name: (identifier)
+          value: (binary_expression
+            left: (identifier)
+            right: (number)))
+        body: (generate_block
+          name: (identifier)
+          (continuous_assign
+            (assignment
+              left: (bit_select
+                value: (identifier)
+                index: (identifier))
+              right: (bit_select
+                value: (identifier)
+                index: (identifier)))))))
+    (if_generate_construct
+      condition: (binary_expression
+        left: (identifier)
+        right: (number))
+      consequence: (generate_block
+        name: (identifier)
+        (net_declaration
+          declarator: (identifier)))
+      alternative: (net_declaration
+        declarator: (identifier)))
+    (case_generate_construct
+      value: (identifier)
+      (case_generate_item
+        match: (number)
+        match: (number)
+        body: (continuous_assign
+          (assignment
+            left: (identifier)
+            right: (number))))
+      (case_generate_item
+        body: (generate_block)))))
+
+================================================================================
+Configuration
+================================================================================
+
+config cfg;
+  design work.top;
+  default liblist work lib2;
+  instance top.u1 use lib2.sub;
+  cell sub liblist lib3;
+  cell lib.adder use gates.adder:config;
+endconfig
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (config_declaration
+    name: (identifier)
+    (design_statement
+      (cell_reference
+        library: (identifier)
+        cell: (identifier)))
+    (default_clause
+      (liblist_clause
+        (identifier)
+        (identifier)))
+    (instance_clause
+      name: (hierarchical_identifier
+        scope: (identifier)
+        name: (identifier))
+      (use_clause
+        (cell_reference
+          library: (identifier)
+          cell: (identifier))))
+    (cell_clause
+      name: (cell_reference
+        cell: (identifier))
+      (liblist_clause
+        (identifier)))
+    (cell_clause
+      name: (cell_reference
+        library: (identifier)
+        cell: (identifier))
+      (use_clause
+        (cell_reference
+          library: (identifier)
+          cell: (identifier))))))
+
+================================================================================
+Items outside a module
+================================================================================
+
+function f;
+  input a;
+  f = a;
+endfunction
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    (port_declaration
+      declarator: (identifier))
+    (blocking_assignment
+      left: (identifier)
+      right: (identifier))))

@@ -1,0 +1,257 @@
+================================================================================
+Nets
+================================================================================
+
+module m;
+  wire a, b = 1, c;
+  wire signed [7:0] s;
+  wire (strong0, weak1) #(1:2:3, 4) w;
+  tri vectored [3:0] t;
+  trireg (small) tr;
+  supply0 gnd;
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (net_declaration
+      declarator: (identifier)
+      declarator: (declarator
+        name: (identifier)
+        value: (number))
+      declarator: (identifier))
+    (net_declaration
+      range: (range
+        msb: (number)
+        lsb: (number))
+      declarator: (identifier))
+    (net_declaration
+      strength: (strength)
+      delay: (delay
+        (mintypmax_expression
+          min: (number)
+          typ: (number)
+          max: (number))
+        (number))
+      declarator: (identifier))
+    (net_declaration
+      range: (range
+        msb: (number)
+        lsb: (number))
+      declarator: (identifier))
+    (net_declaration
+      strength: (strength)
+      declarator: (identifier))
+    (net_declaration
+      declarator: (identifier))))
+
+================================================================================
+Variables
+================================================================================
+
+module m;
+  reg r;
+  reg signed [7:0] mem [0:255], other;
+  integer i = 0, j;
+  real x = 1.5e-3;
+  realtime rt;
+  time t;
+  event e1, e2;
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (variable_declaration
+      declarator: (identifier))
+    (variable_declaration
+      range: (range
+        msb: (number)
+        lsb: (number))
+      declarator: (declarator
+        name: (identifier)
+        dimension: (range
+          msb: (number)
+          lsb: (number)))
+      declarator: (identifier))
+    (variable_declaration
+      declarator: (declarator
+        name: (identifier)
+        value: (number))
+      declarator: (identifier))
+    (variable_declaration
+      declarator: (declarator
+        name: (identifier)
+        value: (real_number)))
+    (variable_declaration
+      declarator: (identifier))
+    (variable_declaration
+      declarator: (identifier))
+    (event_declaration
+      declarator: (identifier)
+      declarator: (identifier))))
+
+================================================================================
+Parameters
+================================================================================
+
+module m;
+  parameter A = 1, B = A * 2;
+  parameter [7:0] C = 8'hFF;
+  parameter real D = 1.0;
+  localparam integer E = 1 << 4;
+  localparam F = 1:2:3;
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (parameter_declaration
+      (parameter_assignment
+        name: (identifier)
+        value: (number))
+      (parameter_assignment
+        name: (identifier)
+        value: (binary_expression
+          left: (identifier)
+          right: (number))))
+    (parameter_declaration
+      range: (range
+        msb: (number)
+        lsb: (number))
+      (parameter_assignment
+        name: (identifier)
+        value: (number)))
+    (parameter_declaration
+      (parameter_assignment
+        name: (identifier)
+        value: (real_number)))
+    (local_parameter_declaration
+      (parameter_assignment
+        name: (identifier)
+        value: (binary_expression
+          left: (number)
+          right: (number))))
+    (local_parameter_declaration
+      (parameter_assignment
+        name: (identifier)
+        value: (mintypmax_expression
+          min: (number)
+          typ: (number)
+          max: (number))))))
+
+================================================================================
+Functions
+================================================================================
+
+module m;
+  function automatic [7:0] add(input [7:0] x, y);
+    add = x + y;
+  endfunction
+
+  function integer clog2;
+    input integer v;
+    integer k;
+    begin
+      clog2 = 0;
+      for (k = v - 1; k > 0; k = k >> 1) clog2 = clog2 + 1;
+    end
+  endfunction
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (function_declaration
+      range: (range
+        msb: (number)
+        lsb: (number))
+      name: (identifier)
+      ports: (task_port_list
+        (port_declaration
+          range: (range
+            msb: (number)
+            lsb: (number))
+          name: (identifier))
+        (identifier))
+      (blocking_assignment
+        left: (identifier)
+        right: (binary_expression
+          left: (identifier)
+          right: (identifier))))
+    (function_declaration
+      name: (identifier)
+      (port_declaration
+        declarator: (identifier))
+      (variable_declaration
+        declarator: (identifier))
+      (seq_block
+        (blocking_assignment
+          left: (identifier)
+          right: (number))
+        (for_statement
+          initializer: (assignment
+            left: (identifier)
+            right: (binary_expression
+              left: (identifier)
+              right: (number)))
+          condition: (binary_expression
+            left: (identifier)
+            right: (number))
+          update: (assignment
+            left: (identifier)
+            right: (binary_expression
+              left: (identifier)
+              right: (number)))
+          body: (blocking_assignment
+            left: (identifier)
+            right: (binary_expression
+              left: (identifier)
+              right: (number))))))))
+
+================================================================================
+Tasks
+================================================================================
+
+module m;
+  task automatic tick(input integer n, output reg done);
+    repeat (n) @(posedge clk);
+  endtask
+
+  task reset;
+    rst = 1;
+  endtask
+endmodule
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (module_declaration
+    name: (identifier)
+    (task_declaration
+      name: (identifier)
+      ports: (task_port_list
+        (port_declaration
+          name: (identifier))
+        (port_declaration
+          name: (identifier)))
+      (repeat_statement
+        count: (identifier)
+        body: (timing_control_statement
+          control: (event_control
+            (edge_event
+              signal: (identifier)))
+          body: (null_statement))))
+    (task_declaration
+      name: (identifier)
+      (blocking_assignment
+        left: (identifier)
+        right: (number)))))
