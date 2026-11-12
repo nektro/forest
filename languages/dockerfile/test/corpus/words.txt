@@ -1,0 +1,229 @@
+================================================================================
+Quoted strings
+================================================================================
+
+ENV A="a \"quoted\" word" B='no $expansion here' C="$1 costs \$5"
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (env_instruction
+    (env_pair
+      name: (variable)
+      value: (value
+        (double_quoted_string
+          (escape_sequence)
+          (escape_sequence))))
+    (env_pair
+      name: (variable)
+      value: (value
+        (single_quoted_string)))
+    (env_pair
+      name: (variable)
+      value: (value
+        (double_quoted_string
+          (expansion
+            (variable))
+          (escape_sequence))))))
+
+================================================================================
+Expansions
+================================================================================
+
+ENV A=$B B=${C} C=${D:-default} D=${E:+alt} E=${F:?required message}
+ENV F=${G#prefix} G=${H##*/} H=${I%suffix} I=${J%%.*} J=${K/a/b} K=${L//a/b}
+ENV L=${M:-${N:-nested}}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (env_instruction
+    (env_pair
+      name: (variable)
+      value: (value
+        (expansion
+          (variable))))
+    (env_pair
+      name: (variable)
+      value: (value
+        (expansion
+          (variable))))
+    (env_pair
+      name: (variable)
+      value: (value
+        (expansion
+          (variable)
+          operator: (expansion_operator)
+          (expansion_word))))
+    (env_pair
+      name: (variable)
+      value: (value
+        (expansion
+          (variable)
+          operator: (expansion_operator)
+          (expansion_word))))
+    (env_pair
+      name: (variable)
+      value: (value
+        (expansion
+          (variable)
+          operator: (expansion_operator)
+          (expansion_word)))))
+  (env_instruction
+    (env_pair
+      name: (variable)
+      value: (value
+        (expansion
+          (variable)
+          operator: (expansion_operator)
+          (expansion_word))))
+    (env_pair
+      name: (variable)
+      value: (value
+        (expansion
+          (variable)
+          operator: (expansion_operator)
+          (expansion_word))))
+    (env_pair
+      name: (variable)
+      value: (value
+        (expansion
+          (variable)
+          operator: (expansion_operator)
+          (expansion_word))))
+    (env_pair
+      name: (variable)
+      value: (value
+        (expansion
+          (variable)
+          operator: (expansion_operator)
+          (expansion_word))))
+    (env_pair
+      name: (variable)
+      value: (value
+        (expansion
+          (variable)
+          operator: (expansion_operator)
+          (expansion_word))))
+    (env_pair
+      name: (variable)
+      value: (value
+        (expansion
+          (variable)
+          operator: (expansion_operator)
+          (expansion_word)))))
+  (env_instruction
+    (env_pair
+      name: (variable)
+      value: (value
+        (expansion
+          (variable)
+          operator: (expansion_operator)
+          (expansion
+            (variable)
+            operator: (expansion_operator)
+            (expansion_word)))))))
+
+================================================================================
+Concatenated words
+================================================================================
+
+ENV A=pre"quoted"$VAR'single'post
+COPY ./a$B"c d" /dest/
+WORKDIR /home/${USER}/src
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (env_instruction
+    (env_pair
+      name: (variable)
+      value: (value
+        (double_quoted_string)
+        (expansion
+          (variable))
+        (single_quoted_string))))
+  (copy_instruction
+    (path
+      (expansion
+        (variable))
+      (double_quoted_string))
+    (path))
+  (workdir_instruction
+    (path
+      (expansion
+        (variable)))))
+
+================================================================================
+Options with and without values
+================================================================================
+
+COPY --link --from=0 --chmod=0755 a b
+RUN --mount=type=bind,source=.,target=/src,rw true
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (copy_instruction
+    (param
+      name: (param_name))
+    (param
+      name: (param_name)
+      value: (value))
+    (param
+      name: (param_name)
+      value: (value))
+    (path)
+    (path))
+  (run_instruction
+    (param
+      name: (param_name)
+      value: (value))
+    (shell_command
+      (shell_fragment))))
+
+================================================================================
+Escaped spaces
+================================================================================
+
+ENV MY_DOG=Rex\ The\ Dog MY_CAT=fluffy
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (env_instruction
+    (env_pair
+      name: (variable)
+      value: (value))
+    (env_pair
+      name: (variable)
+      value: (value))))
+
+================================================================================
+Lone dollar signs
+================================================================================
+
+ENV A="cost $ 5 or $1" B=a$ C=${B}#${A}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (env_instruction
+    (env_pair
+      name: (variable)
+      value: (value
+        (double_quoted_string
+          (expansion)
+          (expansion
+            (variable)))))
+    (env_pair
+      name: (variable)
+      value: (value
+        (expansion)))
+    (env_pair
+      name: (variable)
+      value: (value
+        (expansion
+          (variable))
+        (expansion
+          (variable))))))

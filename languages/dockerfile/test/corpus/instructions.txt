@@ -1,0 +1,499 @@
+================================================================================
+Parser directives are comments
+================================================================================
+# syntax=docker/dockerfile:1
+# escape=\
+# check=skip=JSONArgsRecommended
+FROM alpine
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (comment)
+  (comment)
+  (comment)
+  (from_instruction
+    (image_spec
+      name: (image_name))))
+
+================================================================================
+FROM
+================================================================================
+
+FROM alpine
+FROM alpine:3.20
+FROM alpine@sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1
+FROM docker.io/library/alpine:3.20@sha256:4bcff639 AS base
+FROM localhost:5000/team/app:1.0
+FROM localhost:5000
+from scratch as empty
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (from_instruction
+    (image_spec
+      name: (image_name)))
+  (from_instruction
+    (image_spec
+      name: (image_name)
+      tag: (image_tag)))
+  (from_instruction
+    (image_spec
+      name: (image_name)
+      digest: (image_digest)))
+  (from_instruction
+    (image_spec
+      name: (image_name)
+      tag: (image_tag)
+      digest: (image_digest))
+    as: (image_alias))
+  (from_instruction
+    (image_spec
+      name: (image_name)
+      tag: (image_tag)))
+  (from_instruction
+    (image_spec
+      name: (image_name)
+      tag: (image_tag)))
+  (from_instruction
+    (image_spec
+      name: (image_name))
+    as: (image_alias)))
+
+================================================================================
+FROM with options and expansions
+================================================================================
+
+ARG BASE=alpine
+FROM --platform=$BUILDPLATFORM ${BASE}:${TAG:-latest} AS build-${TARGETARCH}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (arg_instruction
+    (arg_pair
+      name: (variable)
+      default: (value)))
+  (from_instruction
+    (param
+      name: (param_name)
+      value: (value
+        (expansion
+          (variable))))
+    (image_spec
+      name: (image_name
+        (expansion
+          (variable)))
+      tag: (image_tag
+        (expansion
+          (variable)
+          operator: (expansion_operator)
+          (expansion_word))))
+    as: (image_alias
+      (expansion
+        (variable)))))
+
+================================================================================
+ARG
+================================================================================
+
+ARG VERSION
+ARG VERSION=1.0
+ARG A=1 B= C
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (arg_instruction
+    (arg_pair
+      name: (variable)))
+  (arg_instruction
+    (arg_pair
+      name: (variable)
+      default: (value)))
+  (arg_instruction
+    (arg_pair
+      name: (variable)
+      default: (value))
+    (arg_pair
+      name: (variable))
+    (arg_pair
+      name: (variable))))
+
+================================================================================
+ENV
+================================================================================
+
+ENV A=1
+ENV B="two words" C='single' D=
+ENV PATH=/usr/local/bin:$PATH GOPATH=${HOME}/go
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (env_instruction
+    (env_pair
+      name: (variable)
+      value: (value)))
+  (env_instruction
+    (env_pair
+      name: (variable)
+      value: (value
+        (double_quoted_string)))
+    (env_pair
+      name: (variable)
+      value: (value
+        (single_quoted_string)))
+    (env_pair
+      name: (variable)))
+  (env_instruction
+    (env_pair
+      name: (variable)
+      value: (value
+        (expansion
+          (variable))))
+    (env_pair
+      name: (variable)
+      value: (value
+        (expansion
+          (variable))))))
+
+================================================================================
+ENV, deprecated form
+================================================================================
+
+ENV MY_NAME John Doe
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (env_instruction
+    (env_pair
+      name: (variable)
+      value: (value)
+      value: (value))))
+
+================================================================================
+LABEL
+================================================================================
+
+LABEL version=1.0
+LABEL "com.example.vendor"="ACME Inc" description="multi word"
+LABEL org.opencontainers.image.source=https://example.com/repo
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (label_instruction
+    (label_pair
+      key: (label_key)
+      value: (value)))
+  (label_instruction
+    (label_pair
+      key: (double_quoted_string)
+      value: (value
+        (double_quoted_string)))
+    (label_pair
+      key: (label_key)
+      value: (value
+        (double_quoted_string))))
+  (label_instruction
+    (label_pair
+      key: (label_key)
+      value: (value))))
+
+================================================================================
+LABEL, deprecated form
+================================================================================
+
+LABEL description some text
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (label_instruction
+    (label_pair
+      key: (label_key)
+      value: (value)
+      value: (value))))
+
+================================================================================
+MAINTAINER
+================================================================================
+
+MAINTAINER Jane Doe <jane@example.com>
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (maintainer_instruction
+    (value)))
+
+================================================================================
+EXPOSE
+================================================================================
+
+EXPOSE 80
+EXPOSE 80/tcp 443/udp 8000-8010 ${PORT}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (expose_instruction
+    (port))
+  (expose_instruction
+    (port)
+    (port)
+    (port)
+    (port
+      (expansion
+        (variable)))))
+
+================================================================================
+USER, WORKDIR, VOLUME, STOPSIGNAL
+================================================================================
+
+USER app
+USER ${UID}:${GID}
+WORKDIR /app
+WORKDIR "/path with spaces"
+VOLUME /var/log /var/db
+VOLUME ["/data"]
+STOPSIGNAL SIGTERM
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (user_instruction
+    (user))
+  (user_instruction
+    (user
+      (expansion
+        (variable))
+      (expansion
+        (variable))))
+  (workdir_instruction
+    (path))
+  (workdir_instruction
+    (path
+      (double_quoted_string)))
+  (volume_instruction
+    (path)
+    (path))
+  (volume_instruction
+    (json_string_array
+      (json_string)))
+  (stopsignal_instruction
+    (signal)))
+
+================================================================================
+COPY and ADD
+================================================================================
+
+COPY . .
+COPY --from=build --chown=app:app --chmod=755 /out/app /usr/local/bin/
+COPY --link --parents ./a/ ./b/ /dest/
+COPY ["file with space", "/dest/"]
+ADD https://example.com/archive.tar.gz /tmp/
+ADD --checksum=sha256:24454f830cdb571e2c4ad15481119c43b3cafd48dd869a9b2945d1036d1dc68d https://example.com/x /x
+ADD git@github.com:user/repo.git#main /src
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (copy_instruction
+    (path)
+    (path))
+  (copy_instruction
+    (param
+      name: (param_name)
+      value: (value))
+    (param
+      name: (param_name)
+      value: (value))
+    (param
+      name: (param_name)
+      value: (value))
+    (path)
+    (path))
+  (copy_instruction
+    (param
+      name: (param_name))
+    (param
+      name: (param_name))
+    (path)
+    (path)
+    (path))
+  (copy_instruction
+    (json_string_array
+      (json_string)
+      (json_string)))
+  (add_instruction
+    (path)
+    (path))
+  (add_instruction
+    (param
+      name: (param_name)
+      value: (value))
+    (path)
+    (path))
+  (add_instruction
+    (path)
+    (path)))
+
+================================================================================
+ONBUILD
+================================================================================
+
+ONBUILD ADD . /app/src
+ONBUILD RUN make
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (onbuild_instruction
+    (add_instruction
+      (path)
+      (path)))
+  (onbuild_instruction
+    (run_instruction
+      (shell_command
+        (shell_fragment)))))
+
+================================================================================
+Lower-case and indented instructions
+================================================================================
+
+  from alpine
+	run echo hi
+Copy a b
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (from_instruction
+    (image_spec
+      name: (image_name)))
+  (run_instruction
+    (shell_command
+      (shell_fragment)))
+  (copy_instruction
+    (path)
+    (path)))
+
+================================================================================
+Unknown instruction
+:error
+================================================================================
+
+FROM alpine
+FOO bar
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (from_instruction
+    (image_spec
+      name: (image_name)))
+  (ERROR
+    (variable)
+    (ERROR)
+    (variable)))
+
+================================================================================
+End of options
+================================================================================
+
+COPY -- foo /tmp/
+COPY --doit=true -- foo /tmp/
+RUN -- echo
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (copy_instruction
+    (path)
+    (path))
+  (copy_instruction
+    (param
+      name: (param_name)
+      value: (value))
+    (path)
+    (path))
+  (run_instruction
+    (shell_command
+      (shell_fragment))))
+
+================================================================================
+Arguments that take the rest of the line
+================================================================================
+
+WORKDIR /path with spaces
+WORKDIR ${FOO}   # WORKDIR /bar
+USER my user
+STOPSIGNAL SIG TERM
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (workdir_instruction
+    (path))
+  (workdir_instruction
+    (path
+      (expansion
+        (variable))))
+  (user_instruction
+    (user))
+  (stopsignal_instruction
+    (signal)))
+
+================================================================================
+ENV, LABEL and VOLUME --unset
+================================================================================
+
+ENV --unset FOO BAR
+ENV --unset=false FOO=bar
+LABEL --unset a ${name}
+VOLUME --unset /data /cache/
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (env_instruction
+    (param
+      name: (param_name))
+    (variable)
+    (variable))
+  (env_instruction
+    (param
+      name: (param_name)
+      value: (value))
+    (env_pair
+      name: (variable)
+      value: (value)))
+  (label_instruction
+    (param
+      name: (param_name))
+    (label_key)
+    (expansion
+      (variable)))
+  (volume_instruction
+    (param
+      name: (param_name))
+    (path)
+    (path)))
+
+================================================================================
+Words starting with [
+================================================================================
+
+EXPOSE 127.0.0.1:80:80 [::1]:8080:8080 5000:5000
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (expose_instruction
+    (port)
+    (port)
+    (port)))

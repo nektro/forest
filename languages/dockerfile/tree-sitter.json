@@ -1,0 +1,40 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "dockerfile",
+      "camelcase": "Dockerfile",
+      "title": "Dockerfile",
+      "scope": "source.dockerfile",
+      "file-types": [
+        "Dockerfile",
+        "dockerfile",
+        "Containerfile",
+        "containerfile"
+      ],
+      "highlights": "queries/highlights.scm",
+      "tags": "queries/tags.scm",
+      "injections": "queries/injections.scm",
+      "injection-regex": "^(dockerfile|containerfile)$",
+      "class-name": "TreeSitterDockerfile"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "Dockerfile grammar for tree-sitter",
+    "links": {
+      "repository": "https://github.com/OWNER/arborist"
+    }
+  },
+  "bindings": {
+    "c": false,
+    "go": false,
+    "java": false,
+    "node": false,
+    "python": false,
+    "rust": false,
+    "swift": false,
+    "zig": false
+  }
+}

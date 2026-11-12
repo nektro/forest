@@ -5,6 +5,7 @@ A bundle of tree-sitter grammars.
 | Language | Directory | External scanner |
 | --- | --- | --- |
 | CSS | [languages/css](languages/css) | none |
+| Dockerfile | [languages/dockerfile](languages/dockerfile) | none |
 | Go | [languages/go](languages/go) | none |
 | Java | [languages/java](languages/java) | none |
 | JSON (and JSONC, JSON Lines) | [languages/json](languages/json) | none |

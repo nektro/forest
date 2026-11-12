@@ -1,0 +1,171 @@
+================================================================================
+Line continuations
+================================================================================
+
+RUN apt-get update \
+    && apt-get install -y \
+      --no-install-recommends \
+      curl
+ENV A=1 \
+    B=2
+FROM \
+  alpine
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (run_instruction
+    (shell_command
+      (shell_fragment)
+      (shell_fragment)
+      (shell_fragment)
+      (shell_fragment)))
+  (env_instruction
+    (env_pair
+      name: (variable)
+      value: (value))
+    (env_pair
+      name: (variable)
+      value: (value)))
+  (from_instruction
+    (image_spec
+      name: (image_name))))
+
+================================================================================
+Comments and blank lines inside a continuation
+================================================================================
+
+RUN apt-get update \
+    # install the tools
+    && apt-get install -y curl \
+
+    && rm -rf /var/lib/apt/lists/*
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (run_instruction
+    (shell_command
+      (shell_fragment)
+      (comment)
+      (shell_fragment)
+      (shell_fragment))))
+
+================================================================================
+Continuation in exec form
+================================================================================
+
+ENTRYPOINT ["/app", \
+  "--flag"]
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (entrypoint_instruction
+    (json_string_array
+      (json_string)
+      (json_string))))
+
+================================================================================
+Trailing whitespace after a backslash
+================================================================================
+
+RUN echo a \  
+    b
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (run_instruction
+    (shell_command
+      (shell_fragment)
+      (shell_fragment))))
+
+================================================================================
+Comments
+================================================================================
+
+# leading comment
+  # indented comment
+FROM alpine
+# between instructions
+
+# after a blank line
+RUN true # not a comment
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (comment)
+  (comment)
+  (from_instruction
+    (image_spec
+      name: (image_name)))
+  (comment)
+  (comment)
+  (run_instruction
+    (shell_command
+      (shell_fragment))))
+
+================================================================================
+CRLF line endings
+================================================================================
+
+FROM alpine
+RUN echo a \
+  b
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (from_instruction
+    (image_spec
+      name: (image_name)))
+  (run_instruction
+    (shell_command
+      (shell_fragment)
+      (shell_fragment))))
+
+================================================================================
+Continuation inside a quoted string
+================================================================================
+
+LABEL description="This text illustrates \
+that label-values can span multiple lines."
+ENV name2="value2a \
+           value2b" name3=x
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (label_instruction
+    (label_pair
+      key: (label_key)
+      value: (value
+        (double_quoted_string
+          (line_continuation)))))
+  (env_instruction
+    (env_pair
+      name: (variable)
+      value: (value
+        (double_quoted_string
+          (line_continuation))))
+    (env_pair
+      name: (variable)
+      value: (value))))
+
+================================================================================
+Backslash at the end of the file
+================================================================================
+
+FROM alpine
+RUN something \
+--------------------------------------------------------------------------------
+
+(source_file
+  (from_instruction
+    (image_spec
+      name: (image_name)))
+  (run_instruction
+    (shell_command
+      (shell_fragment))))
