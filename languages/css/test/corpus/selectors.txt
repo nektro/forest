@@ -1,0 +1,332 @@
+================================================================================
+Type, class, id and universal selectors
+================================================================================
+
+a, .b, #c, * {}
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name)
+      (class_selector
+        name: (class_name))
+      (id_selector
+        name: (id_name))
+      (universal_selector))
+    body: (block)))
+
+================================================================================
+Compound selectors
+================================================================================
+
+a.b#c.d {}
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (class_selector
+        selector: (id_selector
+          selector: (class_selector
+            selector: (tag_name)
+            name: (class_name))
+          name: (id_name))
+        name: (class_name)))
+    body: (block)))
+
+================================================================================
+Descendant combinator is whitespace
+================================================================================
+
+a .b #c :hover [d] {}
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (descendant_selector
+        left: (descendant_selector
+          left: (descendant_selector
+            left: (descendant_selector
+              left: (tag_name)
+              right: (class_selector
+                name: (class_name)))
+            right: (id_selector
+              name: (id_name)))
+          right: (pseudo_class_selector
+            name: (class_name)))
+        right: (attribute_selector
+          name: (attribute_name))))
+    body: (block)))
+
+================================================================================
+Combinators
+================================================================================
+
+a > b + c ~ d || e {}
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (column_selector
+        left: (sibling_selector
+          left: (adjacent_sibling_selector
+            left: (child_selector
+              left: (tag_name)
+              right: (tag_name))
+            right: (tag_name))
+          right: (tag_name))
+        right: (tag_name)))
+    body: (block)))
+
+================================================================================
+Attribute selectors
+================================================================================
+
+[a], [b=c], [d~="e"], [f|=g i], [h^=i], [j$=k], [l*=m s], [svg|href], [*|n] {}
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (attribute_selector
+        name: (attribute_name))
+      (attribute_selector
+        name: (attribute_name)
+        value: (plain_value))
+      (attribute_selector
+        name: (attribute_name)
+        value: (string_value
+          (string_content)))
+      (attribute_selector
+        name: (attribute_name)
+        value: (plain_value)
+        flag: (plain_value))
+      (attribute_selector
+        name: (attribute_name)
+        value: (plain_value))
+      (attribute_selector
+        name: (attribute_name)
+        value: (plain_value))
+      (attribute_selector
+        name: (attribute_name)
+        value: (plain_value)
+        flag: (plain_value))
+      (attribute_selector
+        namespace: (namespace_name)
+        name: (attribute_name))
+      (attribute_selector
+        namespace: (universal_selector)
+        name: (attribute_name)))
+    body: (block)))
+
+================================================================================
+Namespaces
+================================================================================
+
+svg|circle, *|*, |a {}
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (namespace_selector
+        namespace: (namespace_name)
+        name: (tag_name))
+      (namespace_selector
+        namespace: (universal_selector)
+        name: (universal_selector))
+      (namespace_selector
+        name: (tag_name)))
+    body: (block)))
+
+================================================================================
+Pseudo-classes
+================================================================================
+
+a:hover, :root, li:first-child:not(.x) {}
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (pseudo_class_selector
+        selector: (tag_name)
+        name: (class_name))
+      (pseudo_class_selector
+        name: (class_name))
+      (pseudo_class_selector
+        selector: (pseudo_class_selector
+          selector: (tag_name)
+          name: (class_name))
+        name: (class_name)
+        arguments: (arguments
+          (class_selector
+            name: (class_name)))))
+    body: (block)))
+
+================================================================================
+Pseudo-elements
+================================================================================
+
+p::first-line, ::part(label), ::slotted(*), a:before {}
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (pseudo_element_selector
+        selector: (tag_name)
+        name: (tag_name))
+      (pseudo_element_selector
+        name: (tag_name)
+        arguments: (arguments
+          (tag_name)))
+      (pseudo_element_selector
+        name: (tag_name)
+        arguments: (arguments
+          (universal_selector)))
+      (pseudo_class_selector
+        selector: (tag_name)
+        name: (class_name)))
+    body: (block)))
+
+================================================================================
+Selector list arguments
+================================================================================
+
+:is(h1, h2 > span), :where(.a .b), :has(> img, + p) {}
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (pseudo_class_selector
+        name: (class_name)
+        arguments: (arguments
+          (tag_name)
+          (child_selector
+            left: (tag_name)
+            right: (tag_name))))
+      (pseudo_class_selector
+        name: (class_name)
+        arguments: (arguments
+          (descendant_selector
+            left: (class_selector
+              name: (class_name))
+            right: (class_selector
+              name: (class_name)))))
+      (pseudo_class_selector
+        name: (class_name)
+        arguments: (arguments
+          (child_selector
+            right: (tag_name))
+          (adjacent_sibling_selector
+            right: (tag_name)))))
+    body: (block)))
+
+================================================================================
+An+B arguments
+================================================================================
+
+li:nth-child(2n+1), li:nth-child(-n + 3), li:nth-of-type(odd), li:nth-child(5), li:nth-child(n of .item) {}
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (pseudo_class_selector
+        selector: (tag_name)
+        name: (class_name)
+        arguments: (arguments
+          (an_plus_b)))
+      (pseudo_class_selector
+        selector: (tag_name)
+        name: (class_name)
+        arguments: (arguments
+          (an_plus_b)))
+      (pseudo_class_selector
+        selector: (tag_name)
+        name: (class_name)
+        arguments: (arguments
+          (an_plus_b)))
+      (pseudo_class_selector
+        selector: (tag_name)
+        name: (class_name)
+        arguments: (arguments
+          (an_plus_b)))
+      (pseudo_class_selector
+        selector: (tag_name)
+        name: (class_name)
+        arguments: (arguments
+          (an_plus_b)
+          (selectors
+            (class_selector
+              name: (class_name))))))
+    body: (block)))
+
+================================================================================
+String arguments
+================================================================================
+
+:lang("en") {}
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (pseudo_class_selector
+        name: (class_name)
+        arguments: (arguments
+          (string_value
+            (string_content)))))
+    body: (block)))
+
+================================================================================
+Escaped names
+================================================================================
+
+.\31 23, #a\:b, .\@ {}
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (class_selector
+        name: (class_name))
+      (id_selector
+        name: (id_name))
+      (class_selector
+        name: (class_name)))
+    body: (block)))
+
+================================================================================
+Comment between selectors
+================================================================================
+
+a/* x */b {}
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (descendant_selector
+        left: (tag_name)
+        (comment)
+        right: (tag_name)))
+    body: (block)))

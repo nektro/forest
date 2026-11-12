@@ -1,0 +1,45 @@
+@import url("a.css") screen;
+/* <- keyword.import */
+/*      ^ function */
+/*           ^ string */
+/*                   ^ constant */
+
+div.card > a:hover::before {
+/* <- tag */
+/*   ^ type */
+/*       ^ operator */
+/*           ^ type */
+/*                  ^ type */
+  --gap: 4px;
+/* ^ property */
+/*       ^ number */
+/*        ^ number */
+  margin: var(--gap) auto !important;
+/* ^ property */
+/*        ^ function */
+/*            ^ property */
+/*                    ^ constant */
+/*                         ^ keyword.modifier */
+  color: #0b5fff;
+/*       ^ constant */
+  content: "a\2192";
+/*           ^ string.escape */
+  &:focus { outline: none }
+/*^ character.special */
+}
+
+#main [data-x|="y"] {}
+/*^ constant */
+/*     ^ attribute */
+/*           ^ operator */
+
+@media not print and (width >= 40em) {}
+/* <- keyword */
+/*      ^ keyword.operator */
+/*          ^ constant */
+/*                    ^ constant */
+/*                          ^ operator */
+
+@keyframes spin { from { opacity: 0 } }
+/*          ^ label */
+/*                 ^ keyword */

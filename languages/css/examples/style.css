@@ -1,0 +1,40 @@
+@import url("reset.css") layer(reset);
+
+:root {
+  --accent: #0b5fff;
+  --radius: 0.5rem;
+}
+
+/* Cards nest their own states and children. */
+.card {
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  border-radius: var(--radius);
+  padding: calc(1rem + 2px) 1.5rem;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.15);
+  }
+
+  > h2::after {
+    content: "\2192";
+  }
+
+  @media (width >= 40em) {
+    display: grid;
+    grid-template-columns: [media] 12rem [body] 1fr;
+  }
+}
+
+a:not(.button):is(:hover, :focus-visible),
+li:nth-child(2n + 1 of .item) > input[type="checkbox" i] {
+  color: var(--accent) !important;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@container sidebar (min-width: 300px) {
+  .card { animation: fade-in 200ms ease-out both; }
+}

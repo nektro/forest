@@ -1,0 +1,368 @@
+================================================================================
+Charset, import and namespace
+================================================================================
+
+@charset "UTF-8";
+@import "a.css";
+@import url(b.css) layer(base) supports(display: grid) screen and (min-width: 1px), print;
+@namespace svg url(http://www.w3.org/2000/svg);
+@namespace "x";
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (charset_statement
+    (string_value
+      (string_content)))
+  (import_statement
+    source: (string_value
+      (string_content)))
+  (import_statement
+    source: (call_expression
+      name: (function_name)
+      arguments: (arguments
+        (plain_value)))
+    (call_expression
+      name: (function_name)
+      arguments: (arguments
+        (plain_value)))
+    (call_expression
+      name: (function_name)
+      arguments: (arguments
+        (plain_value)
+        (plain_value)))
+    (binary_query
+      left: (keyword_query)
+      right: (feature_query
+        feature: (feature_name)
+        value: (number_value
+          (unit))))
+    (keyword_query))
+  (namespace_statement
+    prefix: (namespace_name)
+    source: (call_expression
+      name: (function_name)
+      arguments: (arguments
+        (plain_value))))
+  (namespace_statement
+    source: (string_value
+      (string_content))))
+
+================================================================================
+Media queries
+================================================================================
+
+@media screen, print and (orientation: landscape) {}
+@media not all and (monochrome) {}
+@media only screen {}
+@media (400px <= width < 800px) {}
+@media (--narrow) {}
+@media {}
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (media_statement
+    (keyword_query)
+    (binary_query
+      left: (keyword_query)
+      right: (feature_query
+        feature: (feature_name)
+        value: (plain_value)))
+    body: (block))
+  (media_statement
+    (unary_query
+      argument: (binary_query
+        left: (keyword_query)
+        right: (parenthesized_query
+          (keyword_query))))
+    body: (block))
+  (media_statement
+    (unary_query
+      argument: (keyword_query))
+    body: (block))
+  (media_statement
+    (range_query
+      (number_value
+        (unit))
+      (plain_value)
+      (number_value
+        (unit)))
+    body: (block))
+  (media_statement
+    (parenthesized_query
+      (keyword_query))
+    body: (block))
+  (media_statement
+    body: (block)))
+
+================================================================================
+Supports
+================================================================================
+
+@supports (display: grid) and (not (display: inline-grid)) {}
+@supports selector(a > b) or font-tech(color-COLRv1) {}
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (supports_statement
+    (binary_query
+      left: (feature_query
+        feature: (feature_name)
+        value: (plain_value))
+      right: (parenthesized_query
+        (unary_query
+          argument: (feature_query
+            feature: (feature_name)
+            value: (plain_value)))))
+    body: (block))
+  (supports_statement
+    (binary_query
+      left: (selector_query
+        (child_selector
+          left: (tag_name)
+          right: (tag_name)))
+      right: (call_expression
+        name: (function_name)
+        arguments: (arguments
+          (plain_value))))
+    body: (block)))
+
+================================================================================
+Container queries
+================================================================================
+
+@container {}
+@container card {}
+@container card (min-width: 400px) {}
+@container (width > 400px) and style(--x: y) {}
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (container_statement
+    body: (block))
+  (container_statement
+    name: (container_name)
+    body: (block))
+  (container_statement
+    name: (container_name)
+    (feature_query
+      feature: (feature_name)
+      value: (number_value
+        (unit)))
+    body: (block))
+  (container_statement
+    (binary_query
+      left: (range_query
+        (plain_value)
+        (number_value
+          (unit)))
+      right: (call_expression
+        name: (function_name)
+        arguments: (arguments
+          (plain_value)
+          (plain_value))))
+    body: (block)))
+
+================================================================================
+Layers
+================================================================================
+
+@layer reset, base.components;
+@layer { a { b: c } }
+@layer theme { a { b: c } }
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (layer_statement
+    (layer_name)
+    (layer_name))
+  (layer_statement
+    body: (block
+      (rule_set
+        selectors: (selectors
+          (tag_name))
+        body: (block
+          (declaration
+            name: (property_name)
+            value: (plain_value))))))
+  (layer_statement
+    (layer_name)
+    body: (block
+      (rule_set
+        selectors: (selectors
+          (tag_name))
+        body: (block
+          (declaration
+            name: (property_name)
+            value: (plain_value)))))))
+
+================================================================================
+Scope
+================================================================================
+
+@scope (.card) to (.content) { img { b: c } }
+@scope { d { e: f } }
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (scope_statement
+    start: (selectors
+      (class_selector
+        name: (class_name)))
+    end: (selectors
+      (class_selector
+        name: (class_name)))
+    body: (block
+      (rule_set
+        selectors: (selectors
+          (tag_name))
+        body: (block
+          (declaration
+            name: (property_name)
+            value: (plain_value))))))
+  (scope_statement
+    body: (block
+      (rule_set
+        selectors: (selectors
+          (tag_name))
+        body: (block
+          (declaration
+            name: (property_name)
+            value: (plain_value)))))))
+
+================================================================================
+Page
+================================================================================
+
+@page { margin: 1in }
+@page :first { @top-left { content: "x" } }
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (page_statement
+    body: (block
+      (declaration
+        name: (property_name)
+        value: (number_value
+          (unit)))))
+  (page_statement
+    selectors: (selectors
+      (pseudo_class_selector
+        name: (class_name)))
+    body: (block
+      (at_rule
+        name: (at_keyword)
+        body: (block
+          (declaration
+            name: (property_name)
+            value: (string_value
+              (string_content))))))))
+
+================================================================================
+Keyframes
+================================================================================
+
+@keyframes spin { from { a: b } 50%, 75% { c: d } to { e: f } }
+@-webkit-keyframes "x" { entry 10% { g: h } }
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (keyframes_statement
+    name: (keyframes_name)
+    blocks: (keyframe_block_list
+      (keyframe_block
+        body: (block
+          (declaration
+            name: (property_name)
+            value: (plain_value))))
+      (keyframe_block
+        selector: (number_value
+          (unit))
+        selector: (number_value
+          (unit))
+        body: (block
+          (declaration
+            name: (property_name)
+            value: (plain_value))))
+      (keyframe_block
+        body: (block
+          (declaration
+            name: (property_name)
+            value: (plain_value))))))
+  (keyframes_statement
+    name: (string_value
+      (string_content))
+    blocks: (keyframe_block_list
+      (keyframe_block
+        selector: (plain_value)
+        selector: (number_value
+          (unit))
+        body: (block
+          (declaration
+            name: (property_name)
+            value: (plain_value)))))))
+
+================================================================================
+Other at-rules
+================================================================================
+
+@font-face { font-family: X; src: url(x.woff2) format("woff2"); }
+@property --x { syntax: '<length>'; inherits: false; }
+@custom-media --narrow (width < 30em);
+@starting-style { a { b: c } }
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (at_rule
+    name: (at_keyword)
+    body: (block
+      (declaration
+        name: (property_name)
+        value: (plain_value))
+      (declaration
+        name: (property_name)
+        value: (call_expression
+          name: (function_name)
+          arguments: (arguments
+            (plain_value)))
+        value: (call_expression
+          name: (function_name)
+          arguments: (arguments
+            (string_value
+              (string_content)))))))
+  (at_rule
+    name: (at_keyword)
+    prelude: (plain_value)
+    body: (block
+      (declaration
+        name: (property_name)
+        value: (string_value
+          (string_content)))
+      (declaration
+        name: (property_name)
+        value: (plain_value))))
+  (at_rule
+    name: (at_keyword)
+    prelude: (plain_value)
+    prelude: (parenthesized_value
+      (plain_value)
+      (number_value
+        (unit))))
+  (at_rule
+    name: (at_keyword)
+    body: (block
+      (rule_set
+        selectors: (selectors
+          (tag_name))
+        body: (block
+          (declaration
+            name: (property_name)
+            value: (plain_value)))))))

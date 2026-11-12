@@ -1,0 +1,116 @@
+================================================================================
+Nested rules
+================================================================================
+
+a { color: red; &:hover { color: blue } .b & { x: y } > c { d: e } }
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        name: (property_name)
+        value: (plain_value))
+      (rule_set
+        selectors: (selectors
+          (pseudo_class_selector
+            selector: (nesting_selector)
+            name: (class_name)))
+        body: (block
+          (declaration
+            name: (property_name)
+            value: (plain_value))))
+      (rule_set
+        selectors: (selectors
+          (descendant_selector
+            left: (class_selector
+              name: (class_name))
+            right: (nesting_selector)))
+        body: (block
+          (declaration
+            name: (property_name)
+            value: (plain_value))))
+      (rule_set
+        selectors: (selectors
+          (child_selector
+            right: (tag_name)))
+        body: (block
+          (declaration
+            name: (property_name)
+            value: (plain_value)))))))
+
+================================================================================
+Name and colon start a rule
+================================================================================
+
+a { b:hover { c: d } e:f; g :focus { h: i } }
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (rule_set
+        selectors: (selectors
+          (pseudo_class_selector
+            selector: (tag_name)
+            name: (class_name)))
+        body: (block
+          (declaration
+            name: (property_name)
+            value: (plain_value))))
+      (declaration
+        name: (property_name)
+        value: (plain_value))
+      (rule_set
+        selectors: (selectors
+          (descendant_selector
+            left: (tag_name)
+            right: (pseudo_class_selector
+              name: (class_name))))
+        body: (block
+          (declaration
+            name: (property_name)
+            value: (plain_value)))))))
+
+================================================================================
+Nested at-rules
+================================================================================
+
+.a { @media (width > 1px) { b: c } @supports (d: e) { .f { g: h } } }
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (class_selector
+        name: (class_name)))
+    body: (block
+      (media_statement
+        (range_query
+          (plain_value)
+          (number_value
+            (unit)))
+        body: (block
+          (declaration
+            name: (property_name)
+            value: (plain_value))))
+      (supports_statement
+        (feature_query
+          feature: (feature_name)
+          value: (plain_value))
+        body: (block
+          (rule_set
+            selectors: (selectors
+              (class_selector
+                name: (class_name)))
+            body: (block
+              (declaration
+                name: (property_name)
+                value: (plain_value)))))))))

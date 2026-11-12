@@ -1,0 +1,25 @@
+================================================================================
+Comments
+================================================================================
+
+/* a */
+a /* b */ { /* c */ d: /* e */ f; }
+/**/ /***/ /* * / **/
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (comment)
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    (comment)
+    body: (block
+      (comment)
+      (declaration
+        name: (property_name)
+        (comment)
+        value: (plain_value))))
+  (comment)
+  (comment)
+  (comment))

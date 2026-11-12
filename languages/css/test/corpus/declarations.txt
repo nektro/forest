@@ -1,0 +1,299 @@
+================================================================================
+Declarations
+================================================================================
+
+a { color: red; margin: 0 auto }
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        name: (property_name)
+        value: (plain_value))
+      (declaration
+        name: (property_name)
+        value: (number_value)
+        value: (plain_value)))))
+
+================================================================================
+Missing final semicolon and empty items
+================================================================================
+
+a { ; b: c;; d: e }
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        name: (property_name)
+        value: (plain_value))
+      (declaration
+        name: (property_name)
+        value: (plain_value)))))
+
+================================================================================
+Numbers and units
+================================================================================
+
+a { b: 1 -2 3.5 .5 +1e3 10px 50% 1.5em 2e-3s; }
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        name: (property_name)
+        value: (number_value)
+        value: (number_value)
+        value: (number_value)
+        value: (number_value)
+        value: (number_value)
+        value: (number_value
+          (unit))
+        value: (number_value
+          (unit))
+        value: (number_value
+          (unit))
+        value: (number_value
+          (unit))))))
+
+================================================================================
+Colors, strings and unicode ranges
+================================================================================
+
+a { b: #fff #0b5fff80 "x" 'y\'z' "\2192" U+0025-00FF u+4??; }
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        name: (property_name)
+        value: (color_value)
+        value: (color_value)
+        value: (string_value
+          (string_content))
+        value: (string_value
+          (string_content)
+          (escape_sequence)
+          (string_content))
+        value: (string_value
+          (escape_sequence))
+        value: (unicode_range)
+        value: (unicode_range)))))
+
+================================================================================
+Functions
+================================================================================
+
+a { b: calc(100% - 2 * var(--gap, 1px)) rgb(0 0 0 / 50%); }
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        name: (property_name)
+        value: (call_expression
+          name: (function_name)
+          arguments: (arguments
+            (number_value
+              (unit))
+            (number_value)
+            (call_expression
+              name: (function_name)
+              arguments: (arguments
+                (plain_value)
+                (number_value
+                  (unit))))))
+        value: (call_expression
+          name: (function_name)
+          arguments: (arguments
+            (number_value)
+            (number_value)
+            (number_value)
+            (number_value
+              (unit))))))))
+
+================================================================================
+URLs
+================================================================================
+
+a { b: url(a.png) url( "b.png" ) url(data:image/png;base64,iVBOR==) url(); }
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        name: (property_name)
+        value: (call_expression
+          name: (function_name)
+          arguments: (arguments
+            (plain_value)))
+        value: (call_expression
+          name: (function_name)
+          arguments: (arguments
+            (string_value
+              (string_content))))
+        value: (call_expression
+          name: (function_name)
+          arguments: (arguments
+            (plain_value)))
+        value: (call_expression
+          name: (function_name)
+          arguments: (arguments))))))
+
+================================================================================
+Slashes and commas
+================================================================================
+
+a { font: 12px/1.5 "Helvetica Neue", sans-serif; }
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        name: (property_name)
+        value: (number_value
+          (unit))
+        value: (number_value)
+        value: (string_value
+          (string_content))
+        value: (plain_value)))))
+
+================================================================================
+Important
+================================================================================
+
+a { b: c !important; d: e ! IMPORTANT }
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        name: (property_name)
+        value: (plain_value)
+        (important))
+      (declaration
+        name: (property_name)
+        value: (plain_value)
+        (important)))))
+
+================================================================================
+Grid line names
+================================================================================
+
+a { grid-template-columns: [full-start] 1fr [main-start full-end]; }
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        name: (property_name)
+        value: (bracketed_value
+          (plain_value))
+        value: (number_value
+          (unit))
+        value: (bracketed_value
+          (plain_value)
+          (plain_value))))))
+
+================================================================================
+Custom properties
+================================================================================
+
+:root { --a: 1px; --b:; --c: { x: y; z }; --d: [1, (2)] !important; }
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (pseudo_class_selector
+        name: (class_name)))
+    body: (block
+      (declaration
+        name: (property_name)
+        value: (number_value
+          (unit)))
+      (declaration
+        name: (property_name))
+      (declaration
+        name: (property_name)
+        value: (block_value
+          (plain_value)
+          (plain_value)
+          (plain_value)))
+      (declaration
+        name: (property_name)
+        value: (bracketed_value
+          (number_value)
+          (parenthesized_value
+            (number_value)))
+        (important)))))
+
+================================================================================
+Star hack
+================================================================================
+
+a { *zoom: 1; }
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        name: (property_name)
+        value: (number_value)))))
+
+================================================================================
+Top-level declarations
+================================================================================
+
+color: red; margin: 0
+
+--------------------------------------------------------------------------------
+
+(stylesheet
+  (declaration
+    name: (property_name)
+    value: (plain_value))
+  (declaration
+    name: (property_name)
+    value: (number_value)))
