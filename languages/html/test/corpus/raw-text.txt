@@ -1,0 +1,117 @@
+================================================================================
+Script
+================================================================================
+
+<script>if (a < b && c</d) { x = "</p>"; }</script>
+
+--------------------------------------------------------------------------------
+
+(document
+  (script_element
+    start: (start_tag
+      name: (tag_name))
+    (raw_text)
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Style
+================================================================================
+
+<style>a > b { color: red }</style>
+
+--------------------------------------------------------------------------------
+
+(document
+  (style_element
+    start: (start_tag
+      name: (tag_name))
+    (raw_text)
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Empty script and style
+================================================================================
+
+<script src=a.js></script><style></style>
+
+--------------------------------------------------------------------------------
+
+(document
+  (script_element
+    start: (start_tag
+      name: (tag_name)
+      (attribute
+        name: (attribute_name)
+        value: (attribute_value)))
+    end: (end_tag
+      name: (tag_name)))
+  (style_element
+    start: (start_tag
+      name: (tag_name))
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Script end tag in another case
+================================================================================
+
+<SCRIPT>a()</Script>
+
+--------------------------------------------------------------------------------
+
+(document
+  (script_element
+    start: (start_tag
+      name: (tag_name))
+    (raw_text)
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Script with a self-closing start tag
+================================================================================
+
+<script src=a.js />x()</script>
+
+--------------------------------------------------------------------------------
+
+(document
+  (script_element
+    start: (start_tag
+      name: (tag_name)
+      (attribute
+        name: (attribute_name)
+        value: (attribute_value)))
+    (raw_text)
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Title and textarea hold text and entities only
+================================================================================
+
+<title>Fish &amp; <chips></title>
+<textarea name=t><b>x</b></textarea>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (text)
+    (entity)
+    (text)
+    end: (end_tag
+      name: (tag_name)))
+  (element
+    start: (start_tag
+      name: (tag_name)
+      (attribute
+        name: (attribute_name)
+        value: (attribute_value)))
+    (text)
+    end: (end_tag
+      name: (tag_name))))

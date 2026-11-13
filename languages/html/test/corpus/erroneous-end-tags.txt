@@ -1,0 +1,58 @@
+================================================================================
+Paragraph end tag after a block closed it
+================================================================================
+
+<p>text<div>block</div></p>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (text))
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (text)
+    end: (end_tag
+      name: (tag_name)))
+  (erroneous_end_tag
+    name: (erroneous_end_tag_name)))
+
+================================================================================
+End tag for a void element
+================================================================================
+
+<input></input><br></br>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    (start_tag
+      name: (tag_name)))
+  (erroneous_end_tag
+    name: (erroneous_end_tag_name))
+  (element
+    (start_tag
+      name: (tag_name)))
+  (erroneous_end_tag
+    name: (erroneous_end_tag_name)))
+
+================================================================================
+Stray list item end tag
+================================================================================
+
+<div></li></div>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (erroneous_end_tag
+      name: (erroneous_end_tag_name))
+    end: (end_tag
+      name: (tag_name))))

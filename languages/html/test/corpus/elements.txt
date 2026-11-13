@@ -1,0 +1,220 @@
+================================================================================
+Document with doctype
+================================================================================
+
+<!DOCTYPE html>
+<html lang="en">
+<head><title>T</title></head>
+<body><p>Hi</p></body>
+</html>
+
+--------------------------------------------------------------------------------
+
+(document
+  (doctype)
+  (element
+    start: (start_tag
+      name: (tag_name)
+      (attribute
+        name: (attribute_name)
+        value: (quoted_attribute_value
+          (attribute_value))))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (element
+        start: (start_tag
+          name: (tag_name))
+        (text)
+        end: (end_tag
+          name: (tag_name)))
+      end: (end_tag
+        name: (tag_name)))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (element
+        start: (start_tag
+          name: (tag_name))
+        (text)
+        end: (end_tag
+          name: (tag_name)))
+      end: (end_tag
+        name: (tag_name)))
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Case-insensitive names
+================================================================================
+
+<DIV Class=a><Br></DIV>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name)
+      (attribute
+        name: (attribute_name)
+        value: (attribute_value)))
+    (element
+      (start_tag
+        name: (tag_name)))
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Void elements
+================================================================================
+
+<br><img src=a.png alt=""><hr/><input type=checkbox checked>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    (start_tag
+      name: (tag_name)))
+  (element
+    (start_tag
+      name: (tag_name)
+      (attribute
+        name: (attribute_name)
+        value: (attribute_value))
+      (attribute
+        name: (attribute_name)
+        value: (quoted_attribute_value))))
+  (element
+    (self_closing_tag
+      name: (tag_name)))
+  (element
+    (start_tag
+      name: (tag_name)
+      (attribute
+        name: (attribute_name)
+        value: (attribute_value))
+      (attribute
+        name: (attribute_name)))))
+
+================================================================================
+Self-closing tags
+================================================================================
+
+<svg><path d="M0 0"/><circle r=1 /></svg>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (element
+      (self_closing_tag
+        name: (tag_name)
+        (attribute
+          name: (attribute_name)
+          value: (quoted_attribute_value
+            (attribute_value)))))
+    (element
+      (self_closing_tag
+        name: (tag_name)
+        (attribute
+          name: (attribute_name)
+          value: (attribute_value))))
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Custom elements and names that start like special ones
+================================================================================
+
+<my-el><divider></divider><lix>a</lix><tbodyx></tbodyx></my-el>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      end: (end_tag
+        name: (tag_name)))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (text)
+      end: (end_tag
+        name: (tag_name)))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      end: (end_tag
+        name: (tag_name)))
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Comments
+================================================================================
+
+<!-- a -- b -->
+<!---->
+<!-->
+<?xml version="1.0"?>
+
+--------------------------------------------------------------------------------
+
+(document
+  (comment)
+  (comment)
+  (comment)
+  (comment))
+
+================================================================================
+Text with bare ampersands and angle brackets
+================================================================================
+
+<p>a & b, 1 < 2, x &&y, <b>&</b> < 0.1%</p>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (text)
+    (text)
+    (text)
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (text)
+      end: (end_tag
+        name: (tag_name)))
+    (text)
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Entities
+================================================================================
+
+<p>&amp; &copy &#169; &#xA9; &nbsp;</p>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (entity)
+    (entity)
+    (entity)
+    (entity)
+    (entity)
+    end: (end_tag
+      name: (tag_name))))

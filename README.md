@@ -10,6 +10,7 @@ A bundle of tree-sitter grammars.
 | CSS | [languages/css](languages/css) | none |
 | Dockerfile | [languages/dockerfile](languages/dockerfile) | none |
 | Go | [languages/go](languages/go) | none |
+| HTML | [languages/html](languages/html) | none |
 | Java | [languages/java](languages/java) | none |
 | JSON (and JSONC, JSON Lines) | [languages/json](languages/json) | none |
 | Lua (5.1 to 5.5) | [languages/lua](languages/lua) | none |
@@ -73,10 +74,16 @@ Or drive it yourself:
 A loaded grammar has `parse(source, oldTree?)`, `highlights(source, tree?)`
 (nested `{ start, end, name }` ranges in UTF-16 offsets), `highlightHTML(source)`,
 `query(kind)` for `"highlights"`, `"locals"`, `"tags"`, `"folds"` or
-`"injections"`, and `language`.
+`"injections"`, `injections(tree)` (the injected regions, as `{ language, ranges }`),
+`loadInjections(source)`, and `language`.
 
 Highlight classes are `hl-` plus every prefix of the capture name, so `@function.builtin` becomes `class="hl-function hl-function-builtin"`.
-Injections are not applied yet.
+Injections are applied: in HTML, `<style>` is highlighted as CSS and
+`<script>` as TypeScript, and so on for every grammar's `injections.scm`.
+`highlight`, `highlightElement` and `highlightAll` fetch the grammars an
+injection needs. `highlights` and `highlightHTML` are synchronous, so they
+only use grammars that are already loaded; call `grammar.loadInjections(source)`
+(a promise) first to load the rest.
 
 The page must be served over HTTP(S); browsers will not fetch the `.wasm` from `file://`.
 

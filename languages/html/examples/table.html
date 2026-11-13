@@ -1,0 +1,19 @@
+<table>
+  <caption>Opening hours</caption>
+  <thead>
+    <tr><th>Day<th>Open<th>Close
+  <tbody>
+    <tr><td>Monday<td>11:30<td>21:00
+    <tr><td>Tuesday<td>11:30<td>21:00
+    <tr><td>Sunday<td colspan=2><em>Closed</em>
+</table>
+<p>Prices include VAT.
+<p>Call <a href="tel:+441234567890">01234 567890</a> to book &mdash; 10 &lt; groups &lt; 20 welcome.
+<form action="/book" method="post">
+  <label>Name <input name="name" required></label>
+  <select name="size">
+    <option value="2">Two
+    <option value="4" selected>Four
+  </select>
+  <textarea name="notes" rows=3>Window seat, if possible &amp; quiet.</textarea>
+</form>

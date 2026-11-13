@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Fish &amp; Chips</title>
+  <link rel="stylesheet" href="menu.css">
+  <style>
+    main { max-width: 40rem; margin: 0 auto; }
+    .price::before { content: "£"; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Today&rsquo;s menu</h1>
+    <ul class="menu">
+      <li>Cod <span class="price">8.50</span>
+      <li>Haddock <span class="price">9.00</span>
+      <li>Mushy peas <span class="price">2.00</span>
+    </ul>
+    <button type="button" onclick="order('cod')" style="font-weight: bold">Order</button>
+  </main>
+  <script type="module">
+    const prices: Record<string, number> = { cod: 8.5, haddock: 9 };
+    export function order(item: string): void {
+      if (prices[item] < 10) console.log(`ordered ${item}`);
+    }
+  </script>
+</body>
+</html>

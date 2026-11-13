@@ -1,0 +1,354 @@
+================================================================================
+List items
+================================================================================
+
+<ul>
+  <li>one
+  <li>two <b>bold</b>
+  <li>three</li>
+</ul>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (text))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (text)
+      (element
+        start: (start_tag
+          name: (tag_name))
+        (text)
+        end: (end_tag
+          name: (tag_name))))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (text)
+      end: (end_tag
+        name: (tag_name)))
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Paragraphs closed by blocks
+================================================================================
+
+<p>one
+<p>two<div>block</div>
+<p>three<hr>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (text))
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (text))
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (text)
+    end: (end_tag
+      name: (tag_name)))
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (text))
+  (element
+    (start_tag
+      name: (tag_name))))
+
+================================================================================
+Paragraph closed by the end of its parent
+================================================================================
+
+<div><p>text</div>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (text))
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Tables
+================================================================================
+
+<table>
+<thead><tr><th>a<th>b
+<tbody><tr><td>1<td>2
+<tr><td>3<td>4
+</table>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (element
+        start: (start_tag
+          name: (tag_name))
+        (element
+          start: (start_tag
+            name: (tag_name))
+          (text))
+        (element
+          start: (start_tag
+            name: (tag_name))
+          (text))))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (element
+        start: (start_tag
+          name: (tag_name))
+        (element
+          start: (start_tag
+            name: (tag_name))
+          (text))
+        (element
+          start: (start_tag
+            name: (tag_name))
+          (text)))
+      (element
+        start: (start_tag
+          name: (tag_name))
+        (element
+          start: (start_tag
+            name: (tag_name))
+          (text))
+        (element
+          start: (start_tag
+            name: (tag_name))
+          (text))))
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Definition lists
+================================================================================
+
+<dl><dt>term<dd>definition<dt>term 2<dd>definition 2</dl>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (text))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (text))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (text))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (text))
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Options
+================================================================================
+
+<select><optgroup label=a><option>1<option>2<optgroup label=b><option>3</select>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (element
+      start: (start_tag
+        name: (tag_name)
+        (attribute
+          name: (attribute_name)
+          value: (attribute_value)))
+      (element
+        start: (start_tag
+          name: (tag_name))
+        (text))
+      (element
+        start: (start_tag
+          name: (tag_name))
+        (text)))
+    (element
+      start: (start_tag
+        name: (tag_name)
+        (attribute
+          name: (attribute_name)
+          value: (attribute_value)))
+      (element
+        start: (start_tag
+          name: (tag_name))
+        (text)))
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Html, head and body without end tags
+================================================================================
+
+<html><head><title>t</title><body><p>text
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (element
+        start: (start_tag
+          name: (tag_name))
+        (text)
+        end: (end_tag
+          name: (tag_name))))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (element
+        start: (start_tag
+          name: (tag_name))
+        (text)))))
+
+================================================================================
+Head closed by body
+================================================================================
+
+<html><head><meta charset=utf-8><body>x</body></html>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (element
+        (start_tag
+          name: (tag_name)
+          (attribute
+            name: (attribute_name)
+            value: (attribute_value)))))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (text)
+      end: (end_tag
+        name: (tag_name)))
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Nested lists
+================================================================================
+
+<ul><li>a<ul><li>b<li>c</ul><li>d</ul>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (text)
+      (element
+        start: (start_tag
+          name: (tag_name))
+        (element
+          start: (start_tag
+            name: (tag_name))
+          (text))
+        (element
+          start: (start_tag
+            name: (tag_name))
+          (text))
+        end: (end_tag
+          name: (tag_name))))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (text))
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Explicit end tags
+================================================================================
+
+<ul><li>a</li><li>b</li></ul>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (text)
+      end: (end_tag
+        name: (tag_name)))
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (text)
+      end: (end_tag
+        name: (tag_name)))
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Self-closing paragraph
+================================================================================
+
+<P/>text
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    (self_closing_tag
+      name: (tag_name)))
+  (text))
