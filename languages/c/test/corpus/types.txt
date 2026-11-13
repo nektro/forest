@@ -1,0 +1,163 @@
+================================================================================
+Primitive and sized types
+================================================================================
+
+unsigned long long int a;
+long double b;
+signed char c;
+long unsigned d;
+double _Complex e;
+_BitInt(7) f;
+unsigned _BitInt(8) g;
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (declaration
+    type: (sized_type_specifier
+      type: (primitive_type))
+    declarator: (identifier))
+  (declaration
+    type: (sized_type_specifier
+      type: (primitive_type))
+    declarator: (identifier))
+  (declaration
+    type: (sized_type_specifier
+      type: (primitive_type))
+    declarator: (identifier))
+  (declaration
+    type: (sized_type_specifier)
+    declarator: (identifier))
+  (declaration
+    type: (sized_type_specifier
+      type: (primitive_type))
+    declarator: (identifier))
+  (declaration
+    type: (bitint_type
+      width: (number_literal))
+    declarator: (identifier))
+  (declaration
+    type: (sized_type_specifier
+      type: (bitint_type
+        width: (number_literal)))
+    declarator: (identifier)))
+
+================================================================================
+Qualifiers, atomics and typeof
+================================================================================
+
+const volatile int *restrict p;
+_Atomic(int) a;
+_Atomic int b;
+typeof(a) c;
+typeof_unqual(const int) d;
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (declaration
+    (type_qualifier)
+    (type_qualifier)
+    type: (primitive_type)
+    declarator: (pointer_declarator
+      (type_qualifier)
+      declarator: (identifier)))
+  (declaration
+    type: (atomic_type
+      type: (type_descriptor
+        type: (primitive_type)))
+    declarator: (identifier))
+  (declaration
+    (type_qualifier)
+    type: (primitive_type)
+    declarator: (identifier))
+  (declaration
+    type: (typeof_specifier
+      value: (identifier))
+    declarator: (identifier))
+  (declaration
+    type: (typeof_specifier
+      type: (type_descriptor
+        (type_qualifier)
+        type: (primitive_type)))
+    declarator: (identifier)))
+
+================================================================================
+Abstract declarators
+================================================================================
+
+void f(int *, char [], void (*)(int), int (*)[3]);
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (declaration
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type)
+          declarator: (abstract_pointer_declarator))
+        (parameter_declaration
+          type: (primitive_type)
+          declarator: (abstract_array_declarator))
+        (parameter_declaration
+          type: (primitive_type)
+          declarator: (abstract_function_declarator
+            declarator: (abstract_parenthesized_declarator
+              (abstract_pointer_declarator))
+            parameters: (parameter_list
+              (parameter_declaration
+                type: (primitive_type)))))
+        (parameter_declaration
+          type: (primitive_type)
+          declarator: (abstract_array_declarator
+            declarator: (abstract_parenthesized_declarator
+              (abstract_pointer_declarator))
+            size: (number_literal)))))))
+
+================================================================================
+C23 keywords and inference
+================================================================================
+
+void f(void) {
+  auto x = 1;
+  constexpr int y = 2;
+  bool b = true;
+  int *p = nullptr;
+}
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (function_definition
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type))))
+    body: (compound_statement
+      (declaration
+        (storage_class_specifier)
+        declarator: (init_declarator
+          declarator: (identifier)
+          value: (number_literal)))
+      (declaration
+        (storage_class_specifier)
+        type: (primitive_type)
+        declarator: (init_declarator
+          declarator: (identifier)
+          value: (number_literal)))
+      (declaration
+        type: (primitive_type)
+        declarator: (init_declarator
+          declarator: (identifier)
+          value: (true)))
+      (declaration
+        type: (primitive_type)
+        declarator: (init_declarator
+          declarator: (pointer_declarator
+            declarator: (identifier))
+          value: (null))))))

@@ -1,0 +1,296 @@
+================================================================================
+Precedence
+================================================================================
+
+int x = a + b * c << 1 == d && e || f ? g : h;
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (declaration
+    type: (primitive_type)
+    declarator: (init_declarator
+      declarator: (identifier)
+      value: (conditional_expression
+        condition: (binary_expression
+          left: (binary_expression
+            left: (binary_expression
+              left: (binary_expression
+                left: (binary_expression
+                  left: (identifier)
+                  right: (binary_expression
+                    left: (identifier)
+                    right: (identifier)))
+                right: (number_literal))
+              right: (identifier))
+            right: (identifier))
+          right: (identifier))
+        consequence: (identifier)
+        alternative: (identifier)))))
+
+================================================================================
+Unary, postfix and pointers
+================================================================================
+
+void f(void) {
+  x = -a + !b + ~c + *p + &q + ++i + j--;
+  y = s.a->b[i](1, 2);
+  z = a, b = c;
+}
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (function_definition
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type))))
+    body: (compound_statement
+      (expression_statement
+        (assignment_expression
+          left: (identifier)
+          right: (binary_expression
+            left: (binary_expression
+              left: (binary_expression
+                left: (binary_expression
+                  left: (binary_expression
+                    left: (binary_expression
+                      left: (unary_expression
+                        argument: (identifier))
+                      right: (unary_expression
+                        argument: (identifier)))
+                    right: (unary_expression
+                      argument: (identifier)))
+                  right: (pointer_expression
+                    argument: (identifier)))
+                right: (pointer_expression
+                  argument: (identifier)))
+              right: (update_expression
+                argument: (identifier)))
+            right: (update_expression
+              argument: (identifier)))))
+      (expression_statement
+        (assignment_expression
+          left: (identifier)
+          right: (call_expression
+            function: (subscript_expression
+              argument: (field_expression
+                argument: (field_expression
+                  argument: (identifier)
+                  field: (field_identifier))
+                field: (field_identifier))
+              index: (identifier))
+            arguments: (argument_list
+              (number_literal)
+              (number_literal)))))
+      (expression_statement
+        (comma_expression
+          left: (assignment_expression
+            left: (identifier)
+            right: (identifier))
+          right: (assignment_expression
+            left: (identifier)
+            right: (identifier)))))))
+
+================================================================================
+Casts, sizeof and compound literals
+================================================================================
+
+void f(void) {
+  x = (int)y + (unsigned long)-1;
+  x = (T)y;
+  x = (a) + b;
+  x = sizeof x + sizeof(int) + _Alignof(long);
+  p = &(struct point){ .x = 1, .y = 2 };
+}
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (function_definition
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type))))
+    body: (compound_statement
+      (expression_statement
+        (assignment_expression
+          left: (identifier)
+          right: (binary_expression
+            left: (cast_expression
+              type: (type_descriptor
+                type: (primitive_type))
+              value: (identifier))
+            right: (cast_expression
+              type: (type_descriptor
+                type: (sized_type_specifier))
+              value: (unary_expression
+                argument: (number_literal))))))
+      (expression_statement
+        (assignment_expression
+          left: (identifier)
+          right: (cast_expression
+            type: (type_descriptor
+              type: (type_identifier))
+            value: (identifier))))
+      (expression_statement
+        (assignment_expression
+          left: (identifier)
+          right: (cast_expression
+            type: (type_descriptor
+              type: (type_identifier))
+            value: (unary_expression
+              argument: (identifier)))))
+      (expression_statement
+        (assignment_expression
+          left: (identifier)
+          right: (binary_expression
+            left: (binary_expression
+              left: (sizeof_expression
+                value: (identifier))
+              right: (sizeof_expression
+                type: (type_descriptor
+                  type: (primitive_type))))
+            right: (alignof_expression
+              type: (type_descriptor
+                type: (sized_type_specifier))))))
+      (expression_statement
+        (assignment_expression
+          left: (identifier)
+          right: (pointer_expression
+            argument: (compound_literal_expression
+              type: (type_descriptor
+                type: (struct_specifier
+                  name: (type_identifier)))
+              value: (initializer_list
+                (initializer_pair
+                  designator: (field_designator
+                    (field_identifier))
+                  value: (number_literal))
+                (initializer_pair
+                  designator: (field_designator
+                    (field_identifier))
+                  value: (number_literal))))))))))
+
+================================================================================
+Initializers
+================================================================================
+
+int a[] = { [0 ... 3] = 1, [4] = 2, };
+struct s s = { .a.b = 1, .c[0] = { 2 }, x: 3 };
+int e[] = {};
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (declaration
+    type: (primitive_type)
+    declarator: (init_declarator
+      declarator: (array_declarator
+        declarator: (identifier))
+      value: (initializer_list
+        (initializer_pair
+          designator: (subscript_range_designator
+            start: (number_literal)
+            end: (number_literal))
+          value: (number_literal))
+        (initializer_pair
+          designator: (subscript_designator
+            (number_literal))
+          value: (number_literal)))))
+  (declaration
+    type: (struct_specifier
+      name: (type_identifier))
+    declarator: (init_declarator
+      declarator: (identifier)
+      value: (initializer_list
+        (initializer_pair
+          designator: (field_designator
+            (field_identifier))
+          designator: (field_designator
+            (field_identifier))
+          value: (number_literal))
+        (initializer_pair
+          designator: (field_designator
+            (field_identifier))
+          designator: (subscript_designator
+            (number_literal))
+          value: (initializer_list
+            (number_literal)))
+        (initializer_pair
+          designator: (field_identifier)
+          value: (number_literal)))))
+  (declaration
+    type: (primitive_type)
+    declarator: (init_declarator
+      declarator: (array_declarator
+        declarator: (identifier))
+      value: (initializer_list))))
+
+================================================================================
+GNU and C11 expressions
+================================================================================
+
+void f(void) {
+  x = y ?: z;
+  x = ({ int t = 1; t + 1; });
+  x = _Generic(y, int: 1, default: 0);
+  x = va_arg(ap, int);
+}
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (function_definition
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type))))
+    body: (compound_statement
+      (expression_statement
+        (assignment_expression
+          left: (identifier)
+          right: (conditional_expression
+            condition: (identifier)
+            alternative: (identifier))))
+      (expression_statement
+        (assignment_expression
+          left: (identifier)
+          right: (statement_expression
+            (compound_statement
+              (declaration
+                type: (primitive_type)
+                declarator: (init_declarator
+                  declarator: (identifier)
+                  value: (number_literal)))
+              (expression_statement
+                (binary_expression
+                  left: (identifier)
+                  right: (number_literal)))))))
+      (expression_statement
+        (assignment_expression
+          left: (identifier)
+          right: (generic_expression
+            value: (identifier)
+            (generic_association
+              type: (type_descriptor
+                type: (primitive_type))
+              value: (number_literal))
+            (generic_association
+              value: (number_literal)))))
+      (expression_statement
+        (assignment_expression
+          left: (identifier)
+          right: (call_expression
+            function: (identifier)
+            arguments: (argument_list
+              (identifier)
+              (type_descriptor
+                type: (primitive_type)))))))))

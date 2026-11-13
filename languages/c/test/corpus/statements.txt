@@ -1,0 +1,266 @@
+================================================================================
+If and loops
+================================================================================
+
+void f(int n) {
+  if (n) n = 1; else if (!n) n = 2; else n = 3;
+  while (n) n--;
+  do n++; while (n < 10);
+  for (int i = 0, j = n; i < j; i++, j--) continue;
+  for (;;) break;
+}
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (function_definition
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type)
+          declarator: (identifier))))
+    body: (compound_statement
+      (if_statement
+        condition: (parenthesized_expression
+          (identifier))
+        consequence: (expression_statement
+          (assignment_expression
+            left: (identifier)
+            right: (number_literal)))
+        alternative: (else_clause
+          (if_statement
+            condition: (parenthesized_expression
+              (unary_expression
+                argument: (identifier)))
+            consequence: (expression_statement
+              (assignment_expression
+                left: (identifier)
+                right: (number_literal)))
+            alternative: (else_clause
+              (expression_statement
+                (assignment_expression
+                  left: (identifier)
+                  right: (number_literal)))))))
+      (while_statement
+        condition: (parenthesized_expression
+          (identifier))
+        body: (expression_statement
+          (update_expression
+            argument: (identifier))))
+      (do_statement
+        body: (expression_statement
+          (update_expression
+            argument: (identifier)))
+        condition: (parenthesized_expression
+          (binary_expression
+            left: (identifier)
+            right: (number_literal))))
+      (for_statement
+        initializer: (declaration
+          type: (primitive_type)
+          declarator: (init_declarator
+            declarator: (identifier)
+            value: (number_literal))
+          declarator: (init_declarator
+            declarator: (identifier)
+            value: (identifier)))
+        condition: (binary_expression
+          left: (identifier)
+          right: (identifier))
+        update: (comma_expression
+          left: (update_expression
+            argument: (identifier))
+          right: (update_expression
+            argument: (identifier)))
+        body: (continue_statement))
+      (for_statement
+        body: (break_statement)))))
+
+================================================================================
+Switch
+================================================================================
+
+void f(int n) {
+  switch (n) {
+  case 1:
+  case 2 ... 4:
+    n++;
+    [[fallthrough]];
+  default: {
+    break;
+  }
+  }
+}
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (function_definition
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type)
+          declarator: (identifier))))
+    body: (compound_statement
+      (switch_statement
+        condition: (parenthesized_expression
+          (identifier))
+        body: (compound_statement
+          (case_statement
+            value: (number_literal))
+          (case_statement
+            value: (number_literal)
+            end: (number_literal)
+            (expression_statement
+              (update_expression
+                argument: (identifier)))
+            (attributed_statement
+              (attribute_declaration
+                (attribute
+                  name: (identifier)))
+              (expression_statement)))
+          (case_statement
+            (compound_statement
+              (break_statement))))))))
+
+================================================================================
+Labels and goto
+================================================================================
+
+void f(void) {
+  void *p = &&out;
+  goto *p;
+  goto out;
+out:
+  return;
+}
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (function_definition
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type))))
+    body: (compound_statement
+      (declaration
+        type: (primitive_type)
+        declarator: (init_declarator
+          declarator: (pointer_declarator
+            declarator: (identifier))
+          value: (label_address_expression
+            label: (statement_identifier))))
+      (goto_statement
+        target: (identifier))
+      (goto_statement
+        label: (statement_identifier))
+      (labeled_statement
+        label: (statement_identifier)
+        (return_statement)))))
+
+================================================================================
+Declaration or expression
+================================================================================
+
+void f(void) {
+  T * x;
+  a * b = c;
+  foo(x);
+  (void)x;
+  T;
+}
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (function_definition
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type))))
+    body: (compound_statement
+      (declaration
+        type: (type_identifier)
+        declarator: (pointer_declarator
+          declarator: (identifier)))
+      (declaration
+        type: (type_identifier)
+        declarator: (init_declarator
+          declarator: (pointer_declarator
+            declarator: (identifier))
+          value: (identifier)))
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (argument_list
+            (identifier))))
+      (expression_statement
+        (cast_expression
+          type: (type_descriptor
+            type: (primitive_type))
+          value: (identifier)))
+      (declaration
+        type: (type_identifier)))))
+
+================================================================================
+Inline assembly
+================================================================================
+
+void f(int x) {
+  __asm__ __volatile__("nop" ::: "memory");
+  asm("mov %1, %0" : "=r"(x) : "r"(x));
+  asm goto("jmp %l0" :::: done);
+done:;
+}
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (function_definition
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type)
+          declarator: (identifier))))
+    body: (compound_statement
+      (asm_statement
+        (asm_expression
+          template: (string_literal
+            (string_content))
+          clobbers: (asm_clobber_list
+            (string_literal
+              (string_content)))))
+      (asm_statement
+        (asm_expression
+          template: (string_literal
+            (string_content))
+          output_operands: (asm_operand_list
+            (asm_operand
+              constraint: (string_literal
+                (string_content))
+              value: (identifier)))
+          input_operands: (asm_operand_list
+            (asm_operand
+              constraint: (string_literal
+                (string_content))
+              value: (identifier)))))
+      (asm_statement
+        (asm_expression
+          template: (string_literal
+            (string_content))
+          goto_labels: (asm_goto_list
+            (statement_identifier))))
+      (labeled_statement
+        label: (statement_identifier)
+        (expression_statement)))))

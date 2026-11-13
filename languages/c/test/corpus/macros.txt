@@ -1,0 +1,235 @@
+================================================================================
+Macro modifiers
+================================================================================
+
+SQLITE_API int sqlite3_open(const char *name);
+static void NOINLINE g(void);
+char *CONST p;
+int f(int) __THROW __nonnull((1));
+static ATTRIBUTE((noinline)) int h(void);
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (declaration
+    (macro_modifier)
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          (type_qualifier)
+          type: (primitive_type)
+          declarator: (pointer_declarator
+            declarator: (identifier))))))
+  (declaration
+    (storage_class_specifier)
+    type: (primitive_type)
+    (macro_modifier)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type)))))
+  (declaration
+    type: (primitive_type)
+    declarator: (pointer_declarator
+      (macro_modifier)
+      declarator: (identifier)))
+  (declaration
+    type: (primitive_type)
+    declarator: (attributed_declarator
+      declarator: (function_declarator
+        declarator: (identifier)
+        parameters: (parameter_list
+          (parameter_declaration
+            type: (primitive_type))))
+      (macro_modifier)
+      (macro_modifier
+        function: (identifier)
+        arguments: (argument_list
+          (parenthesized_expression
+            (number_literal))))))
+  (declaration
+    (storage_class_specifier)
+    (macro_modifier
+      function: (identifier)
+      arguments: (argument_list
+        (parenthesized_expression
+          (identifier))))
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type))))))
+
+================================================================================
+Annotations in casts
+================================================================================
+
+void f(void) {
+  p = (void __user *)q;
+  x = (__force u32)y;
+}
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (function_definition
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type))))
+    body: (compound_statement
+      (expression_statement
+        (assignment_expression
+          left: (identifier)
+          right: (cast_expression
+            type: (type_descriptor
+              type: (primitive_type)
+              (macro_modifier)
+              declarator: (abstract_pointer_declarator))
+            value: (identifier))))
+      (expression_statement
+        (assignment_expression
+          left: (identifier)
+          right: (cast_expression
+            type: (type_descriptor
+              (macro_modifier)
+              type: (type_identifier))
+            value: (identifier)))))))
+
+================================================================================
+Macro types
+================================================================================
+
+ElfW(Addr) a;
+const ElfW(Phdr) *p;
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (declaration
+    type: (macro_type_specifier
+      name: (identifier)
+      type: (type_descriptor
+        type: (type_identifier)))
+    declarator: (identifier))
+  (declaration
+    (type_qualifier)
+    type: (macro_type_specifier
+      name: (identifier)
+      type: (type_descriptor
+        type: (type_identifier)))
+    declarator: (pointer_declarator
+      declarator: (identifier))))
+
+================================================================================
+Macro statements
+================================================================================
+
+EXPORT_SYMBOL(f);
+static DEFINE_MUTEX(lock);
+static DEFINE_SEMAPHORE(sem, 1);
+struct s {
+  DECLARE_BITMAP(bits, 1 << 7);
+};
+void f(void) {
+  SWAP(a, b)
+  deliberate_fall_through
+}
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (expression_statement
+    (call_expression
+      function: (identifier)
+      arguments: (argument_list
+        (identifier))))
+  (declaration
+    (storage_class_specifier)
+    declarator: (call_expression
+      function: (identifier)
+      arguments: (argument_list
+        (identifier))))
+  (declaration
+    (storage_class_specifier)
+    declarator: (call_expression
+      function: (identifier)
+      arguments: (argument_list
+        (identifier)
+        (number_literal))))
+  (declaration
+    type: (struct_specifier
+      name: (type_identifier)
+      body: (field_declaration_list
+        (expression_statement
+          (call_expression
+            function: (identifier)
+            arguments: (argument_list
+              (identifier)
+              (binary_expression
+                left: (number_literal)
+                right: (number_literal))))))))
+  (function_definition
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type))))
+    body: (compound_statement
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (argument_list
+            (identifier)
+            (identifier))))
+      (expression_statement
+        (identifier)))))
+
+================================================================================
+Types as macro arguments
+================================================================================
+
+void f(void) {
+  n = offsetof(struct s, field);
+  p = container_of(q, struct s, member);
+}
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (function_definition
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type))))
+    body: (compound_statement
+      (expression_statement
+        (assignment_expression
+          left: (identifier)
+          right: (call_expression
+            function: (identifier)
+            arguments: (argument_list
+              (type_descriptor
+                type: (struct_specifier
+                  name: (type_identifier)))
+              (identifier)))))
+      (expression_statement
+        (assignment_expression
+          left: (identifier)
+          right: (call_expression
+            function: (identifier)
+            arguments: (argument_list
+              (identifier)
+              (type_descriptor
+                type: (struct_specifier
+                  name: (type_identifier)))
+              (identifier))))))))

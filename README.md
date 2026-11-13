@@ -5,6 +5,7 @@ A bundle of tree-sitter grammars.
 | Language | Directory | External scanner |
 | --- | --- | --- |
 | Bash | [languages/bash](languages/bash) | none |
+| C (C23, with GNU and MSVC extensions) | [languages/c](languages/c) | none |
 | CMake | [languages/cmake](languages/cmake) | none |
 | CSS | [languages/css](languages/css) | none |
 | Dockerfile | [languages/dockerfile](languages/dockerfile) | none |

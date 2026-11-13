@@ -1,0 +1,343 @@
+================================================================================
+Variables
+================================================================================
+
+int a;
+static const unsigned long b = 1, *c, d[4];
+extern char *argv[];
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (declaration
+    type: (primitive_type)
+    declarator: (identifier))
+  (declaration
+    (storage_class_specifier)
+    (type_qualifier)
+    type: (sized_type_specifier)
+    declarator: (init_declarator
+      declarator: (identifier)
+      value: (number_literal))
+    declarator: (pointer_declarator
+      declarator: (identifier))
+    declarator: (array_declarator
+      declarator: (identifier)
+      size: (number_literal)))
+  (declaration
+    (storage_class_specifier)
+    type: (primitive_type)
+    declarator: (pointer_declarator
+      declarator: (array_declarator
+        declarator: (identifier)))))
+
+================================================================================
+Functions
+================================================================================
+
+int add(int a, int b);
+static inline void f(void) {}
+int (*get(void))(int);
+void g(int n, char *items[static n], ...);
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (declaration
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type)
+          declarator: (identifier))
+        (parameter_declaration
+          type: (primitive_type)
+          declarator: (identifier)))))
+  (function_definition
+    (storage_class_specifier)
+    (storage_class_specifier)
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type))))
+    body: (compound_statement))
+  (declaration
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (parenthesized_declarator
+        (pointer_declarator
+          declarator: (function_declarator
+            declarator: (identifier)
+            parameters: (parameter_list
+              (parameter_declaration
+                type: (primitive_type))))))
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type)))))
+  (declaration
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type)
+          declarator: (identifier))
+        (parameter_declaration
+          type: (primitive_type)
+          declarator: (pointer_declarator
+            declarator: (array_declarator
+              declarator: (identifier)
+              size: (identifier))))
+        (variadic_parameter)))))
+
+================================================================================
+K&R and implicit int
+================================================================================
+
+int f(a, b) int a; char *b; { return a; }
+main() { return 0; }
+static x = 1;
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (function_definition
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (type_identifier))
+        (parameter_declaration
+          type: (type_identifier))))
+    parameter_declaration: (declaration
+      type: (primitive_type)
+      declarator: (identifier))
+    parameter_declaration: (declaration
+      type: (primitive_type)
+      declarator: (pointer_declarator
+        declarator: (identifier)))
+    body: (compound_statement
+      (return_statement
+        (identifier))))
+  (function_definition
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list))
+    body: (compound_statement
+      (return_statement
+        (number_literal))))
+  (declaration
+    (storage_class_specifier)
+    declarator: (init_declarator
+      declarator: (identifier)
+      value: (number_literal))))
+
+================================================================================
+Typedefs
+================================================================================
+
+typedef unsigned int u32, *pu32;
+typedef int (*handler)(int);
+typedef struct node node;
+typedef enum { false, true } bool;
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (type_definition
+    type: (sized_type_specifier
+      type: (primitive_type))
+    declarator: (type_identifier)
+    declarator: (pointer_declarator
+      declarator: (type_identifier)))
+  (type_definition
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (parenthesized_declarator
+        (pointer_declarator
+          declarator: (type_identifier)))
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type)))))
+  (type_definition
+    type: (struct_specifier
+      name: (type_identifier))
+    declarator: (type_identifier))
+  (type_definition
+    type: (enum_specifier
+      body: (enumerator_list
+        (enumerator
+          name: (identifier))
+        (enumerator
+          name: (identifier))))
+    declarator: (type_identifier)))
+
+================================================================================
+Structs, unions and enums
+================================================================================
+
+struct point { int x, y; unsigned flags : 3, : 0; struct { int z; }; char data[]; };
+union value { int i; float f; } v;
+enum color : unsigned char { RED, GREEN = 2, };
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (declaration
+    type: (struct_specifier
+      name: (type_identifier)
+      body: (field_declaration_list
+        (field_declaration
+          type: (primitive_type)
+          declarator: (field_identifier)
+          declarator: (field_identifier))
+        (field_declaration
+          type: (sized_type_specifier)
+          declarator: (field_identifier)
+          (bitfield_clause
+            (number_literal))
+          (bitfield_clause
+            (number_literal)))
+        (field_declaration
+          type: (struct_specifier
+            body: (field_declaration_list
+              (field_declaration
+                type: (primitive_type)
+                declarator: (field_identifier)))))
+        (field_declaration
+          type: (primitive_type)
+          declarator: (array_declarator
+            declarator: (field_identifier))))))
+  (declaration
+    type: (union_specifier
+      name: (type_identifier)
+      body: (field_declaration_list
+        (field_declaration
+          type: (primitive_type)
+          declarator: (field_identifier))
+        (field_declaration
+          type: (primitive_type)
+          declarator: (field_identifier))))
+    declarator: (identifier))
+  (declaration
+    type: (enum_specifier
+      name: (type_identifier)
+      underlying_type: (sized_type_specifier
+        type: (primitive_type))
+      body: (enumerator_list
+        (enumerator
+          name: (identifier))
+        (enumerator
+          name: (identifier)
+          value: (number_literal))))))
+
+================================================================================
+Attributes
+================================================================================
+
+[[nodiscard, gnu::always_inline]] static int f(void);
+int x __attribute__((aligned(8))) = 0;
+struct __attribute__((packed)) s { int a; } __attribute__((aligned(4)));
+__declspec(dllexport) void __cdecl g(void);
+int y asm("z");
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (declaration
+    (attribute_declaration
+      (attribute
+        name: (identifier))
+      (attribute
+        prefix: (identifier)
+        name: (identifier)))
+    (storage_class_specifier)
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type)))))
+  (declaration
+    type: (primitive_type)
+    declarator: (init_declarator
+      declarator: (attributed_declarator
+        declarator: (identifier)
+        (attribute_specifier
+          (attribute
+            name: (identifier)
+            arguments: (argument_list
+              (number_literal)))))
+      value: (number_literal)))
+  (declaration
+    type: (struct_specifier
+      (attribute_specifier
+        (attribute
+          name: (identifier)))
+      name: (type_identifier)
+      body: (field_declaration_list
+        (field_declaration
+          type: (primitive_type)
+          declarator: (field_identifier))))
+    (attribute_specifier
+      (attribute
+        name: (identifier)
+        arguments: (argument_list
+          (number_literal)))))
+  (declaration
+    (ms_declspec_modifier
+      (attribute
+        name: (identifier)))
+    type: (primitive_type)
+    (ms_call_modifier)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type)))))
+  (declaration
+    type: (primitive_type)
+    declarator: (attributed_declarator
+      declarator: (identifier)
+      (asm_expression
+        template: (string_literal
+          (string_content))))))
+
+================================================================================
+Static assertions and linkage
+================================================================================
+
+static_assert(sizeof(int) == 4, "int is 32 bits");
+_Static_assert(1);
+extern "C" {
+int f(void);
+}
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (static_assert_declaration
+    condition: (binary_expression
+      left: (sizeof_expression
+        type: (type_descriptor
+          type: (primitive_type)))
+      right: (number_literal))
+    message: (string_literal
+      (string_content)))
+  (static_assert_declaration
+    condition: (number_literal))
+  (linkage_specification
+    value: (string_literal
+      (string_content))
+    body: (declaration_list
+      (declaration
+        type: (primitive_type)
+        declarator: (function_declarator
+          declarator: (identifier)
+          parameters: (parameter_list
+            (parameter_declaration
+              type: (primitive_type))))))))

@@ -1,0 +1,213 @@
+================================================================================
+Includes
+================================================================================
+
+#include <stdio.h>
+#include "local.h"
+#include_next <limits.h>
+#include HEADER
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (preproc_include
+    path: (system_lib_string))
+  (preproc_include
+    path: (string_literal
+      (string_content)))
+  (preproc_include
+    path: (system_lib_string))
+  (preproc_include
+    path: (identifier)))
+
+================================================================================
+Defines
+================================================================================
+
+#define EMPTY
+#define ONE 1 // one
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define LOG(fmt, ...) printf(fmt, __VA_ARGS__)
+#define PAREN (x)
+#define URL "http://example.com/*x*/"
+#define LONG a \
+  b
+#define bool _Bool
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (preproc_def
+    name: (identifier))
+  (preproc_def
+    name: (identifier)
+    value: (preproc_arg)
+    (comment))
+  (preproc_function_def
+    name: (identifier)
+    parameters: (preproc_params
+      (identifier)
+      (identifier))
+    value: (preproc_arg))
+  (preproc_function_def
+    name: (identifier)
+    parameters: (preproc_params
+      (identifier))
+    value: (preproc_arg))
+  (preproc_def
+    name: (identifier)
+    value: (preproc_arg))
+  (preproc_def
+    name: (identifier)
+    value: (preproc_arg))
+  (preproc_def
+    name: (identifier)
+    value: (preproc_arg))
+  (preproc_def
+    name: (identifier)
+    value: (preproc_arg)))
+
+================================================================================
+Conditionals
+================================================================================
+
+#if defined(A) && B > 1 || __has_include(<x.h>)
+int a;
+#elif !defined B
+int b;
+#elifdef C
+#else
+int c;
+#endif /* A */
+#ifdef D
+#endif D
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (preproc_if
+    condition: (binary_expression
+      left: (binary_expression
+        left: (preproc_defined
+          name: (identifier))
+        right: (binary_expression
+          left: (identifier)
+          right: (number_literal)))
+      right: (call_expression
+        function: (identifier)
+        arguments: (argument_list
+          (system_lib_string)))))
+  (declaration
+    type: (primitive_type)
+    declarator: (identifier))
+  (preproc_elif
+    condition: (unary_expression
+      argument: (preproc_defined
+        name: (identifier))))
+  (declaration
+    type: (primitive_type)
+    declarator: (identifier))
+  (preproc_elifdef
+    name: (identifier))
+  (preproc_else)
+  (declaration
+    type: (primitive_type)
+    declarator: (identifier))
+  (preproc_endif)
+  (comment)
+  (preproc_ifdef
+    name: (identifier))
+  (preproc_endif))
+
+================================================================================
+Other directives
+================================================================================
+
+#pragma once
+#undef X
+#error don't
+# 1 "file.c" 2
+#
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (preproc_call
+    directive: (preproc_directive)
+    argument: (preproc_arg))
+  (preproc_call
+    directive: (preproc_directive)
+    argument: (preproc_arg))
+  (preproc_call
+    directive: (preproc_directive)
+    argument: (preproc_arg))
+  (preproc_call
+    directive: (preproc_directive)
+    argument: (preproc_arg))
+  (preproc_call
+    directive: (preproc_directive)))
+
+================================================================================
+Directives inside code
+================================================================================
+
+int a[] = {
+  1,
+#ifdef X
+  2,
+#endif
+  3,
+};
+void f(void) {
+#if A
+  g();
+#endif
+}
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (declaration
+    type: (primitive_type)
+    declarator: (init_declarator
+      declarator: (array_declarator
+        declarator: (identifier))
+      value: (initializer_list
+        (number_literal)
+        (preproc_ifdef
+          name: (identifier))
+        (number_literal)
+        (preproc_endif)
+        (number_literal))))
+  (function_definition
+    type: (primitive_type)
+    declarator: (function_declarator
+      declarator: (identifier)
+      parameters: (parameter_list
+        (parameter_declaration
+          type: (primitive_type))))
+    body: (compound_statement
+      (preproc_if
+        condition: (identifier))
+      (expression_statement
+        (call_expression
+          function: (identifier)
+          arguments: (argument_list)))
+      (preproc_endif))))
+
+================================================================================
+Endif at end of file
+================================================================================
+
+#ifndef H
+#define H
+#endif
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (preproc_ifdef
+    name: (identifier))
+  (preproc_def
+    name: (identifier))
+  (preproc_endif))

@@ -1,0 +1,184 @@
+================================================================================
+Numbers
+================================================================================
+
+int a[] = { 0, 42, 0x1F, 0b1010, 0755, 1'000'000, 10ULL, 1.5f, .5, 1e-9, 0x1p-3, 2wb };
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (declaration
+    type: (primitive_type)
+    declarator: (init_declarator
+      declarator: (array_declarator
+        declarator: (identifier))
+      value: (initializer_list
+        (number_literal)
+        (number_literal)
+        (number_literal)
+        (number_literal)
+        (number_literal)
+        (number_literal)
+        (number_literal)
+        (number_literal)
+        (number_literal)
+        (number_literal)
+        (number_literal)
+        (number_literal)))))
+
+================================================================================
+Characters
+================================================================================
+
+int a[] = { 'a', '\n', '\'', '\x41', '\0', L'x', u'y', U'z', u8'w' };
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (declaration
+    type: (primitive_type)
+    declarator: (init_declarator
+      declarator: (array_declarator
+        declarator: (identifier))
+      value: (initializer_list
+        (char_literal
+          (character))
+        (char_literal
+          (escape_sequence))
+        (char_literal
+          (escape_sequence))
+        (char_literal
+          (escape_sequence))
+        (char_literal
+          (escape_sequence))
+        (char_literal
+          (character))
+        (char_literal
+          (character))
+        (char_literal
+          (character))
+        (char_literal
+          (character))))))
+
+================================================================================
+Strings
+================================================================================
+
+const char *a = "plain";
+const char *b = "esc \" \\ \t é";
+const char *c = u8"a" "b" L"c";
+const char *d = "%" PRIu64 "\n";
+const char *e = "line \
+continued";
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (declaration
+    (type_qualifier)
+    type: (primitive_type)
+    declarator: (init_declarator
+      declarator: (pointer_declarator
+        declarator: (identifier))
+      value: (string_literal
+        (string_content))))
+  (declaration
+    (type_qualifier)
+    type: (primitive_type)
+    declarator: (init_declarator
+      declarator: (pointer_declarator
+        declarator: (identifier))
+      value: (string_literal
+        (string_content)
+        (escape_sequence)
+        (string_content)
+        (escape_sequence)
+        (string_content)
+        (escape_sequence)
+        (string_content))))
+  (declaration
+    (type_qualifier)
+    type: (primitive_type)
+    declarator: (init_declarator
+      declarator: (pointer_declarator
+        declarator: (identifier))
+      value: (concatenated_string
+        (string_literal
+          (string_content))
+        (string_literal
+          (string_content))
+        (string_literal
+          (string_content)))))
+  (declaration
+    (type_qualifier)
+    type: (primitive_type)
+    declarator: (init_declarator
+      declarator: (pointer_declarator
+        declarator: (identifier))
+      value: (concatenated_string
+        (string_literal
+          (string_content))
+        (identifier)
+        (string_literal
+          (escape_sequence)))))
+  (declaration
+    (type_qualifier)
+    type: (primitive_type)
+    declarator: (init_declarator
+      declarator: (pointer_declarator
+        declarator: (identifier))
+      value: (string_literal
+        (string_content)
+        (escape_sequence)
+        (string_content)))))
+
+================================================================================
+Booleans and null
+================================================================================
+
+bool a = true || false;
+void *p = NULL;
+void *q = nullptr;
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (declaration
+    type: (primitive_type)
+    declarator: (init_declarator
+      declarator: (identifier)
+      value: (binary_expression
+        left: (true)
+        right: (false))))
+  (declaration
+    type: (primitive_type)
+    declarator: (init_declarator
+      declarator: (pointer_declarator
+        declarator: (identifier))
+      value: (null)))
+  (declaration
+    type: (primitive_type)
+    declarator: (init_declarator
+      declarator: (pointer_declarator
+        declarator: (identifier))
+      value: (null))))
+
+================================================================================
+Comments
+================================================================================
+
+// line comment \
+   continued
+/* block
+   comment */
+int x; /* trailing */
+
+--------------------------------------------------------------------------------
+
+(translation_unit
+  (comment)
+  (comment)
+  (declaration
+    type: (primitive_type)
+    declarator: (identifier))
+  (comment))
