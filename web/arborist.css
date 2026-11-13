@@ -47,6 +47,7 @@
 .arborist .hl-type { color: var(--hl-type); }
 .arborist .hl-constant { color: var(--hl-constant); }
 .arborist .hl-property { color: var(--hl-property); }
+.arborist .hl-variable { color: var(--hl-fg); }
 .arborist .hl-variable-parameter { font-style: italic; }
 .arborist .hl-label { color: var(--hl-label); }
 .arborist .hl-tag { color: var(--hl-tag); }
