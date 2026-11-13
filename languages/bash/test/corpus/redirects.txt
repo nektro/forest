@@ -1,0 +1,292 @@
+================================================================================
+File redirects
+================================================================================
+
+a > f >> g < h 2>&1 &> i &>> j 3<&0 >&- <> k >| l
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    redirect: (file_redirect
+      destination: (word))
+    redirect: (file_redirect
+      destination: (word))
+    redirect: (file_redirect
+      destination: (word))
+    redirect: (file_redirect
+      descriptor: (file_descriptor)
+      destination: (word))
+    redirect: (file_redirect
+      destination: (word))
+    redirect: (file_redirect
+      destination: (word))
+    redirect: (file_redirect
+      descriptor: (file_descriptor)
+      destination: (word))
+    redirect: (file_redirect
+      destination: (word))
+    redirect: (file_redirect
+      destination: (word))
+    redirect: (file_redirect
+      destination: (word))))
+
+================================================================================
+Redirects before a command and alone
+================================================================================
+
+>f a
+> out
+2>/dev/null cmd
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    (file_redirect
+      destination: (word))
+    name: (command_name
+      (word)))
+  (file_redirect
+    destination: (word))
+  (command
+    (file_redirect
+      descriptor: (file_descriptor)
+      destination: (word))
+    name: (command_name
+      (word))))
+
+================================================================================
+Here strings
+================================================================================
+
+cat <<< "$x"
+read a b <<< $line
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    redirect: (herestring_redirect
+      (string
+        (simple_expansion
+          (variable_name)))))
+  (command
+    name: (command_name
+      (word))
+    argument: (word)
+    argument: (word)
+    redirect: (herestring_redirect
+      (simple_expansion
+        (variable_name)))))
+
+================================================================================
+Heredoc
+================================================================================
+
+cat <<EOF
+hello $name
+  $(date) ${x}
+EOF
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    redirect: (heredoc_redirect
+      delimiter: (heredoc_start)
+      body: (heredoc_body
+        (heredoc_content)
+        (simple_expansion
+          (variable_name))
+        (heredoc_content)
+        (command_substitution
+          (command
+            name: (command_name
+              (word))))
+        (heredoc_content)
+        (expansion
+          (variable_name))
+        (heredoc_end)))))
+
+================================================================================
+Quoted heredoc
+================================================================================
+
+cat <<'EOF'
+literal $x `y` \
+EOF
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    redirect: (heredoc_redirect
+      delimiter: (heredoc_start)
+      body: (heredoc_body
+        (heredoc_content)
+        (heredoc_end)))))
+
+================================================================================
+Heredoc with the rest of the line
+================================================================================
+
+cat <<EOF > out | sort && echo done
+body
+EOF
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    redirect: (heredoc_redirect
+      delimiter: (heredoc_start)
+      redirect: (file_redirect
+        destination: (word))
+      (list
+        (command
+          name: (command_name
+            (word)))
+        (command
+          name: (command_name
+            (word))
+          argument: (word)))
+      body: (heredoc_body
+        (heredoc_content)
+        (heredoc_end)))))
+
+================================================================================
+Heredoc with tabs
+================================================================================
+
+cat <<-EOF
+	body
+	EOF
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    redirect: (heredoc_redirect
+      delimiter: (heredoc_start)
+      body: (heredoc_body
+        (heredoc_content)
+        (heredoc_end)))))
+
+================================================================================
+Heredoc lines that look like ends
+================================================================================
+
+cat <<EOF
+USAGE
+EOFX
+EOF
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    redirect: (heredoc_redirect
+      delimiter: (heredoc_start)
+      body: (heredoc_body
+        (heredoc_content)
+        (heredoc_content)
+        (heredoc_end)))))
+
+================================================================================
+Heredoc with another delimiter
+================================================================================
+
+cat <<USAGE
+usage: x
+USAGE
+cat <<cmake
+project(x)
+cmake
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    redirect: (heredoc_redirect
+      delimiter: (heredoc_start)
+      body: (heredoc_body
+        (heredoc_content)
+        (heredoc_end))))
+  (command
+    name: (command_name
+      (word))
+    redirect: (heredoc_redirect
+      delimiter: (heredoc_start)
+      body: (heredoc_body
+        (heredoc_content)
+        (heredoc_end)))))
+
+================================================================================
+Heredoc in command substitution
+================================================================================
+
+x=$(cat <<EOF
+hi
+EOF
+)
+
+--------------------------------------------------------------------------------
+
+(program
+  (variable_assignment
+    name: (variable_name)
+    value: (command_substitution
+      (command
+        name: (command_name
+          (word))
+        redirect: (heredoc_redirect
+          delimiter: (heredoc_start)
+          body: (heredoc_body
+            (heredoc_content)
+            (heredoc_end)))))))
+
+================================================================================
+Heredoc on a loop
+================================================================================
+
+while read l; do echo $l; done <<EOF
+a
+EOF
+
+--------------------------------------------------------------------------------
+
+(program
+  (redirected_statement
+    body: (while_statement
+      condition: (command
+        name: (command_name
+          (word))
+        argument: (word))
+      body: (do_group
+        (command
+          name: (command_name
+            (word))
+          argument: (simple_expansion
+            (variable_name)))))
+    redirect: (heredoc_redirect
+      delimiter: (heredoc_start)
+      body: (heredoc_body
+        (heredoc_content)
+        (heredoc_end)))))

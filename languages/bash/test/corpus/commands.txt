@@ -1,0 +1,375 @@
+================================================================================
+Simple commands
+================================================================================
+
+echo hello world
+ls -la /tmp
+./configure --prefix=/usr
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    argument: (word)
+    argument: (word))
+  (command
+    name: (command_name
+      (word))
+    argument: (word)
+    argument: (word))
+  (command
+    name: (command_name
+      (word))
+    argument: (word)))
+
+================================================================================
+Command names that are not identifiers
+================================================================================
+
+g++ -o a a.c
+[ -f x ]
+/usr/bin/env bash
+7z x a.7z
+"$cmd" arg
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    argument: (word)
+    argument: (word)
+    argument: (word))
+  (command
+    name: (command_name
+      (word))
+    argument: (word)
+    argument: (word)
+    argument: (word))
+  (command
+    name: (command_name
+      (word))
+    argument: (word))
+  (command
+    name: (command_name
+      (word))
+    argument: (word)
+    argument: (word))
+  (command
+    name: (command_name
+      (string
+        (simple_expansion
+          (variable_name))))
+    argument: (word)))
+
+================================================================================
+Assignments
+================================================================================
+
+a=1
+b+=2 c=
+d=$a"x"
+
+--------------------------------------------------------------------------------
+
+(program
+  (variable_assignment
+    name: (variable_name)
+    value: (word))
+  (variable_assignment
+    name: (variable_name)
+    value: (word))
+  (variable_assignment
+    name: (variable_name))
+  (variable_assignment
+    name: (variable_name)
+    value: (concatenation
+      (simple_expansion
+        (variable_name))
+      (string
+        (string_content)))))
+
+================================================================================
+Assignments before a command
+================================================================================
+
+LC_ALL=C sort file
+A=1 B=2 make
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    (variable_assignment
+      name: (variable_name)
+      value: (word))
+    name: (command_name
+      (word))
+    argument: (word))
+  (command
+    (variable_assignment
+      name: (variable_name)
+      value: (word))
+    (variable_assignment
+      name: (variable_name)
+      value: (word))
+    name: (command_name
+      (word))))
+
+================================================================================
+Assignments and a command on the next line
+================================================================================
+
+a=1 b=2
+make
+
+--------------------------------------------------------------------------------
+
+(program
+  (variable_assignment
+    name: (variable_name)
+    value: (word))
+  (variable_assignment
+    name: (variable_name)
+    value: (word))
+  (command
+    name: (command_name
+      (word))))
+
+================================================================================
+Arrays and subscripts
+================================================================================
+
+arr=(a "b c" $d)
+arr[0]=x
+arr+=([k]=v)
+
+--------------------------------------------------------------------------------
+
+(program
+  (variable_assignment
+    name: (variable_name)
+    value: (array
+      (word)
+      (string
+        (string_content))
+      (simple_expansion
+        (variable_name))))
+  (variable_assignment
+    name: (subscript
+      name: (variable_name)
+      index: (word))
+    value: (word))
+  (variable_assignment
+    name: (variable_name)
+    value: (array
+      (word))))
+
+================================================================================
+Reserved words as names
+================================================================================
+
+select=1
+function=$1
+local if function
+
+--------------------------------------------------------------------------------
+
+(program
+  (variable_assignment
+    name: (variable_name)
+    value: (word))
+  (variable_assignment
+    name: (variable_name)
+    value: (simple_expansion
+      (special_variable_name)))
+  (declaration_command
+    (variable_name)
+    (variable_name)))
+
+================================================================================
+Declarations
+================================================================================
+
+export PATH="$HOME/bin:$PATH" EDITOR
+local -a list=() name
+readonly X=1
+declare -A map=([a]=1)
+
+--------------------------------------------------------------------------------
+
+(program
+  (declaration_command
+    (variable_assignment
+      name: (variable_name)
+      value: (string
+        (simple_expansion
+          (variable_name))
+        (string_content)
+        (simple_expansion
+          (variable_name))))
+    (variable_name))
+  (declaration_command
+    (word)
+    (variable_assignment
+      name: (variable_name)
+      value: (array))
+    (variable_name))
+  (declaration_command
+    (variable_assignment
+      name: (variable_name)
+      value: (word)))
+  (declaration_command
+    (word)
+    (variable_assignment
+      name: (variable_name)
+      value: (array
+        (word)))))
+
+================================================================================
+Unset
+================================================================================
+
+unset -v x arr[1] 'arr[2]'
+
+--------------------------------------------------------------------------------
+
+(program
+  (unset_command
+    (word)
+    (variable_name)
+    (subscript
+      name: (variable_name)
+      index: (word))
+    (raw_string)))
+
+================================================================================
+Pipelines and lists
+================================================================================
+
+a | b |& c
+a && b || c
+! grep -q x f && echo no
+
+--------------------------------------------------------------------------------
+
+(program
+  (pipeline
+    (command
+      name: (command_name
+        (word)))
+    (pipeline
+      (command
+        name: (command_name
+          (word)))
+      (command
+        name: (command_name
+          (word)))))
+  (list
+    (list
+      (command
+        name: (command_name
+          (word)))
+      (command
+        name: (command_name
+          (word))))
+    (command
+      name: (command_name
+        (word))))
+  (list
+    (negated_command
+      (command
+        name: (command_name
+          (word))
+        argument: (word)
+        argument: (word)
+        argument: (word)))
+    (command
+      name: (command_name
+        (word))
+      argument: (word))))
+
+================================================================================
+Terminators
+================================================================================
+
+a; b & c
+d &
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word)))
+  (command
+    name: (command_name
+      (word)))
+  (command
+    name: (command_name
+      (word)))
+  (command
+    name: (command_name
+      (word))))
+
+================================================================================
+Line continuations
+================================================================================
+
+echo a \
+  b
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    argument: (word)
+    argument: (word)))
+
+================================================================================
+Comments
+================================================================================
+
+# comment
+echo a#b # comment
+echo "#" '#' \#
+
+--------------------------------------------------------------------------------
+
+(program
+  (comment)
+  (command
+    name: (command_name
+      (word))
+    argument: (word))
+  (comment)
+  (command
+    name: (command_name
+      (word))
+    argument: (string
+      (string_content))
+    argument: (raw_string)
+    argument: (word)))
+
+================================================================================
+Reserved words as arguments
+================================================================================
+
+echo if then } ]] done
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    argument: (word)
+    argument: (word)
+    argument: (word)
+    argument: (word)
+    argument: (word)))

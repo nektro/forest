@@ -1,0 +1,409 @@
+================================================================================
+Concatenation
+================================================================================
+
+echo a"b"$c${d}$(e)`f`'g'
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    argument: (concatenation
+      (word)
+      (string
+        (string_content))
+      (simple_expansion
+        (variable_name))
+      (expansion
+        (variable_name))
+      (command_substitution
+        (command
+          name: (command_name
+            (word))))
+      (command_substitution
+        (command
+          name: (command_name
+            (word))))
+      (raw_string))))
+
+================================================================================
+Separate words
+================================================================================
+
+echo a "b" $c
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    argument: (word)
+    argument: (string
+      (string_content))
+    argument: (simple_expansion
+      (variable_name))))
+
+================================================================================
+Double-quoted strings
+================================================================================
+
+echo "a $b ${c} $(d) $((1 + 2)) `e` \" $"
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    argument: (string
+      (string_content)
+      (simple_expansion
+        (variable_name))
+      (string_content)
+      (expansion
+        (variable_name))
+      (string_content)
+      (command_substitution
+        (command
+          name: (command_name
+            (word))))
+      (string_content)
+      (arithmetic_expansion
+        (binary_expression
+          left: (number)
+          right: (number)))
+      (string_content)
+      (command_substitution
+        (command
+          name: (command_name
+            (word))))
+      (string_content)
+      (string_content))))
+
+================================================================================
+Other strings
+================================================================================
+
+echo 'raw $x' $'tab\t' $"hello"
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    argument: (raw_string)
+    argument: (ansi_c_string)
+    argument: (translated_string
+      (string_content))))
+
+================================================================================
+Simple expansions
+================================================================================
+
+echo $a $_b $1 $10 $@ $* $# $? $$ $! $- $0
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    argument: (simple_expansion
+      (variable_name))
+    argument: (simple_expansion
+      (variable_name))
+    argument: (simple_expansion
+      (special_variable_name))
+    argument: (concatenation
+      (simple_expansion
+        (special_variable_name))
+      (word))
+    argument: (simple_expansion
+      (special_variable_name))
+    argument: (simple_expansion
+      (special_variable_name))
+    argument: (simple_expansion
+      (special_variable_name))
+    argument: (simple_expansion
+      (special_variable_name))
+    argument: (simple_expansion
+      (special_variable_name))
+    argument: (simple_expansion
+      (special_variable_name))
+    argument: (simple_expansion
+      (special_variable_name))
+    argument: (simple_expansion
+      (special_variable_name))))
+
+================================================================================
+Literal dollar signs
+================================================================================
+
+echo $ a$ "$"
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    argument: (word)
+    argument: (concatenation
+      (word)
+      (word))
+    argument: (string
+      (string_content))))
+
+================================================================================
+Parameter expansions
+================================================================================
+
+echo ${a} ${#a} ${!a} ${a:-b} ${a:=b} ${a:?msg} ${a:+x}
+echo ${a#*/} ${a##*/} ${a%.*} ${a%%.*} ${a/x/y} ${a//x/y} ${a^^} ${a,,} ${a@Q}
+echo ${a:1:2} ${arr[@]} ${#arr[@]} ${!arr[@]} ${arr[$i]} ${#} ${@}
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    argument: (expansion
+      (variable_name))
+    argument: (expansion
+      (variable_name))
+    argument: (expansion
+      (variable_name))
+    argument: (expansion
+      (variable_name)
+      (word))
+    argument: (expansion
+      (variable_name)
+      (word))
+    argument: (expansion
+      (variable_name)
+      (word))
+    argument: (expansion
+      (variable_name)
+      (word)))
+  (command
+    name: (command_name
+      (word))
+    argument: (expansion
+      (variable_name)
+      (word))
+    argument: (expansion
+      (variable_name)
+      (word))
+    argument: (expansion
+      (variable_name)
+      (word))
+    argument: (expansion
+      (variable_name)
+      (word))
+    argument: (expansion
+      (variable_name)
+      (word))
+    argument: (expansion
+      (variable_name)
+      (word))
+    argument: (expansion
+      (variable_name))
+    argument: (expansion
+      (variable_name))
+    argument: (expansion
+      (variable_name)
+      (word)))
+  (command
+    name: (command_name
+      (word))
+    argument: (expansion
+      (variable_name)
+      (word))
+    argument: (expansion
+      (subscript
+        name: (variable_name)
+        index: (word)))
+    argument: (expansion
+      (subscript
+        name: (variable_name)
+        index: (word)))
+    argument: (expansion
+      (subscript
+        name: (variable_name)
+        index: (word)))
+    argument: (expansion
+      (subscript
+        name: (variable_name)
+        index: (simple_expansion
+          (variable_name))))
+    argument: (expansion
+      (special_variable_name))
+    argument: (expansion
+      (special_variable_name))))
+
+================================================================================
+Expansion words with spaces
+================================================================================
+
+echo ${a:-b c} ${a:-"q"}
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    argument: (expansion
+      (variable_name)
+      (word))
+    argument: (expansion
+      (variable_name)
+      (string
+        (string_content)))))
+
+================================================================================
+Command substitution
+================================================================================
+
+echo $(a | b) `c` "$(d "e")"
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    argument: (command_substitution
+      (pipeline
+        (command
+          name: (command_name
+            (word)))
+        (command
+          name: (command_name
+            (word)))))
+    argument: (command_substitution
+      (command
+        name: (command_name
+          (word))))
+    argument: (string
+      (command_substitution
+        (command
+          name: (command_name
+            (word))
+          argument: (string
+            (string_content)))))))
+
+================================================================================
+Arithmetic expansion
+================================================================================
+
+echo $((a + 1)) $(( (a) * 2 )) $[a]
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    argument: (arithmetic_expansion
+      (binary_expression
+        left: (variable_name)
+        right: (number)))
+    argument: (arithmetic_expansion
+      (binary_expression
+        left: (parenthesized_expression
+          (variable_name))
+        right: (number)))
+    argument: (arithmetic_expansion
+      (variable_name))))
+
+================================================================================
+Process substitution
+================================================================================
+
+diff <(a) >(b)
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    argument: (process_substitution
+      (command
+        name: (command_name
+          (word))))
+    argument: (process_substitution
+      (command
+        name: (command_name
+          (word))))))
+
+================================================================================
+Globs and brace expansions
+================================================================================
+
+echo *.txt file?.[ch] {a,b} ~/x
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    argument: (word)
+    argument: (word)
+    argument: (word)
+    argument: (word)))
+
+================================================================================
+Extended globs
+================================================================================
+
+echo !(*.txt) @(a|b) x+([0-9])
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    argument: (word)
+    argument: (word)
+    argument: (word)))
+
+================================================================================
+Escapes
+================================================================================
+
+echo \$HOME \"x\" a\ b
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    argument: (word)
+    argument: (word)
+    argument: (word)))
+
+================================================================================
+Numbers
+================================================================================
+
+echo 1 23 4x
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    argument: (word)
+    argument: (word)
+    argument: (word)))

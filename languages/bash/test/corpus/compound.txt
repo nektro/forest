@@ -1,0 +1,410 @@
+================================================================================
+If
+================================================================================
+
+if a; then b; elif c; then d; else e; fi
+
+--------------------------------------------------------------------------------
+
+(program
+  (if_statement
+    condition: (command
+      name: (command_name
+        (word)))
+    (command
+      name: (command_name
+        (word)))
+    (elif_clause
+      condition: (command
+        name: (command_name
+          (word)))
+      (command
+        name: (command_name
+          (word))))
+    (else_clause
+      (command
+        name: (command_name
+          (word))))))
+
+================================================================================
+If on several lines
+================================================================================
+
+if [ -z "$1" ]
+then
+  echo none
+fi
+
+--------------------------------------------------------------------------------
+
+(program
+  (if_statement
+    condition: (command
+      name: (command_name
+        (word))
+      argument: (word)
+      argument: (string
+        (simple_expansion
+          (special_variable_name)))
+      argument: (word))
+    (command
+      name: (command_name
+        (word))
+      argument: (word))))
+
+================================================================================
+While and until
+================================================================================
+
+while read -r l; do echo "$l"; done < f
+until false; do break; done
+
+--------------------------------------------------------------------------------
+
+(program
+  (redirected_statement
+    body: (while_statement
+      condition: (command
+        name: (command_name
+          (word))
+        argument: (word)
+        argument: (word))
+      body: (do_group
+        (command
+          name: (command_name
+            (word))
+          argument: (string
+            (simple_expansion
+              (variable_name))))))
+    redirect: (file_redirect
+      destination: (word)))
+  (while_statement
+    condition: (command
+      name: (command_name
+        (word)))
+    body: (do_group
+      (command
+        name: (command_name
+          (word))))))
+
+================================================================================
+For
+================================================================================
+
+for i in 1 2 3; do echo $i; done
+for a; do :; done
+select x in a b; do break; done
+
+--------------------------------------------------------------------------------
+
+(program
+  (for_statement
+    variable: (variable_name)
+    value: (word)
+    value: (word)
+    value: (word)
+    body: (do_group
+      (command
+        name: (command_name
+          (word))
+        argument: (simple_expansion
+          (variable_name)))))
+  (for_statement
+    variable: (variable_name)
+    body: (do_group
+      (command
+        name: (command_name
+          (word)))))
+  (for_statement
+    variable: (variable_name)
+    value: (word)
+    value: (word)
+    body: (do_group
+      (command
+        name: (command_name
+          (word))))))
+
+================================================================================
+C-style for
+================================================================================
+
+for ((i = 0; i < 10; i++)); do echo $i; done
+
+--------------------------------------------------------------------------------
+
+(program
+  (c_style_for_statement
+    initializer: (binary_expression
+      left: (variable_name)
+      right: (number))
+    condition: (binary_expression
+      left: (variable_name)
+      right: (number))
+    update: (postfix_expression
+      (variable_name))
+    body: (do_group
+      (command
+        name: (command_name
+          (word))
+        argument: (simple_expansion
+          (variable_name))))))
+
+================================================================================
+Case
+================================================================================
+
+case $1 in
+  -h|--help) usage ;;
+  (*.c) echo c ;&
+  *) exit 1 ;;&
+esac
+
+--------------------------------------------------------------------------------
+
+(program
+  (case_statement
+    value: (simple_expansion
+      (special_variable_name))
+    (case_item
+      value: (word)
+      value: (word)
+      (command
+        name: (command_name
+          (word))))
+    (case_item
+      value: (word)
+      (command
+        name: (command_name
+          (word))
+        argument: (word)))
+    (case_item
+      value: (word)
+      (command
+        name: (command_name
+          (word))
+        argument: (word)))))
+
+================================================================================
+Case without a final terminator
+================================================================================
+
+case $x in
+  a) echo a
+esac
+
+--------------------------------------------------------------------------------
+
+(program
+  (case_statement
+    value: (simple_expansion
+      (variable_name))
+    (case_item
+      value: (word)
+      (command
+        name: (command_name
+          (word))
+        argument: (word)))))
+
+================================================================================
+Functions
+================================================================================
+
+f() { echo f; }
+function g { :; }
+function h() ( echo sub )
+foo-bar::baz () {
+  return 0
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (function_definition
+    name: (word)
+    body: (compound_statement
+      (command
+        name: (command_name
+          (word))
+        argument: (word))))
+  (function_definition
+    name: (word)
+    body: (compound_statement
+      (command
+        name: (command_name
+          (word)))))
+  (function_definition
+    name: (word)
+    body: (subshell
+      (command
+        name: (command_name
+          (word))
+        argument: (word))))
+  (function_definition
+    name: (word)
+    body: (compound_statement
+      (command
+        name: (command_name
+          (word))
+        argument: (word)))))
+
+================================================================================
+Groups and subshells
+================================================================================
+
+{ a; b; } > out 2>&1
+(cd dir && make)
+
+--------------------------------------------------------------------------------
+
+(program
+  (redirected_statement
+    body: (compound_statement
+      (command
+        name: (command_name
+          (word)))
+      (command
+        name: (command_name
+          (word))))
+    redirect: (file_redirect
+      destination: (word))
+    redirect: (file_redirect
+      descriptor: (file_descriptor)
+      destination: (word)))
+  (subshell
+    (list
+      (command
+        name: (command_name
+          (word))
+        argument: (word))
+      (command
+        name: (command_name
+          (word))))))
+
+================================================================================
+Test commands
+================================================================================
+
+[[ -f $f && $x == *.txt || ! -d d ]]
+[[ $a = -x ]]
+[[ ( $a < $b ) ]]
+
+--------------------------------------------------------------------------------
+
+(program
+  (test_command
+    (binary_expression
+      left: (binary_expression
+        left: (unary_expression
+          operator: (test_operator)
+          (simple_expansion
+            (variable_name)))
+        right: (binary_expression
+          left: (simple_expansion
+            (variable_name))
+          right: (word)))
+      right: (unary_expression
+        (unary_expression
+          operator: (test_operator)
+          (word)))))
+  (test_command
+    (binary_expression
+      left: (simple_expansion
+        (variable_name))
+      right: (word)))
+  (test_command
+    (parenthesized_expression
+      (binary_expression
+        left: (simple_expansion
+          (variable_name))
+        right: (simple_expansion
+          (variable_name))))))
+
+================================================================================
+Regular expressions
+================================================================================
+
+[[ $v =~ ^([0-9]+)\.([0-9]+)$ ]]
+[[ $x =~ Lunar([ ]|%20)Client ]]
+[[ $x =~ "a b"$c ]]
+
+--------------------------------------------------------------------------------
+
+(program
+  (test_command
+    (binary_expression
+      left: (simple_expansion
+        (variable_name))
+      right: (regex)))
+  (test_command
+    (binary_expression
+      left: (simple_expansion
+        (variable_name))
+      right: (regex)))
+  (test_command
+    (binary_expression
+      left: (simple_expansion
+        (variable_name))
+      right: (concatenation
+        (string
+          (string_content))
+        (simple_expansion
+          (variable_name))))))
+
+================================================================================
+Arithmetic commands
+================================================================================
+
+((i++))
+(( x = y ? 1 : 2, z <<= 1 ))
+(( a $op b ))
+
+--------------------------------------------------------------------------------
+
+(program
+  (arithmetic_command
+    (postfix_expression
+      (variable_name)))
+  (arithmetic_command
+    (binary_expression
+      left: (binary_expression
+        left: (variable_name)
+        right: (ternary_expression
+          condition: (variable_name)
+          consequence: (number)
+          alternative: (number)))
+      right: (binary_expression
+        left: (variable_name)
+        right: (number))))
+  (arithmetic_command
+    (binary_expression
+      left: (variable_name)
+      operator: (simple_expansion
+        (variable_name))
+      right: (variable_name))))
+
+================================================================================
+Arithmetic numbers
+================================================================================
+
+echo $((16#ff + 0x1f + 10#$n + 0x$h))
+
+--------------------------------------------------------------------------------
+
+(program
+  (command
+    name: (command_name
+      (word))
+    argument: (arithmetic_expansion
+      (binary_expression
+        left: (binary_expression
+          left: (binary_expression
+            left: (number)
+            right: (number))
+          right: (concatenation
+            (number)
+            (simple_expansion
+              (variable_name))))
+        right: (concatenation
+          (number)
+          (simple_expansion
+            (variable_name)))))))
