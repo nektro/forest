@@ -1,0 +1,97 @@
+========================================================================
+Use
+========================================================================
+
+@use "sass:math";
+@use "a" as b;
+@use "c" as *;
+@use "d" with ($e: 1, $f: 2);
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (use_statement
+    path: (string
+      (string_content)))
+  (use_statement
+    path: (string
+      (string_content))
+    namespace: (identifier))
+  (use_statement
+    path: (string
+      (string_content)))
+  (use_statement
+    path: (string
+      (string_content))
+    configuration: (map
+      (pair
+        key: (variable)
+        value: (value
+          (number)))
+      (pair
+        key: (variable)
+        value: (value
+          (number))))))
+
+========================================================================
+Forward
+========================================================================
+
+@forward "a" as b-* hide c, $d;
+@forward "e" show f with ($g: 1 !default);
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (forward_statement
+    path: (string
+      (string_content))
+    prefix: (forward_prefix)
+    (identifier)
+    (variable))
+  (forward_statement
+    path: (string
+      (string_content))
+    (identifier)
+    configuration: (map
+      (pair
+        key: (variable)
+        value: (value
+          (number)
+          (default_flag))))))
+
+========================================================================
+Import
+========================================================================
+
+@import "a", 'b';
+@import url(c.css) screen and (min-width: 1px);
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (import_statement
+    (string
+      (string_content))
+    (string
+      (string_content)))
+  (import_statement
+    (url)
+    (keyword_query)
+    (feature_query
+      feature: (property_name)
+      (number
+        (unit)))))
+
+========================================================================
+Charset
+========================================================================
+
+@charset "UTF-8";
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (charset_statement
+    (string
+      (string_content))))

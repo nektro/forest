@@ -1,0 +1,36 @@
+@use "sass:map";
+@use "sass:math";
+
+$button-padding: 0.5rem 1rem !default;
+$button-variants: (
+  "primary": #0d6efd,
+  "danger": #dc3545,
+) !default;
+
+@mixin button-variant($background, $hover: darken($background, 8%)) {
+  background-color: $background;
+  border-color: $background;
+
+  &:hover,
+  &:focus-visible {
+    background-color: $hover;
+  }
+}
+
+.btn {
+  display: inline-block;
+  padding: $button-padding;
+  border-radius: math.div(1rem, 4);
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+
+  @each $name, $color in $button-variants {
+    &-#{$name} {
+      @include button-variant($color);
+    }
+  }
+
+  &:disabled > .icon,
+  &.is-loading::after {
+    opacity: if(sass($enable-shadows): 0.65; else: 0.5);
+  }
+}

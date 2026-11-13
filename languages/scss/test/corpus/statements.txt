@@ -1,0 +1,503 @@
+========================================================================
+Mixin and include
+========================================================================
+
+@mixin m($a, $b: 10px, $c...) {
+  @content($a);
+}
+.x {
+  @include m(1);
+  @include n;
+  @include ns.o($p: 2) { y: z }
+  @include q using ($r) { s: $r }
+}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (mixin_statement
+    name: (identifier)
+    parameters: (parameters
+      (parameter
+        name: (variable))
+      (parameter
+        name: (variable)
+        default: (number
+          (unit)))
+      (parameter
+        name: (variable)))
+    body: (block
+      (content_statement
+        arguments: (arguments
+          (variable)))))
+  (rule_set
+    selectors: (selectors
+      (class_selector
+        name: (class_name)))
+    body: (block
+      (include_statement
+        name: (identifier)
+        arguments: (arguments
+          (number)))
+      (include_statement
+        name: (identifier))
+      (include_statement
+        name: (namespaced_name
+          namespace: (module)
+          name: (identifier))
+        arguments: (arguments
+          (keyword_argument
+            name: (variable)
+            value: (value
+              (number))))
+        body: (block
+          (declaration
+            property: (property_name)
+            (identifier))))
+      (include_statement
+        name: (identifier)
+        using: (parameters
+          (parameter
+            name: (variable)))
+        body: (block
+          (declaration
+            property: (property_name)
+            (variable)))))))
+
+========================================================================
+Include as the last statement
+========================================================================
+
+.x { @include m }
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (class_selector
+        name: (class_name)))
+    body: (block
+      (include_statement
+        name: (identifier)))))
+
+========================================================================
+Function and return
+========================================================================
+
+@function double($n) {
+  @return $n * 2;
+}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (function_statement
+    name: (identifier)
+    parameters: (parameters
+      (parameter
+        name: (variable)))
+    body: (block
+      (return_statement
+        (binary_expression
+          left: (variable)
+          right: (number))))))
+
+========================================================================
+If and else
+========================================================================
+
+@if $a == 1 {
+  b: c;
+} @else if $d {
+  e: f;
+} @elseif $g {
+} @else {
+  h: i;
+}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (if_statement
+    condition: (binary_expression
+      left: (variable)
+      right: (number))
+    consequence: (block
+      (declaration
+        property: (property_name)
+        (identifier)))
+    alternative: (else_if_clause
+      condition: (variable)
+      consequence: (block
+        (declaration
+          property: (property_name)
+          (identifier))))
+    alternative: (else_if_clause
+      condition: (variable)
+      consequence: (block))
+    alternative: (else_clause
+      body: (block
+        (declaration
+          property: (property_name)
+          (identifier))))))
+
+========================================================================
+Each
+========================================================================
+
+@each $key, $value in $map {
+  .#{$key} { color: $value; }
+}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (each_statement
+    (variable)
+    (variable)
+    value: (value
+      (variable))
+    body: (block
+      (rule_set
+        selectors: (selectors
+          (class_selector
+            name: (class_name
+              (interpolation
+                (variable)))))
+        body: (block
+          (declaration
+            property: (property_name)
+            (variable)))))))
+
+========================================================================
+For
+========================================================================
+
+@for $i from 1 through $n {}
+@for $j from 0 to 10 {}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (for_statement
+    variable: (variable)
+    from: (number)
+    to: (variable)
+    body: (block))
+  (for_statement
+    variable: (variable)
+    from: (number)
+    to: (number)
+    body: (block)))
+
+========================================================================
+While
+========================================================================
+
+@while $i > 0 {
+  $i: $i - 1;
+}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (while_statement
+    condition: (binary_expression
+      left: (variable)
+      right: (number))
+    body: (block
+      (variable_declaration
+        name: (variable)
+        (binary_expression
+          left: (variable)
+          right: (number))))))
+
+========================================================================
+Extend
+========================================================================
+
+.a {
+  @extend .b;
+  @extend %c !optional;
+}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (class_selector
+        name: (class_name)))
+    body: (block
+      (extend_statement
+        (selectors
+          (class_selector
+            name: (class_name))))
+      (extend_statement
+        (selectors
+          (placeholder_selector
+            name: (placeholder_name)))
+        (optional_flag)))))
+
+========================================================================
+Debug, warn and error
+========================================================================
+
+@debug $a;
+@warn "b";
+@error "Unknown `#{$c}`.";
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (debug_statement
+    (variable))
+  (warn_statement
+    (string
+      (string_content)))
+  (error_statement
+    (string
+      (string_content)
+      (interpolation
+        (variable))
+      (string_content))))
+
+========================================================================
+At-root
+========================================================================
+
+.a {
+  @at-root .b {}
+  @at-root (without: media) {}
+  @at-root { .c {} }
+}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (class_selector
+        name: (class_name)))
+    body: (block
+      (at_root_statement
+        (selectors
+          (class_selector
+            name: (class_name)))
+        body: (block))
+      (at_root_statement
+        (at_root_query
+          (identifier))
+        body: (block))
+      (at_root_statement
+        body: (block
+          (rule_set
+            selectors: (selectors
+              (class_selector
+                name: (class_name)))
+            body: (block)))))))
+
+========================================================================
+Media queries
+========================================================================
+
+@media screen and (min-width: $md - 1px), print {}
+@media (400px <= width <= 700px) {}
+@media #{$mq} and (variables.$x) {}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (media_statement
+    (keyword_query)
+    (feature_query
+      feature: (property_name)
+      (binary_expression
+        left: (variable)
+        right: (number
+          (unit))))
+    (keyword_query)
+    body: (block))
+  (media_statement
+    (feature_query
+      (number
+        (unit))
+      (keyword_query)
+      (number
+        (unit)))
+    body: (block))
+  (media_statement
+    (interpolation
+      (variable))
+    (feature_query
+      (namespaced_variable
+        namespace: (module)
+        name: (variable)))
+    body: (block)))
+
+========================================================================
+Supports
+========================================================================
+
+@supports (display: grid) and (not (display: inline-grid)) {}
+@supports selector(:has(a)) {}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (supports_statement
+    (feature_query
+      feature: (property_name)
+      (identifier))
+    (feature_query
+      (feature_query
+        feature: (property_name)
+        (identifier)))
+    body: (block))
+  (supports_statement
+    (selector_query
+      (selectors
+        (pseudo_class_selector
+          name: (pseudo_class_name)
+          arguments: (pseudo_arguments
+            (selectors
+              (tag_name))))))
+    body: (block)))
+
+========================================================================
+Container
+========================================================================
+
+@container sidebar (min-width: 400px) {}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (container_statement
+    (keyword_query)
+    (feature_query
+      feature: (property_name)
+      (number
+        (unit)))
+    body: (block)))
+
+========================================================================
+Keyframes
+========================================================================
+
+@keyframes spin {
+  from { a: b }
+  50%, 75% { c: d }
+  to { e: f }
+}
+@-webkit-keyframes #{$name} {}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (keyframes_statement
+    keyword: (keyframes_keyword)
+    name: (identifier)
+    body: (block
+      (keyframe_block
+        selectors: (keyframe_selectors)
+        body: (block
+          (declaration
+            property: (property_name)
+            (identifier))))
+      (keyframe_block
+        selectors: (keyframe_selectors
+          (number
+            (unit))
+          (number
+            (unit)))
+        body: (block
+          (declaration
+            property: (property_name)
+            (identifier))))
+      (keyframe_block
+        selectors: (keyframe_selectors)
+        body: (block
+          (declaration
+            property: (property_name)
+            (identifier))))))
+  (keyframes_statement
+    keyword: (keyframes_keyword)
+    name: (interpolation
+      (variable))
+    body: (block)))
+
+========================================================================
+Page and scope
+========================================================================
+
+@page :first { margin: 1in; }
+@scope (.card) to (.content) {}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (page_statement
+    (selectors
+      (pseudo_class_selector
+        name: (pseudo_class_name)))
+    body: (block
+      (declaration
+        property: (property_name)
+        (number
+          (unit)))))
+  (scope_statement
+    root: (selectors
+      (class_selector
+        name: (class_name)))
+    limit: (selectors
+      (class_selector
+        name: (class_name)))
+    body: (block)))
+
+========================================================================
+Other at-rules
+========================================================================
+
+@font-face { font-family: X; }
+@layer base, components;
+@property --x { inherits: false; }
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (at_rule
+    keyword: (at_keyword)
+    body: (block
+      (declaration
+        property: (property_name)
+        (identifier))))
+  (at_rule
+    keyword: (at_keyword)
+    (identifier)
+    (identifier))
+  (at_rule
+    keyword: (at_keyword)
+    (identifier)
+    body: (block
+      (declaration
+        property: (property_name)
+        (boolean)))))
+
+========================================================================
+Stray semicolons
+========================================================================
+
+a { b: c;; };
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        property: (property_name)
+        (identifier)))))

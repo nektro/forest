@@ -1,0 +1,43 @@
+// A twelve-column grid.
+$columns: 12;
+$breakpoints: (sm: 576px, md: 768px, lg: 992px);
+
+@function percentage-of($n) {
+  @return math.div($n, $columns) * 100%;
+}
+
+@mixin media-up($name) {
+  @if map.has-key($breakpoints, $name) {
+    @media (min-width: map.get($breakpoints, $name)) {
+      @content;
+    }
+  } @else {
+    @error "Unknown breakpoint `#{$name}`.";
+  }
+}
+
+.row {
+  --gutter: 1.5rem;
+  display: flex;
+  margin: 0 calc(var(--gutter) / -2);
+
+  > * {
+    flex: 1 0 0%;
+  }
+}
+
+@for $i from 1 through $columns {
+  .col-#{$i} {
+    flex: 0 0 auto;
+    width: percentage-of($i);
+  }
+}
+
+@include media-up(md) {
+  .row { --gutter: 2rem }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

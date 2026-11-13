@@ -1,0 +1,86 @@
+@use "sass:math" as m;
+// <- keyword.import
+//   ^ string
+//                  ^ module
+
+$gutter: 1.5rem !default;
+// <- variable
+//       ^ number
+//          ^ number
+//              ^ keyword.modifier
+
+@mixin button($color, $size: 1rem) {
+// <- keyword.function
+//     ^ function
+//            ^ variable.parameter
+  color: $color;
+//^ property
+//       ^ variable
+  @content;
+//^ keyword.directive
+}
+
+.btn-#{$name}:hover > a::before {
+// <- punctuation.delimiter
+// ^ type
+//   ^ punctuation.special
+//      ^ variable
+//            ^ type
+//                  ^ operator
+//                    ^ tag
+//                       ^ type
+  &--active { width: calc(100% - #{$gutter}) !important; }
+//^ variable.builtin
+// ^ type
+//            ^ property
+//                   ^ function.call
+//                                           ^ keyword.modifier
+  @include button(red, $size: 2rem);
+//^ keyword.directive
+//         ^ function.call
+//                ^ constant
+//                     ^ variable.parameter
+  margin: m.div($gutter, 2) 0 #fff;
+//        ^ module
+//          ^ function.call
+//                            ^ constant
+  gap: var(--gap);
+//         ^ property
+}
+
+@if $a == null and not $b {
+// <- keyword.conditional
+//     ^ operator
+//        ^ constant.builtin
+//             ^ keyword.operator
+} @else if $c {
+//^ keyword.conditional
+//      ^ keyword.conditional
+}
+
+@each $key, $value in $map {
+// <- keyword.repeat
+//                 ^ keyword
+}
+
+@media screen and (min-width: 768px) {
+// <- keyword.directive
+//     ^ constant.builtin
+//            ^ keyword.operator
+//                 ^ property
+}
+
+@keyframes spin {
+// <- keyword.directive
+  from { opacity: 0; }
+//^ attribute
+  50% { opacity: 1; }
+//^ number
+}
+
+%placeholder { x: true; }
+// <- punctuation.delimiter
+// ^ type
+//                ^ boolean
+/* done */
+// <- comment

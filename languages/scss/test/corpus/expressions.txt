@@ -1,0 +1,389 @@
+========================================================================
+Numbers and units
+========================================================================
+
+$a: 1 1.5px .5em 50% -2 1e3 9x16;
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (variable_declaration
+    name: (variable)
+    (number)
+    (number
+      (unit))
+    (number
+      (unit))
+    (number
+      (unit))
+    (number)
+    (number)
+    (number
+      (unit))))
+
+========================================================================
+Colors, strings and booleans
+========================================================================
+
+$a: #fff #A0b1C2 "a" 'b' true false null;
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (variable_declaration
+    name: (variable)
+    (color)
+    (color)
+    (string
+      (string_content))
+    (string
+      (string_content))
+    (boolean)
+    (boolean)
+    (null)))
+
+========================================================================
+Strings with escapes and interpolation
+========================================================================
+
+$a: "\201C #{$b} #c";
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (variable_declaration
+    name: (variable)
+    (string
+      (escape_sequence)
+      (interpolation
+        (variable))
+      (string_content)
+      (string_content)
+      (string_content))))
+
+========================================================================
+Binary and unary minus
+========================================================================
+
+$a: $b - $c, $b -$c, -$d, a-b, $e*-1;
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (variable_declaration
+    name: (variable)
+    (binary_expression
+      left: (variable)
+      right: (variable))
+    (variable)
+    (unary_expression
+      argument: (variable))
+    (unary_expression
+      argument: (variable))
+    (identifier)
+    (binary_expression
+      left: (variable)
+      right: (number))))
+
+========================================================================
+Operator precedence
+========================================================================
+
+$a: $b + $c * $d == 1 and not $e or $f;
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (variable_declaration
+    name: (variable)
+    (binary_expression
+      left: (binary_expression
+        left: (binary_expression
+          left: (binary_expression
+            left: (variable)
+            right: (binary_expression
+              left: (variable)
+              right: (variable)))
+          right: (number))
+        right: (unary_expression
+          argument: (variable)))
+      right: (variable))))
+
+========================================================================
+Division in a shorthand
+========================================================================
+
+a { font: 12px/1.5 $font; }
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        property: (property_name)
+        (binary_expression
+          left: (number
+            (unit))
+          right: (number))
+        (variable)))))
+
+========================================================================
+Function calls
+========================================================================
+
+$a: rgba(#000, .5) math.div($b, 2) map.get($m, k) calc(100% - #{$c});
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (variable_declaration
+    name: (variable)
+    (call_expression
+      function: (identifier)
+      arguments: (arguments
+        (color)
+        (number)))
+    (call_expression
+      function: (namespaced_name
+        namespace: (module)
+        name: (identifier))
+      arguments: (arguments
+        (variable)
+        (number)))
+    (call_expression
+      function: (namespaced_name
+        namespace: (module)
+        name: (identifier))
+      arguments: (arguments
+        (variable)
+        (identifier)))
+    (call_expression
+      function: (identifier)
+      arguments: (arguments
+        (binary_expression
+          left: (number
+            (unit))
+          right: (interpolation
+            (variable)))))))
+
+========================================================================
+Keyword and rest arguments
+========================================================================
+
+$a: f($b: 1 2, $c...);
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (variable_declaration
+    name: (variable)
+    (call_expression
+      function: (identifier)
+      arguments: (arguments
+        (keyword_argument
+          name: (variable)
+          value: (value
+            (number)
+            (number)))
+        (variable)))))
+
+========================================================================
+Legacy if()
+========================================================================
+
+$a: if($b, 1, 2);
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (variable_declaration
+    name: (variable)
+    (if_expression
+      arguments: (arguments
+        (variable)
+        (number)
+        (number)))))
+
+========================================================================
+CSS-style if()
+========================================================================
+
+$a: if(sass($b > 1): x; not sass($c): y; else: z);
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (variable_declaration
+    name: (variable)
+    (if_expression
+      arguments: (if_branches
+        (if_branch
+          condition: (call_expression
+            function: (identifier)
+            arguments: (arguments
+              (binary_expression
+                left: (variable)
+                right: (number))))
+          value: (value
+            (identifier)))
+        (if_branch
+          condition: (unary_expression
+            argument: (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (variable))))
+          value: (value
+            (identifier)))
+        (if_branch
+          condition: (identifier)
+          value: (value
+            (identifier)))))))
+
+========================================================================
+Maps and lists
+========================================================================
+
+$a: (b: 1, c: (d e), 'f': [g h],);
+$i: (1, 2, 3) ();
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (variable_declaration
+    name: (variable)
+    (map
+      (pair
+        key: (identifier)
+        value: (value
+          (number)))
+      (pair
+        key: (identifier)
+        value: (value
+          (parenthesized_expression
+            (identifier)
+            (identifier))))
+      (pair
+        key: (string
+          (string_content))
+        value: (value
+          (bracketed_list
+            (identifier)
+            (identifier))))))
+  (variable_declaration
+    name: (variable)
+    (parenthesized_expression
+      (number)
+      (number)
+      (number))
+    (parenthesized_expression)))
+
+========================================================================
+Module members
+========================================================================
+
+$a: math.$pi;
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (variable_declaration
+    name: (variable)
+    (namespaced_variable
+      namespace: (module)
+      name: (variable))))
+
+========================================================================
+Unquoted URLs
+========================================================================
+
+a {
+  b: url(data:image/png;base64,iV=) url(#{$c}.woff2) url($d) url("e");
+}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        property: (property_name)
+        (url)
+        (url)
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (variable)))
+        (call_expression
+          function: (identifier)
+          arguments: (arguments
+            (string
+              (string_content))))))))
+
+========================================================================
+Unicode range
+========================================================================
+
+@font-face { unicode-range: U+0000-00FF, U+4??; }
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (at_rule
+    keyword: (at_keyword)
+    body: (block
+      (declaration
+        property: (property_name)
+        (unicode_range)
+        (unicode_range)))))
+
+========================================================================
+Parent selector in values
+========================================================================
+
+$a: &;
+$b: selector.append(&, '-x');
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (variable_declaration
+    name: (variable)
+    (nesting_selector))
+  (variable_declaration
+    name: (variable)
+    (call_expression
+      function: (namespaced_name
+        namespace: (module)
+        name: (identifier))
+      arguments: (arguments
+        (nesting_selector)
+        (string
+          (string_content))))))
+
+========================================================================
+Interpolated identifiers
+========================================================================
+
+a { b: foo-#{$c} #{$d}px; }
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        property: (property_name)
+        (interpolated_identifier
+          (identifier)
+          (interpolation
+            (variable)))
+        (interpolated_identifier
+          (interpolation
+            (variable)))))))

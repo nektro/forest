@@ -1,0 +1,297 @@
+========================================================================
+Declarations
+========================================================================
+
+a {
+  color: red;
+  margin: 0 auto;
+}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        property: (property_name)
+        (identifier))
+      (declaration
+        property: (property_name)
+        (number)
+        (identifier)))))
+
+========================================================================
+Declaration without whitespace
+========================================================================
+
+a{color:red;b:c}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        property: (property_name)
+        (identifier))
+      (declaration
+        property: (property_name)
+        (identifier)))))
+
+========================================================================
+Whitespace before the colon
+========================================================================
+
+a {
+  color : red;
+}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        property: (property_name)
+        (identifier)))))
+
+========================================================================
+Last declaration without a semicolon
+========================================================================
+
+a { color: red }
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        property: (property_name)
+        (identifier)))))
+
+========================================================================
+Nested rules beside declarations
+========================================================================
+
+a {
+  color: red;
+  b:hover { color: blue; }
+}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        property: (property_name)
+        (identifier))
+      (rule_set
+        selectors: (selectors
+          (pseudo_class_selector
+            (tag_name)
+            name: (pseudo_class_name)))
+        body: (block
+          (declaration
+            property: (property_name)
+            (identifier)))))))
+
+========================================================================
+Interpolated property names
+========================================================================
+
+a {
+  margin-#{$side}: 0;
+  #{$prop}: 1px;
+  --#{$prefix}gap: 1rem;
+}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        property: (property_name
+          (identifier)
+          (interpolation
+            (variable)))
+        (number))
+      (declaration
+        property: (property_name
+          (interpolation
+            (variable)))
+        (number
+          (unit)))
+      (declaration
+        property: (property_name
+          (identifier)
+          (interpolation
+            (variable)))
+        (number
+          (unit))))))
+
+========================================================================
+Custom properties
+========================================================================
+
+a {
+  --x: 1px;
+  --empty: ;
+}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        property: (property_name)
+        (number
+          (unit)))
+      (declaration
+        property: (property_name)))))
+
+========================================================================
+Nested properties
+========================================================================
+
+a {
+  font: {
+    family: serif;
+    size: 12px;
+  }
+}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (nested_property
+        property: (property_name)
+        body: (block
+          (declaration
+            property: (property_name)
+            (identifier))
+          (declaration
+            property: (property_name)
+            (number
+              (unit))))))))
+
+========================================================================
+Important
+========================================================================
+
+a {
+  color: red !important;
+}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        property: (property_name)
+        (identifier)
+        (important)))))
+
+========================================================================
+Comma-separated values
+========================================================================
+
+a {
+  transition: opacity .3s ease-in, transform .3s;
+}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (declaration
+        property: (property_name)
+        (identifier)
+        (number
+          (unit))
+        (identifier)
+        (identifier)
+        (number
+          (unit))))))
+
+========================================================================
+Comments
+========================================================================
+
+a { // line
+  b: c; /* block */
+}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (single_line_comment)
+      (declaration
+        property: (property_name)
+        (identifier))
+      (comment))))
+
+========================================================================
+Variable declarations
+========================================================================
+
+$a: 1px;
+$b: null !default;
+$c: (x: 1) !global;
+mat.$d: true;
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (variable_declaration
+    name: (variable)
+    (number
+      (unit)))
+  (variable_declaration
+    name: (variable)
+    (null)
+    (default_flag))
+  (variable_declaration
+    name: (variable)
+    (map
+      (pair
+        key: (identifier)
+        value: (value
+          (number))))
+    (global_flag))
+  (variable_declaration
+    name: (namespaced_variable
+      namespace: (module)
+      name: (variable))
+    (boolean)))

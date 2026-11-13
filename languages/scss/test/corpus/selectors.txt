@@ -1,0 +1,409 @@
+========================================================================
+Type, class, id and universal selectors
+========================================================================
+
+a, .b, #c, * {}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name)
+      (class_selector
+        name: (class_name))
+      (id_selector
+        name: (id_name))
+      (universal_selector))
+    body: (block)))
+
+========================================================================
+Compound selectors
+========================================================================
+
+a.b#c[d]:e::f {}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (pseudo_element_selector
+        (pseudo_class_selector
+          (attribute_selector
+            (id_selector
+              (class_selector
+                (tag_name)
+                name: (class_name))
+              name: (id_name))
+            name: (attribute_name))
+          name: (pseudo_class_name))
+        name: (pseudo_element_name)))
+    body: (block)))
+
+========================================================================
+Descendant selector
+========================================================================
+
+a .b {}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (descendant_selector
+        (tag_name)
+        (class_selector
+          name: (class_name))))
+    body: (block)))
+
+========================================================================
+Descendant selector before a pseudo-class
+========================================================================
+
+a :hover {}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (descendant_selector
+        (tag_name)
+        (pseudo_class_selector
+          name: (pseudo_class_name))))
+    body: (block)))
+
+========================================================================
+Combinators
+========================================================================
+
+a > b + c ~ d {}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (sibling_selector
+        (adjacent_sibling_selector
+          (child_selector
+            (tag_name)
+            (tag_name))
+          (tag_name))
+        (tag_name)))
+    body: (block)))
+
+========================================================================
+Combinators without whitespace
+========================================================================
+
+li:hover>a+b{}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (adjacent_sibling_selector
+        (child_selector
+          (pseudo_class_selector
+            (tag_name)
+            name: (pseudo_class_name))
+          (tag_name))
+        (tag_name)))
+    body: (block)))
+
+========================================================================
+Leading combinators in a nested rule
+========================================================================
+
+ul {
+  > li {}
+  + p {}
+  ~ p {}
+}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (rule_set
+        selectors: (selectors
+          (child_selector
+            (tag_name)))
+        body: (block))
+      (rule_set
+        selectors: (selectors
+          (adjacent_sibling_selector
+            (tag_name)))
+        body: (block))
+      (rule_set
+        selectors: (selectors
+          (sibling_selector
+            (tag_name)))
+        body: (block)))))
+
+========================================================================
+Trailing combinator
+========================================================================
+
+a {
+  & > {}
+}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (tag_name))
+    body: (block
+      (rule_set
+        selectors: (selectors
+          (child_selector
+            (nesting_selector)))
+        body: (block)))))
+
+========================================================================
+Attribute selectors
+========================================================================
+
+[a], [b=c], [d~='e' i], [f*="g"] {}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (attribute_selector
+        name: (attribute_name))
+      (attribute_selector
+        name: (attribute_name)
+        value: (identifier))
+      (attribute_selector
+        name: (attribute_name)
+        value: (string
+          (string_content))
+        flag: (identifier))
+      (attribute_selector
+        name: (attribute_name)
+        value: (string
+          (string_content))))
+    body: (block)))
+
+========================================================================
+Pseudo-class with selector arguments
+========================================================================
+
+.a:not(.b, [c]):is(h1, h2) {}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (pseudo_class_selector
+        (pseudo_class_selector
+          (class_selector
+            name: (class_name))
+          name: (pseudo_class_name)
+          arguments: (pseudo_arguments
+            (selectors
+              (class_selector
+                name: (class_name))
+              (attribute_selector
+                name: (attribute_name)))))
+        name: (pseudo_class_name)
+        arguments: (pseudo_arguments
+          (selectors
+            (tag_name)
+            (tag_name)))))
+    body: (block)))
+
+========================================================================
+Pseudo-class with nth arguments
+========================================================================
+
+li:nth-child(2n + 1), li:nth-last-child(-n+3 of .x), li:nth-of-type(odd) {}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (pseudo_class_selector
+        (tag_name)
+        name: (pseudo_class_name)
+        arguments: (pseudo_arguments
+          (nth)))
+      (pseudo_class_selector
+        (tag_name)
+        name: (pseudo_class_name)
+        arguments: (pseudo_arguments
+          (nth)
+          (selectors
+            (class_selector
+              name: (class_name)))))
+      (pseudo_class_selector
+        (tag_name)
+        name: (pseudo_class_name)
+        arguments: (pseudo_arguments
+          (selectors
+            (tag_name)))))
+    body: (block)))
+
+========================================================================
+Pseudo-elements
+========================================================================
+
+a::before, b::slotted(span), c:before {}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (pseudo_element_selector
+        (tag_name)
+        name: (pseudo_element_name))
+      (pseudo_element_selector
+        (tag_name)
+        name: (pseudo_element_name)
+        arguments: (pseudo_arguments
+          (selectors
+            (tag_name))))
+      (pseudo_class_selector
+        (tag_name)
+        name: (pseudo_class_name)))
+    body: (block)))
+
+========================================================================
+Nesting selector
+========================================================================
+
+.a {
+  &:hover {}
+  &.b {}
+  & + & {}
+  .c & {}
+}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (class_selector
+        name: (class_name)))
+    body: (block
+      (rule_set
+        selectors: (selectors
+          (pseudo_class_selector
+            (nesting_selector)
+            name: (pseudo_class_name)))
+        body: (block))
+      (rule_set
+        selectors: (selectors
+          (class_selector
+            (nesting_selector)
+            name: (class_name)))
+        body: (block))
+      (rule_set
+        selectors: (selectors
+          (adjacent_sibling_selector
+            (nesting_selector)
+            (nesting_selector)))
+        body: (block))
+      (rule_set
+        selectors: (selectors
+          (descendant_selector
+            (class_selector
+              name: (class_name))
+            (nesting_selector)))
+        body: (block)))))
+
+========================================================================
+Nesting selector with a suffix
+========================================================================
+
+.btn {
+  &-primary {}
+  &__icon {}
+  &--#{$mod} {}
+}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (class_selector
+        name: (class_name)))
+    body: (block
+      (rule_set
+        selectors: (selectors
+          (nesting_selector
+            (suffix)))
+        body: (block))
+      (rule_set
+        selectors: (selectors
+          (nesting_selector
+            (suffix)))
+        body: (block))
+      (rule_set
+        selectors: (selectors
+          (nesting_selector
+            (suffix
+              (interpolation
+                (variable)))))
+        body: (block)))))
+
+========================================================================
+Placeholder selector
+========================================================================
+
+%message {}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (placeholder_selector
+        name: (placeholder_name)))
+    body: (block)))
+
+========================================================================
+Interpolation in selectors
+========================================================================
+
+.col-#{$i}-md, #{$sel}:hover, .a-#{$b}#{$c} {}
+
+------------------------------------------------------------------------
+
+(stylesheet
+  (rule_set
+    selectors: (selectors
+      (class_selector
+        name: (class_name
+          (identifier)
+          (interpolation
+            (variable))))
+      (pseudo_class_selector
+        (tag_name
+          (interpolation
+            (variable)))
+        name: (pseudo_class_name))
+      (class_selector
+        name: (class_name
+          (identifier)
+          (interpolation
+            (variable))
+          (interpolation
+            (variable)))))
+    body: (block)))
