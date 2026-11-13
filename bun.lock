@@ -5,11 +5,14 @@
     "": {
       "name": "arborist",
       "devDependencies": {
+        "tree-sitter-cli": "0.27.2",
         "web-tree-sitter": "0.27.2",
       },
     },
   },
   "packages": {
+    "tree-sitter-cli": ["tree-sitter-cli@0.27.2", "", { "hasInstallScript": true, "bin": { "tree-sitter": "cli.js" } }, "sha512-uuqW/tbzkGaV5pJeNYI0OwixzpXg3Ozx3XH3DXhnSz8DCrvQp5JACLr4/0y9C5AfmL6irfLoTkvN1338m8UGYw=="],
+
     "web-tree-sitter": ["web-tree-sitter@0.27.2", "", {}, "sha512-ZRo86GKI4aOSBAqOrPmCtriExI3xIzu1sNw/V6v3b4QGxrEmO19FGwbMNdyhw3MJLAZIw0xAV0oSpqX361eAyQ=="],
   }
 }
