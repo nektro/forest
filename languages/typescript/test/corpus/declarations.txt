@@ -1,0 +1,747 @@
+================================================================================
+Functions
+================================================================================
+
+function f(a: number, b?: string, ...rest: unknown[]): void {}
+async function g() {}
+function* h() { yield 1; yield* other() }
+async function* i() {}
+
+--------------------------------------------------------------------------------
+
+(program
+  (function_declaration
+    name: (identifier)
+    parameters: (formal_parameters
+      (required_parameter
+        pattern: (identifier)
+        type: (type_annotation
+          (predefined_type)))
+      (optional_parameter
+        pattern: (identifier)
+        type: (type_annotation
+          (predefined_type)))
+      (required_parameter
+        pattern: (rest_pattern
+          (identifier))
+        type: (type_annotation
+          (array_type
+            (predefined_type)))))
+    return_type: (type_annotation
+      (predefined_type))
+    body: (statement_block))
+  (function_declaration
+    name: (identifier)
+    parameters: (formal_parameters)
+    body: (statement_block))
+  (generator_function_declaration
+    name: (identifier)
+    parameters: (formal_parameters)
+    body: (statement_block
+      (expression_statement
+        (yield_expression
+          (number)))
+      (expression_statement
+        (yield_expression
+          (call_expression
+            function: (identifier)
+            arguments: (arguments))))))
+  (generator_function_declaration
+    name: (identifier)
+    parameters: (formal_parameters)
+    body: (statement_block)))
+
+================================================================================
+Overloads
+================================================================================
+
+function f(x: string): string
+function f(x: number): number
+function f(x: any) { return x }
+
+--------------------------------------------------------------------------------
+
+(program
+  (function_signature
+    name: (identifier)
+    parameters: (formal_parameters
+      (required_parameter
+        pattern: (identifier)
+        type: (type_annotation
+          (predefined_type))))
+    return_type: (type_annotation
+      (predefined_type)))
+  (function_signature
+    name: (identifier)
+    parameters: (formal_parameters
+      (required_parameter
+        pattern: (identifier)
+        type: (type_annotation
+          (predefined_type))))
+    return_type: (type_annotation
+      (predefined_type)))
+  (function_declaration
+    name: (identifier)
+    parameters: (formal_parameters
+      (required_parameter
+        pattern: (identifier)
+        type: (type_annotation
+          (predefined_type))))
+    body: (statement_block
+      (return_statement
+        (identifier)))))
+
+================================================================================
+Generic functions
+================================================================================
+
+function first<T extends unknown[], const U = T[0]>(xs: T): U {
+  return xs[0]
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (function_declaration
+    name: (identifier)
+    type_parameters: (type_parameters
+      (type_parameter
+        name: (type_identifier)
+        constraint: (constraint
+          (array_type
+            (predefined_type))))
+      (type_parameter
+        name: (type_identifier)
+        value: (default_type
+          (lookup_type
+            (type_identifier)
+            (literal_type
+              (number))))))
+    parameters: (formal_parameters
+      (required_parameter
+        pattern: (identifier)
+        type: (type_annotation
+          (type_identifier))))
+    return_type: (type_annotation
+      (type_identifier))
+    body: (statement_block
+      (return_statement
+        (subscript_expression
+          object: (identifier)
+          index: (number))))))
+
+================================================================================
+Classes
+================================================================================
+
+@sealed
+export abstract class Animal<T> extends Base<T> implements Named, Aged {
+  #secret = 1
+  private static readonly count: number = 0
+  declare foo: string
+  accessor bar = 2
+  optional?: string
+  definite!: number
+  constructor(private readonly name: string, public age?: number) { super() }
+  abstract speak(): void
+  protected abstract get legs(): number
+  override toString() { return "" }
+  static { init() }
+  @log method(@inject() x: number): this { return this }
+  async *gen() {}
+  [key: string]: unknown
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (export_statement
+    decorator: (decorator
+      (identifier))
+    declaration: (abstract_class_declaration
+      name: (type_identifier)
+      type_parameters: (type_parameters
+        (type_parameter
+          name: (type_identifier)))
+      (class_heritage
+        (extends_clause
+          value: (instantiation_expression
+            (identifier)
+            type_arguments: (type_arguments
+              (type_identifier))))
+        (implements_clause
+          (type_identifier)
+          (type_identifier)))
+      body: (class_body
+        member: (public_field_definition
+          name: (private_property_identifier)
+          value: (number))
+        member: (public_field_definition
+          (accessibility_modifier)
+          name: (property_identifier)
+          type: (type_annotation
+            (predefined_type))
+          value: (number))
+        member: (public_field_definition
+          name: (property_identifier)
+          type: (type_annotation
+            (predefined_type)))
+        member: (public_field_definition
+          name: (property_identifier)
+          value: (number))
+        member: (public_field_definition
+          name: (property_identifier)
+          type: (type_annotation
+            (predefined_type)))
+        member: (public_field_definition
+          name: (property_identifier)
+          type: (type_annotation
+            (predefined_type)))
+        member: (method_definition
+          name: (property_identifier)
+          parameters: (formal_parameters
+            (required_parameter
+              (accessibility_modifier)
+              pattern: (identifier)
+              type: (type_annotation
+                (predefined_type)))
+            (optional_parameter
+              (accessibility_modifier)
+              pattern: (identifier)
+              type: (type_annotation
+                (predefined_type))))
+          body: (statement_block
+            (expression_statement
+              (call_expression
+                function: (super)
+                arguments: (arguments)))))
+        member: (method_signature
+          name: (property_identifier)
+          parameters: (formal_parameters)
+          return_type: (type_annotation
+            (predefined_type)))
+        member: (method_signature
+          (accessibility_modifier)
+          name: (property_identifier)
+          parameters: (formal_parameters)
+          return_type: (type_annotation
+            (predefined_type)))
+        member: (method_definition
+          (override_modifier)
+          name: (property_identifier)
+          parameters: (formal_parameters)
+          body: (statement_block
+            (return_statement
+              (string))))
+        member: (class_static_block
+          body: (statement_block
+            (expression_statement
+              (call_expression
+                function: (identifier)
+                arguments: (arguments)))))
+        member: (method_definition
+          decorator: (decorator
+            (identifier))
+          name: (property_identifier)
+          parameters: (formal_parameters
+            (required_parameter
+              decorator: (decorator
+                (call_expression
+                  function: (identifier)
+                  arguments: (arguments)))
+              pattern: (identifier)
+              type: (type_annotation
+                (predefined_type))))
+          return_type: (type_annotation
+            (this_type))
+          body: (statement_block
+            (return_statement
+              (this))))
+        member: (method_definition
+          name: (property_identifier)
+          parameters: (formal_parameters)
+          body: (statement_block))
+        member: (index_signature
+          name: (identifier)
+          index_type: (predefined_type)
+          type: (type_annotation
+            (predefined_type)))))))
+
+================================================================================
+Class expressions
+================================================================================
+
+const A = class extends B {}
+
+--------------------------------------------------------------------------------
+
+(program
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      value: (class
+        (class_heritage
+          (extends_clause
+            value: (identifier)))
+        body: (class_body)))))
+
+================================================================================
+Interfaces
+================================================================================
+
+interface Point<T = number> extends Base, Other<T> {
+  readonly x: T
+  y?: T
+  [key: string]: unknown
+  method<U>(a: U): U
+  new (x: T): Point<T>
+  (call: string): void
+  get value(): T
+  set value(v: T)
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (interface_declaration
+    name: (type_identifier)
+    type_parameters: (type_parameters
+      (type_parameter
+        name: (type_identifier)
+        value: (default_type
+          (predefined_type))))
+    (extends_type_clause
+      type: (type_identifier)
+      type: (generic_type
+        name: (type_identifier)
+        type_arguments: (type_arguments
+          (type_identifier))))
+    body: (interface_body
+      (property_signature
+        name: (property_identifier)
+        type: (type_annotation
+          (type_identifier)))
+      (property_signature
+        name: (property_identifier)
+        type: (type_annotation
+          (type_identifier)))
+      (index_signature
+        name: (identifier)
+        index_type: (predefined_type)
+        type: (type_annotation
+          (predefined_type)))
+      (method_signature
+        name: (property_identifier)
+        type_parameters: (type_parameters
+          (type_parameter
+            name: (type_identifier)))
+        parameters: (formal_parameters
+          (required_parameter
+            pattern: (identifier)
+            type: (type_annotation
+              (type_identifier))))
+        return_type: (type_annotation
+          (type_identifier)))
+      (method_signature
+        name: (property_identifier)
+        parameters: (formal_parameters
+          (required_parameter
+            pattern: (identifier)
+            type: (type_annotation
+              (type_identifier))))
+        return_type: (type_annotation
+          (generic_type
+            name: (type_identifier)
+            type_arguments: (type_arguments
+              (type_identifier)))))
+      (call_signature
+        parameters: (formal_parameters
+          (required_parameter
+            pattern: (identifier)
+            type: (type_annotation
+              (predefined_type))))
+        return_type: (type_annotation
+          (predefined_type)))
+      (method_signature
+        name: (property_identifier)
+        parameters: (formal_parameters)
+        return_type: (type_annotation
+          (type_identifier)))
+      (method_signature
+        name: (property_identifier)
+        parameters: (formal_parameters
+          (required_parameter
+            pattern: (identifier)
+            type: (type_annotation
+              (type_identifier))))))))
+
+================================================================================
+Type aliases
+================================================================================
+
+type ID = string | number
+type Fn<T> = (x: T) => void
+
+--------------------------------------------------------------------------------
+
+(program
+  (type_alias_declaration
+    name: (type_identifier)
+    value: (union_type
+      (predefined_type)
+      (predefined_type)))
+  (type_alias_declaration
+    name: (type_identifier)
+    type_parameters: (type_parameters
+      (type_parameter
+        name: (type_identifier)))
+    value: (function_type
+      parameters: (formal_parameters
+        (required_parameter
+          pattern: (identifier)
+          type: (type_annotation
+            (type_identifier))))
+      return_type: (predefined_type))))
+
+================================================================================
+Enums
+================================================================================
+
+enum Color { Red, Green = "green", Blue = 1 << 2 }
+const enum E { A }
+declare enum D {}
+
+--------------------------------------------------------------------------------
+
+(program
+  (enum_declaration
+    name: (identifier)
+    body: (enum_body
+      name: (property_identifier)
+      (enum_assignment
+        name: (property_identifier)
+        value: (string
+          (string_fragment)))
+      (enum_assignment
+        name: (property_identifier)
+        value: (binary_expression
+          left: (number)
+          right: (number)))))
+  (enum_declaration
+    name: (identifier)
+    body: (enum_body
+      name: (property_identifier)))
+  (ambient_declaration
+    (enum_declaration
+      name: (identifier)
+      body: (enum_body))))
+
+================================================================================
+Namespaces and modules
+================================================================================
+
+namespace A.B { export const c = 1 }
+module M {}
+declare module "foo" {
+  export function f(): void
+}
+declare module "*.css";
+declare global {
+  interface Window { app: App }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (internal_module
+    name: (nested_identifier
+      object: (identifier)
+      property: (property_identifier))
+    body: (statement_block
+      (export_statement
+        declaration: (lexical_declaration
+          (variable_declarator
+            name: (identifier)
+            value: (number))))))
+  (module
+    name: (identifier)
+    body: (statement_block))
+  (ambient_declaration
+    (module
+      name: (string
+        (string_fragment))
+      body: (statement_block
+        (export_statement
+          declaration: (function_signature
+            name: (identifier)
+            parameters: (formal_parameters)
+            return_type: (type_annotation
+              (predefined_type)))))))
+  (ambient_declaration
+    (module
+      name: (string
+        (string_fragment))))
+  (empty_statement)
+  (ambient_declaration
+    (statement_block
+      (interface_declaration
+        name: (type_identifier)
+        body: (interface_body
+          (property_signature
+            name: (property_identifier)
+            type: (type_annotation
+              (type_identifier))))))))
+
+================================================================================
+Ambient declarations
+================================================================================
+
+declare const VERSION: string
+declare function f(x: number): void
+declare class C { m(): void }
+declare let x: number, y: string
+
+--------------------------------------------------------------------------------
+
+(program
+  (ambient_declaration
+    (lexical_declaration
+      (variable_declarator
+        name: (identifier)
+        type: (type_annotation
+          (predefined_type)))))
+  (ambient_declaration
+    (function_signature
+      name: (identifier)
+      parameters: (formal_parameters
+        (required_parameter
+          pattern: (identifier)
+          type: (type_annotation
+            (predefined_type))))
+      return_type: (type_annotation
+        (predefined_type))))
+  (ambient_declaration
+    (class_declaration
+      name: (type_identifier)
+      body: (class_body
+        member: (method_signature
+          name: (property_identifier)
+          parameters: (formal_parameters)
+          return_type: (type_annotation
+            (predefined_type))))))
+  (ambient_declaration
+    (lexical_declaration
+      (variable_declarator
+        name: (identifier)
+        type: (type_annotation
+          (predefined_type)))
+      (variable_declarator
+        name: (identifier)
+        type: (type_annotation
+          (predefined_type))))))
+
+================================================================================
+Imports
+================================================================================
+
+import a from "a"
+import * as b from "b"
+import { c, d as e, type F, "g" as g } from "c"
+import type { H } from "h"
+import i, { j } from "i"
+import "side-effect"
+import json from "./data.json" with { type: "json" }
+import fs = require("fs")
+import Alias = Some.Name
+import defer * as lazy from "lazy"
+
+--------------------------------------------------------------------------------
+
+(program
+  (import_statement
+    (import_clause
+      (identifier
+        (identifier)))
+    source: (string
+      (string_fragment)))
+  (import_statement
+    (import_clause
+      (namespace_import
+        (identifier
+          (identifier))))
+    source: (string
+      (string_fragment)))
+  (import_statement
+    (import_clause
+      (named_imports
+        (import_specifier
+          name: (identifier))
+        (import_specifier
+          name: (identifier)
+          alias: (identifier
+            (identifier)))
+        (import_specifier
+          name: (identifier))
+        (import_specifier
+          name: (string
+            (string_fragment))
+          alias: (identifier
+            (identifier)))))
+    source: (string
+      (string_fragment)))
+  (import_statement
+    (import_clause
+      (named_imports
+        (import_specifier
+          name: (identifier))))
+    source: (string
+      (string_fragment)))
+  (import_statement
+    (import_clause
+      (identifier
+        (identifier))
+      (named_imports
+        (import_specifier
+          name: (identifier))))
+    source: (string
+      (string_fragment)))
+  (import_statement
+    source: (string
+      (string_fragment)))
+  (import_statement
+    (import_clause
+      (identifier
+        (identifier)))
+    source: (string
+      (string_fragment))
+    (import_attribute
+      (object
+        (pair
+          key: (property_identifier)
+          value: (string
+            (string_fragment))))))
+  (import_statement
+    (import_require_clause
+      (identifier
+        (identifier))
+      source: (string
+        (string_fragment))))
+  (import_alias
+    name: (identifier
+      (identifier))
+    value: (nested_identifier
+      object: (identifier)
+      property: (property_identifier)))
+  (import_statement
+    (import_clause
+      (namespace_import
+        (identifier
+          (identifier))))
+    source: (string
+      (string_fragment))))
+
+================================================================================
+Exports
+================================================================================
+
+export { a, b as c }
+export * from "d"
+export * as e from "e"
+export type { F } from "f"
+export default function () {}
+export default class {}
+export const g = 1
+export = h
+export as namespace Lib
+export import X = Y.Z
+
+--------------------------------------------------------------------------------
+
+(program
+  (export_statement
+    (export_clause
+      (export_specifier
+        name: (identifier))
+      (export_specifier
+        name: (identifier)
+        alias: (identifier))))
+  (export_statement
+    source: (string
+      (string_fragment)))
+  (export_statement
+    (namespace_export
+      (identifier))
+    source: (string
+      (string_fragment)))
+  (export_statement
+    (export_clause
+      (export_specifier
+        name: (identifier)))
+    source: (string
+      (string_fragment)))
+  (export_statement
+    value: (function_expression
+      parameters: (formal_parameters)
+      body: (statement_block)))
+  (export_statement
+    value: (class
+      body: (class_body)))
+  (export_statement
+    declaration: (lexical_declaration
+      (variable_declarator
+        name: (identifier)
+        value: (number))))
+  (export_statement
+    value: (identifier))
+  (export_statement
+    (identifier))
+  (export_statement
+    declaration: (import_alias
+      name: (identifier
+        (identifier))
+      value: (nested_identifier
+        object: (identifier)
+        property: (property_identifier)))))
+
+================================================================================
+Decorators
+================================================================================
+
+@Component({ selector: "app" })
+class C {
+  @Input() name: string
+  @(dec.prop) other: number
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    decorator: (decorator
+      (call_expression
+        function: (identifier)
+        arguments: (arguments
+          (object
+            (pair
+              key: (property_identifier)
+              value: (string
+                (string_fragment)))))))
+    name: (type_identifier)
+    body: (class_body
+      member: (public_field_definition
+        decorator: (decorator
+          (call_expression
+            function: (identifier)
+            arguments: (arguments)))
+        name: (property_identifier)
+        type: (type_annotation
+          (predefined_type)))
+      member: (public_field_definition
+        decorator: (decorator
+          (parenthesized_expression
+            (member_expression
+              object: (identifier)
+              property: (property_identifier))))
+        name: (property_identifier)
+        type: (type_annotation
+          (predefined_type))))))

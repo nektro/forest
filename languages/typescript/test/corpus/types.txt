@@ -1,0 +1,607 @@
+================================================================================
+Primitive and literal types
+================================================================================
+
+let a: string | number | boolean | null | undefined | void | never | unknown | any | bigint | symbol | object
+let b: "a" | 1 | -1 | true
+
+--------------------------------------------------------------------------------
+
+(program
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      type: (type_annotation
+        (union_type
+          (union_type
+            (union_type
+              (union_type
+                (union_type
+                  (union_type
+                    (union_type
+                      (union_type
+                        (union_type
+                          (union_type
+                            (union_type
+                              (predefined_type)
+                              (predefined_type))
+                            (predefined_type))
+                          (literal_type
+                            (null)))
+                        (literal_type
+                          (undefined)))
+                      (predefined_type))
+                    (predefined_type))
+                  (predefined_type))
+                (predefined_type))
+              (predefined_type))
+            (predefined_type))
+          (predefined_type)))))
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      type: (type_annotation
+        (union_type
+          (union_type
+            (union_type
+              (literal_type
+                (string
+                  (string_fragment)))
+              (literal_type
+                (number)))
+            (literal_type
+              (unary_expression
+                argument: (number))))
+          (literal_type
+            (true)))))))
+
+================================================================================
+Generic types
+================================================================================
+
+let a: Array<Map<string, Set<number>>>
+let b: A.B.C<T>
+
+--------------------------------------------------------------------------------
+
+(program
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      type: (type_annotation
+        (generic_type
+          name: (type_identifier)
+          type_arguments: (type_arguments
+            (generic_type
+              name: (type_identifier)
+              type_arguments: (type_arguments
+                (predefined_type)
+                (generic_type
+                  name: (type_identifier)
+                  type_arguments: (type_arguments
+                    (predefined_type))))))))))
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      type: (type_annotation
+        (generic_type
+          name: (nested_type_identifier
+            module: (nested_identifier
+              object: (identifier)
+              property: (property_identifier))
+            name: (type_identifier))
+          type_arguments: (type_arguments
+            (type_identifier)))))))
+
+================================================================================
+Array, tuple and indexed types
+================================================================================
+
+let a: string[][]
+let b: [string, number?, ...boolean[]]
+let c: [first: string, second?: number, ...rest: any[]]
+let d: T["key"]
+let e: readonly string[]
+
+--------------------------------------------------------------------------------
+
+(program
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      type: (type_annotation
+        (array_type
+          (array_type
+            (predefined_type))))))
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      type: (type_annotation
+        (tuple_type
+          (predefined_type)
+          (optional_type
+            (predefined_type))
+          (rest_type
+            (array_type
+              (predefined_type)))))))
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      type: (type_annotation
+        (tuple_type
+          (required_parameter
+            name: (identifier)
+            type: (type_annotation
+              (predefined_type)))
+          (optional_parameter
+            name: (identifier)
+            type: (type_annotation
+              (predefined_type)))
+          (required_parameter
+            name: (rest_pattern
+              (identifier))
+            type: (type_annotation
+              (array_type
+                (predefined_type))))))))
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      type: (type_annotation
+        (lookup_type
+          (type_identifier)
+          (literal_type
+            (string
+              (string_fragment)))))))
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      type: (type_annotation
+        (readonly_type
+          (array_type
+            (predefined_type)))))))
+
+================================================================================
+Function and constructor types
+================================================================================
+
+let a: (x: number, y?: string) => void
+let b: new (...args: any[]) => T
+let c: abstract new () => object
+let d: <T>(x: T) => T
+let e: ({ a }: Props) => void
+
+--------------------------------------------------------------------------------
+
+(program
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      type: (type_annotation
+        (function_type
+          parameters: (formal_parameters
+            (required_parameter
+              pattern: (identifier)
+              type: (type_annotation
+                (predefined_type)))
+            (optional_parameter
+              pattern: (identifier)
+              type: (type_annotation
+                (predefined_type))))
+          return_type: (predefined_type)))))
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      type: (type_annotation
+        (constructor_type
+          parameters: (formal_parameters
+            (required_parameter
+              pattern: (rest_pattern
+                (identifier))
+              type: (type_annotation
+                (array_type
+                  (predefined_type)))))
+          type: (type_identifier)))))
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      type: (type_annotation
+        (constructor_type
+          parameters: (formal_parameters)
+          type: (predefined_type)))))
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      type: (type_annotation
+        (function_type
+          type_parameters: (type_parameters
+            (type_parameter
+              name: (type_identifier)))
+          parameters: (formal_parameters
+            (required_parameter
+              pattern: (identifier)
+              type: (type_annotation
+                (type_identifier))))
+          return_type: (type_identifier)))))
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      type: (type_annotation
+        (function_type
+          parameters: (formal_parameters
+            (required_parameter
+              pattern: (object_pattern
+                (shorthand_property_identifier_pattern))
+              type: (type_annotation
+                (type_identifier))))
+          return_type: (predefined_type))))))
+
+================================================================================
+Object types
+================================================================================
+
+let a: { a: string; b?: number, readonly c: boolean }
+let b: { (x: number): string; new (): C; [k: string]: any; m(): void }
+
+--------------------------------------------------------------------------------
+
+(program
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      type: (type_annotation
+        (object_type
+          (property_signature
+            name: (property_identifier)
+            type: (type_annotation
+              (predefined_type)))
+          (property_signature
+            name: (property_identifier)
+            type: (type_annotation
+              (predefined_type)))
+          (property_signature
+            name: (property_identifier)
+            type: (type_annotation
+              (predefined_type)))))))
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      type: (type_annotation
+        (object_type
+          (call_signature
+            parameters: (formal_parameters
+              (required_parameter
+                pattern: (identifier)
+                type: (type_annotation
+                  (predefined_type))))
+            return_type: (type_annotation
+              (predefined_type)))
+          (method_signature
+            name: (property_identifier)
+            parameters: (formal_parameters)
+            return_type: (type_annotation
+              (type_identifier)))
+          (index_signature
+            name: (identifier)
+            index_type: (predefined_type)
+            type: (type_annotation
+              (predefined_type)))
+          (method_signature
+            name: (property_identifier)
+            parameters: (formal_parameters)
+            return_type: (type_annotation
+              (predefined_type))))))))
+
+================================================================================
+Mapped types
+================================================================================
+
+type A<T> = { readonly [K in keyof T]?: T[K] }
+type B<T> = { -readonly [K in keyof T]-?: T[K] }
+type C<T> = { [K in keyof T as `get${Capitalize<K & string>}`]: () => T[K] }
+
+--------------------------------------------------------------------------------
+
+(program
+  (type_alias_declaration
+    name: (type_identifier)
+    type_parameters: (type_parameters
+      (type_parameter
+        name: (type_identifier)))
+    value: (object_type
+      (index_signature
+        (mapped_type_clause
+          name: (type_identifier)
+          type: (index_type_query
+            (type_identifier)))
+        type: (opting_type_annotation
+          (lookup_type
+            (type_identifier)
+            (type_identifier))))))
+  (type_alias_declaration
+    name: (type_identifier)
+    type_parameters: (type_parameters
+      (type_parameter
+        name: (type_identifier)))
+    value: (object_type
+      (index_signature
+        (mapped_type_clause
+          name: (type_identifier)
+          type: (index_type_query
+            (type_identifier)))
+        type: (omitting_type_annotation
+          (lookup_type
+            (type_identifier)
+            (type_identifier))))))
+  (type_alias_declaration
+    name: (type_identifier)
+    type_parameters: (type_parameters
+      (type_parameter
+        name: (type_identifier)))
+    value: (object_type
+      (index_signature
+        (mapped_type_clause
+          name: (type_identifier)
+          type: (index_type_query
+            (type_identifier))
+          alias: (template_literal_type
+            (string_fragment)
+            (template_type
+              (generic_type
+                name: (type_identifier)
+                type_arguments: (type_arguments
+                  (intersection_type
+                    (type_identifier)
+                    (predefined_type)))))))
+        type: (type_annotation
+          (function_type
+            parameters: (formal_parameters)
+            return_type: (lookup_type
+              (type_identifier)
+              (type_identifier))))))))
+
+================================================================================
+Conditional and infer types
+================================================================================
+
+type A<T> = T extends string ? "s" : T extends number ? "n" : never
+type B<T> = T extends Promise<infer U> ? U : T
+type C<T> = T extends [infer H extends string, ...infer R] ? H : never
+
+--------------------------------------------------------------------------------
+
+(program
+  (type_alias_declaration
+    name: (type_identifier)
+    type_parameters: (type_parameters
+      (type_parameter
+        name: (type_identifier)))
+    value: (conditional_type
+      left: (type_identifier)
+      right: (predefined_type)
+      consequence: (literal_type
+        (string
+          (string_fragment)))
+      alternative: (conditional_type
+        left: (type_identifier)
+        right: (predefined_type)
+        consequence: (literal_type
+          (string
+            (string_fragment)))
+        alternative: (predefined_type))))
+  (type_alias_declaration
+    name: (type_identifier)
+    type_parameters: (type_parameters
+      (type_parameter
+        name: (type_identifier)))
+    value: (conditional_type
+      left: (type_identifier)
+      right: (generic_type
+        name: (type_identifier)
+        type_arguments: (type_arguments
+          (infer_type
+            (type_identifier))))
+      consequence: (type_identifier)
+      alternative: (type_identifier)))
+  (type_alias_declaration
+    name: (type_identifier)
+    type_parameters: (type_parameters
+      (type_parameter
+        name: (type_identifier)))
+    value: (conditional_type
+      left: (type_identifier)
+      right: (tuple_type
+        (infer_type
+          (type_identifier)
+          (predefined_type))
+        (rest_type
+          (infer_type
+            (type_identifier))))
+      consequence: (type_identifier)
+      alternative: (predefined_type))))
+
+================================================================================
+Type operators
+================================================================================
+
+type A = keyof T
+type B = typeof x
+type C = typeof x.y<T>
+type D = unique symbol
+type E = typeof import("./a")
+type F = import("./a").B<C>
+
+--------------------------------------------------------------------------------
+
+(program
+  (type_alias_declaration
+    name: (type_identifier)
+    value: (index_type_query
+      (type_identifier)))
+  (type_alias_declaration
+    name: (type_identifier)
+    value: (type_query
+      (identifier)))
+  (type_alias_declaration
+    name: (type_identifier)
+    value: (type_query
+      (member_expression
+        object: (identifier)
+        property: (property_identifier))
+      type_arguments: (type_arguments
+        (type_identifier))))
+  (type_alias_declaration
+    name: (type_identifier)
+    value: (predefined_type))
+  (type_alias_declaration
+    name: (type_identifier)
+    value: (type_query
+      (import_type
+        (import)
+        source: (string
+          (string_fragment)))))
+  (type_alias_declaration
+    name: (type_identifier)
+    value: (generic_type
+      name: (nested_type_identifier
+        module: (import_type
+          (import)
+          source: (string
+            (string_fragment)))
+        name: (type_identifier))
+      type_arguments: (type_arguments
+        (type_identifier)))))
+
+================================================================================
+Union and intersection types
+================================================================================
+
+type A = | B | C
+type D = & E & F
+type G = (H | I) & J
+
+--------------------------------------------------------------------------------
+
+(program
+  (type_alias_declaration
+    name: (type_identifier)
+    value: (union_type
+      (union_type
+        (type_identifier))
+      (type_identifier)))
+  (type_alias_declaration
+    name: (type_identifier)
+    value: (intersection_type
+      (intersection_type
+        (type_identifier))
+      (type_identifier)))
+  (type_alias_declaration
+    name: (type_identifier)
+    value: (intersection_type
+      (parenthesized_type
+        (union_type
+          (type_identifier)
+          (type_identifier)))
+      (type_identifier))))
+
+================================================================================
+Template literal types
+================================================================================
+
+type A = `prefix-${string}-${number}`
+
+--------------------------------------------------------------------------------
+
+(program
+  (type_alias_declaration
+    name: (type_identifier)
+    value: (template_literal_type
+      (string_fragment)
+      (template_type
+        (predefined_type))
+      (string_fragment)
+      (template_type
+        (predefined_type)))))
+
+================================================================================
+Type predicates and assertions
+================================================================================
+
+function isString(x: unknown): x is string {}
+function assert(x: unknown): asserts x is string {}
+function check(x: unknown): asserts x {}
+class C { isFoo(): this is Foo {} }
+
+--------------------------------------------------------------------------------
+
+(program
+  (function_declaration
+    name: (identifier)
+    parameters: (formal_parameters
+      (required_parameter
+        pattern: (identifier)
+        type: (type_annotation
+          (predefined_type))))
+    return_type: (type_predicate_annotation
+      (type_predicate
+        name: (identifier)
+        type: (predefined_type)))
+    body: (statement_block))
+  (function_declaration
+    name: (identifier)
+    parameters: (formal_parameters
+      (required_parameter
+        pattern: (identifier)
+        type: (type_annotation
+          (predefined_type))))
+    return_type: (asserts_annotation
+      (asserts
+        (type_predicate
+          name: (identifier)
+          type: (predefined_type))))
+    body: (statement_block))
+  (function_declaration
+    name: (identifier)
+    parameters: (formal_parameters
+      (required_parameter
+        pattern: (identifier)
+        type: (type_annotation
+          (predefined_type))))
+    return_type: (asserts_annotation
+      (asserts
+        (identifier)))
+    body: (statement_block))
+  (class_declaration
+    name: (type_identifier)
+    body: (class_body
+      member: (method_definition
+        name: (property_identifier)
+        parameters: (formal_parameters)
+        return_type: (type_predicate_annotation
+          (type_predicate
+            name: (this)
+            type: (type_identifier)))
+        body: (statement_block)))))
+
+================================================================================
+Type parameters with modifiers
+================================================================================
+
+interface I<in out T, const U extends string = "a"> {}
+
+--------------------------------------------------------------------------------
+
+(program
+  (interface_declaration
+    name: (type_identifier)
+    type_parameters: (type_parameters
+      (type_parameter
+        name: (type_identifier))
+      (type_parameter
+        name: (type_identifier)
+        constraint: (constraint
+          (predefined_type))
+        value: (default_type
+          (literal_type
+            (string
+              (string_fragment))))))
+    body: (interface_body)))

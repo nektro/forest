@@ -16,6 +16,7 @@ A bundle of tree-sitter grammars.
 | Rust | [languages/rust](languages/rust) | none |
 | SCSS | [languages/scss](languages/scss) | none |
 | Swift | [languages/swift](languages/swift) | none |
+| TypeScript (and TSX) | [languages/typescript](languages/typescript) | none |
 | Verilog (IEEE 1364-2005) | [languages/verilog](languages/verilog) | none |
 | XML (and DTD) | [languages/xml](languages/xml) | none |
 | Zig | [languages/zig](languages/zig) | none |

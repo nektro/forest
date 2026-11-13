@@ -1,0 +1,197 @@
+================================================================================
+Elements
+================================================================================
+
+const a = <div className="app" data-id={1}>Hello, {name}!</div>
+
+--------------------------------------------------------------------------------
+
+(program
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      value: (jsx_element
+        open_tag: (jsx_opening_element
+          name: (identifier)
+          attribute: (jsx_attribute
+            (property_identifier)
+            (string
+              (string_fragment)))
+          attribute: (jsx_attribute
+            (property_identifier)
+            (jsx_expression
+              (number))))
+        (jsx_text)
+        (jsx_expression
+          (identifier))
+        (jsx_text)
+        close_tag: (jsx_closing_element
+          name: (identifier))))))
+
+================================================================================
+Self-closing elements and fragments
+================================================================================
+
+const a = <><Foo.Bar x /><a:b c="d" /></>
+
+--------------------------------------------------------------------------------
+
+(program
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      value: (jsx_element
+        open_tag: (jsx_opening_element)
+        (jsx_self_closing_element
+          name: (member_expression
+            object: (identifier)
+            property: (property_identifier))
+          attribute: (jsx_attribute
+            (property_identifier)))
+        (jsx_self_closing_element
+          name: (jsx_namespace_name
+            (identifier)
+            (identifier))
+          attribute: (jsx_attribute
+            (property_identifier)
+            (string
+              (string_fragment))))
+        close_tag: (jsx_closing_element)))))
+
+================================================================================
+Expressions and text in children
+================================================================================
+
+const a = (
+  <ul>
+    {items.map(item => <li key={item.id}>{item.label}</li>)}
+    {/* comment */}
+    // text, not a comment
+    &amp; &#x1F408;
+  </ul>
+)
+
+--------------------------------------------------------------------------------
+
+(program
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      value: (parenthesized_expression
+        (jsx_element
+          open_tag: (jsx_opening_element
+            name: (identifier))
+          (jsx_expression
+            (call_expression
+              function: (member_expression
+                object: (identifier)
+                property: (property_identifier))
+              arguments: (arguments
+                (arrow_function
+                  parameter: (identifier)
+                  body: (jsx_element
+                    open_tag: (jsx_opening_element
+                      name: (identifier)
+                      attribute: (jsx_attribute
+                        (property_identifier)
+                        (jsx_expression
+                          (member_expression
+                            object: (identifier)
+                            property: (property_identifier)))))
+                    (jsx_expression
+                      (member_expression
+                        object: (identifier)
+                        property: (property_identifier)))
+                    close_tag: (jsx_closing_element
+                      name: (identifier)))))))
+          (jsx_expression
+            (comment))
+          (jsx_text)
+          (html_character_reference)
+          (html_character_reference)
+          close_tag: (jsx_closing_element
+            name: (identifier)))))))
+
+================================================================================
+Spread attributes and type arguments
+================================================================================
+
+const a = <Generic<string> value="x" {...rest} />
+
+--------------------------------------------------------------------------------
+
+(program
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      value: (jsx_self_closing_element
+        name: (identifier)
+        type_arguments: (type_arguments
+          (predefined_type))
+        attribute: (jsx_attribute
+          (property_identifier)
+          (string
+            (string_fragment)))
+        attribute: (jsx_expression
+          (spread_element
+            (identifier)))))))
+
+================================================================================
+Generic arrow functions
+================================================================================
+
+const f = <T,>(x: T) => x
+const g = <T extends unknown>(x: T) => x
+
+--------------------------------------------------------------------------------
+
+(program
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      value: (arrow_function
+        type_parameters: (type_parameters
+          (type_parameter
+            name: (type_identifier)))
+        parameters: (formal_parameters
+          (required_parameter
+            pattern: (identifier)
+            type: (type_annotation
+              (type_identifier))))
+        body: (identifier))))
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      value: (arrow_function
+        type_parameters: (type_parameters
+          (type_parameter
+            name: (type_identifier)
+            constraint: (constraint
+              (predefined_type))))
+        parameters: (formal_parameters
+          (required_parameter
+            pattern: (identifier)
+            type: (type_annotation
+              (type_identifier))))
+        body: (identifier)))))
+
+================================================================================
+Comparisons
+================================================================================
+
+x = a < b ? c : d > e
+
+--------------------------------------------------------------------------------
+
+(program
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (ternary_expression
+        condition: (binary_expression
+          left: (identifier)
+          right: (identifier))
+        consequence: (identifier)
+        alternative: (binary_expression
+          left: (identifier)
+          right: (identifier))))))

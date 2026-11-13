@@ -1,0 +1,333 @@
+================================================================================
+Statements without semicolons
+================================================================================
+
+let a = 1
+let b = 2
+a
+b
+
+--------------------------------------------------------------------------------
+
+(program
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      value: (number)))
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      value: (number)))
+  (expression_statement
+    (identifier))
+  (expression_statement
+    (identifier)))
+
+================================================================================
+A parenthesized line continues the previous expression
+================================================================================
+
+a
+(b)
+
+--------------------------------------------------------------------------------
+
+(program
+  (expression_statement
+    (call_expression
+      function: (identifier)
+      arguments: (arguments
+        (identifier)))))
+
+================================================================================
+A line starting with a dot continues a member chain
+================================================================================
+
+promise
+  .then(f)
+  .catch(g)
+
+--------------------------------------------------------------------------------
+
+(program
+  (expression_statement
+    (call_expression
+      function: (member_expression
+        object: (call_expression
+          function: (member_expression
+            object: (identifier)
+            property: (property_identifier))
+          arguments: (arguments
+            (identifier)))
+        property: (property_identifier))
+      arguments: (arguments
+        (identifier)))))
+
+================================================================================
+A bracketed line continues the previous expression
+================================================================================
+
+a
+[0]
+
+--------------------------------------------------------------------------------
+
+(program
+  (expression_statement
+    (subscript_expression
+      object: (identifier)
+      index: (number))))
+
+================================================================================
+A slash after an expression is division
+================================================================================
+
+a
+/b/g
+
+--------------------------------------------------------------------------------
+
+(program
+  (expression_statement
+    (binary_expression
+      left: (binary_expression
+        left: (identifier)
+        right: (identifier))
+      right: (identifier))))
+
+================================================================================
+A regex at the start of a statement
+================================================================================
+
+x;
+/b/g.test(s)
+
+--------------------------------------------------------------------------------
+
+(program
+  (expression_statement
+    (identifier))
+  (expression_statement
+    (call_expression
+      function: (member_expression
+        object: (regex
+          pattern: (regex_pattern)
+          flags: (regex_flags))
+        property: (property_identifier))
+      arguments: (arguments
+        (identifier)))))
+
+================================================================================
+A template after an expression is a tagged template
+================================================================================
+
+tag
+`text`
+
+--------------------------------------------------------------------------------
+
+(program
+  (expression_statement
+    (call_expression
+      function: (identifier)
+      arguments: (template_string
+        (string_fragment)))))
+
+================================================================================
+Binary operators continue across lines
+================================================================================
+
+total = a
+  + b
+  - c
+
+--------------------------------------------------------------------------------
+
+(program
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (binary_expression
+        left: (binary_expression
+          left: (identifier)
+          right: (identifier))
+        right: (identifier)))))
+
+================================================================================
+Statements on one line
+================================================================================
+
+a; b; c
+
+--------------------------------------------------------------------------------
+
+(program
+  (expression_statement
+    (identifier))
+  (expression_statement
+    (identifier))
+  (expression_statement
+    (identifier)))
+
+================================================================================
+Class fields without semicolons
+================================================================================
+
+class A {
+  a = 1
+  b: string
+  c
+  get d() { return 1 }
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (type_identifier)
+    body: (class_body
+      member: (public_field_definition
+        name: (property_identifier)
+        value: (number))
+      member: (public_field_definition
+        name: (property_identifier)
+        type: (type_annotation
+          (predefined_type)))
+      member: (public_field_definition
+        name: (property_identifier))
+      member: (method_definition
+        name: (property_identifier)
+        parameters: (formal_parameters)
+        body: (statement_block
+          (return_statement
+            (number)))))))
+
+================================================================================
+Members of an object type without separators
+================================================================================
+
+type T = {
+  a: string
+  b?: number
+  c(): void
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (type_alias_declaration
+    name: (type_identifier)
+    value: (object_type
+      (property_signature
+        name: (property_identifier)
+        type: (type_annotation
+          (predefined_type)))
+      (property_signature
+        name: (property_identifier)
+        type: (type_annotation
+          (predefined_type)))
+      (method_signature
+        name: (property_identifier)
+        parameters: (formal_parameters)
+        return_type: (type_annotation
+          (predefined_type))))))
+
+================================================================================
+Index signature on the line after a type
+================================================================================
+
+interface Config {
+  plugins: Partial<Plugins>
+  [key: string]: any
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (interface_declaration
+    name: (type_identifier)
+    body: (interface_body
+      (property_signature
+        name: (property_identifier)
+        type: (type_annotation
+          (generic_type
+            name: (type_identifier)
+            type_arguments: (type_arguments
+              (type_identifier)))))
+      (index_signature
+        name: (identifier)
+        index_type: (predefined_type)
+        type: (type_annotation
+          (predefined_type))))))
+
+================================================================================
+Computed member on the line after a type
+================================================================================
+
+class List {
+  private items: Item[]
+  [Symbol.iterator]() {}
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (class_declaration
+    name: (type_identifier)
+    body: (class_body
+      member: (public_field_definition
+        (accessibility_modifier)
+        name: (property_identifier)
+        type: (type_annotation
+          (array_type
+            (type_identifier))))
+      member: (method_definition
+        name: (computed_property_name
+          (member_expression
+            object: (identifier)
+            property: (property_identifier)))
+        parameters: (formal_parameters)
+        body: (statement_block)))))
+
+================================================================================
+A union continued on the next line
+================================================================================
+
+type U =
+  | A
+  | B
+
+--------------------------------------------------------------------------------
+
+(program
+  (type_alias_declaration
+    name: (type_identifier)
+    value: (union_type
+      (union_type
+        (type_identifier))
+      (type_identifier))))
+
+================================================================================
+A block that starts with an array
+================================================================================
+
+if (x) {
+  [a, b].forEach(f)
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (if_statement
+    condition: (parenthesized_expression
+      (identifier))
+    consequence: (statement_block
+      (expression_statement
+        (call_expression
+          function: (member_expression
+            object: (array
+              (identifier)
+              (identifier))
+            property: (property_identifier))
+          arguments: (arguments
+            (identifier)))))))

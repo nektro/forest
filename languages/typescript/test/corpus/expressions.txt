@@ -1,0 +1,598 @@
+================================================================================
+Literals
+================================================================================
+
+x = [1, 2.5, .5, 1e10, 0xff, 0b10, 0o7, 1_000n, "a", 'b', true, false, null, undefined, this]
+
+--------------------------------------------------------------------------------
+
+(program
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (array
+        (number)
+        (number)
+        (number)
+        (number)
+        (number)
+        (number)
+        (number)
+        (number)
+        (string
+          (string_fragment))
+        (string
+          (string_fragment))
+        (true)
+        (false)
+        (null)
+        (undefined)
+        (this)))))
+
+================================================================================
+Template strings
+================================================================================
+
+s = `a ${b} c ${d + `nested ${e}`} $ $${f} \n`
+s = `// not a comment ${x} /* nor this`
+
+--------------------------------------------------------------------------------
+
+(program
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (template_string
+        (string_fragment)
+        (template_substitution
+          (identifier))
+        (string_fragment)
+        (template_substitution
+          (binary_expression
+            left: (identifier)
+            right: (template_string
+              (string_fragment)
+              (template_substitution
+                (identifier)))))
+        (string_fragment)
+        (string_fragment)
+        (template_substitution
+          (identifier))
+        (string_fragment)
+        (escape_sequence))))
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (template_string
+        (string_fragment)
+        (string_fragment)
+        (string_fragment)
+        (template_substitution
+          (identifier))
+        (string_fragment)
+        (string_fragment)
+        (string_fragment)))))
+
+================================================================================
+Regular expressions
+================================================================================
+
+r = /a[/]b\/c/gimsuyd
+r = a / b / c
+
+--------------------------------------------------------------------------------
+
+(program
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (regex
+        pattern: (regex_pattern)
+        flags: (regex_flags))))
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (binary_expression
+        left: (binary_expression
+          left: (identifier)
+          right: (identifier))
+        right: (identifier)))))
+
+================================================================================
+Objects
+================================================================================
+
+o = { a, b: 1, [c]: 2, ...d, e() {}, get f() { return 1 }, set f(v) {}, async g() {}, *h() {}, "i": 3, 4: 5 }
+
+--------------------------------------------------------------------------------
+
+(program
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (object
+        (shorthand_property_identifier)
+        (pair
+          key: (property_identifier)
+          value: (number))
+        (pair
+          key: (computed_property_name
+            (identifier))
+          value: (number))
+        (spread_element
+          (identifier))
+        (method_definition
+          name: (property_identifier)
+          parameters: (formal_parameters)
+          body: (statement_block))
+        (method_definition
+          name: (property_identifier)
+          parameters: (formal_parameters)
+          body: (statement_block
+            (return_statement
+              (number))))
+        (method_definition
+          name: (property_identifier)
+          parameters: (formal_parameters
+            (required_parameter
+              pattern: (identifier)))
+          body: (statement_block))
+        (method_definition
+          name: (property_identifier)
+          parameters: (formal_parameters)
+          body: (statement_block))
+        (method_definition
+          name: (property_identifier)
+          parameters: (formal_parameters)
+          body: (statement_block))
+        (pair
+          key: (string
+            (string_fragment))
+          value: (number))
+        (pair
+          key: (number)
+          value: (number))))))
+
+================================================================================
+Contextual keywords as names
+================================================================================
+
+x.type = { get: 1, set: 2, type, async: 3, declare: 4 }
+module.exports = namespace
+
+--------------------------------------------------------------------------------
+
+(program
+  (expression_statement
+    (assignment_expression
+      left: (member_expression
+        object: (identifier)
+        property: (property_identifier))
+      right: (object
+        (pair
+          key: (property_identifier)
+          value: (number))
+        (pair
+          key: (property_identifier)
+          value: (number))
+        (shorthand_property_identifier)
+        (pair
+          key: (property_identifier)
+          value: (number))
+        (pair
+          key: (property_identifier)
+          value: (number)))))
+  (expression_statement
+    (assignment_expression
+      left: (member_expression
+        object: (identifier)
+        property: (property_identifier))
+      right: (identifier))))
+
+================================================================================
+Arrays and destructuring assignment
+================================================================================
+
+[a, b] = [b, a]
+;({ a, b: { c } } = obj)
+
+--------------------------------------------------------------------------------
+
+(program
+  (expression_statement
+    (assignment_expression
+      left: (array_pattern
+        (identifier)
+        (identifier))
+      right: (array
+        (identifier)
+        (identifier))))
+  (expression_statement
+    (parenthesized_expression
+      (assignment_expression
+        left: (object_pattern
+          (shorthand_property_identifier_pattern)
+          (pair_pattern
+            key: (property_identifier)
+            value: (object_pattern
+              (shorthand_property_identifier_pattern))))
+        right: (identifier)))))
+
+================================================================================
+Arrow functions
+================================================================================
+
+f = x => x
+f = async (a, b = 1, { c }, [d], ...e) => {}
+f = <T,>(x: T): T => x
+f = (x): x is string => true
+f = async x => await x
+
+--------------------------------------------------------------------------------
+
+(program
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (arrow_function
+        parameter: (identifier)
+        body: (identifier))))
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (arrow_function
+        parameters: (formal_parameters
+          (required_parameter
+            pattern: (identifier))
+          (required_parameter
+            pattern: (identifier)
+            value: (number))
+          (required_parameter
+            pattern: (object_pattern
+              (shorthand_property_identifier_pattern)))
+          (required_parameter
+            pattern: (array_pattern
+              (identifier)))
+          (required_parameter
+            pattern: (rest_pattern
+              (identifier))))
+        body: (statement_block))))
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (arrow_function
+        type_parameters: (type_parameters
+          (type_parameter
+            name: (type_identifier)))
+        parameters: (formal_parameters
+          (required_parameter
+            pattern: (identifier)
+            type: (type_annotation
+              (type_identifier))))
+        return_type: (type_annotation
+          (type_identifier))
+        body: (identifier))))
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (arrow_function
+        parameters: (formal_parameters
+          (required_parameter
+            pattern: (identifier)))
+        return_type: (type_predicate_annotation
+          (type_predicate
+            name: (identifier)
+            type: (predefined_type)))
+        body: (true))))
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (arrow_function
+        parameter: (identifier)
+        body: (await_expression
+          (identifier))))))
+
+================================================================================
+Calls and members
+================================================================================
+
+a.b?.c?.[d]?.(e)
+new Foo
+new Foo<T>(1)
+new.target
+import.meta.url
+import("module")
+super.method()
+f<string>(x)
+x!.y
+
+--------------------------------------------------------------------------------
+
+(program
+  (expression_statement
+    (call_expression
+      function: (subscript_expression
+        object: (member_expression
+          object: (member_expression
+            object: (identifier)
+            property: (property_identifier))
+          optional_chain: (optional_chain)
+          property: (property_identifier))
+        optional_chain: (optional_chain)
+        index: (identifier))
+      optional_chain: (optional_chain)
+      arguments: (arguments
+        (identifier))))
+  (expression_statement
+    (new_expression
+      constructor: (identifier)))
+  (expression_statement
+    (new_expression
+      constructor: (identifier)
+      type_arguments: (type_arguments
+        (type_identifier))
+      arguments: (arguments
+        (number))))
+  (expression_statement
+    (meta_property))
+  (expression_statement
+    (member_expression
+      object: (meta_property)
+      property: (property_identifier)))
+  (expression_statement
+    (call_expression
+      function: (import)
+      arguments: (arguments
+        (string
+          (string_fragment)))))
+  (expression_statement
+    (call_expression
+      function: (member_expression
+        object: (super)
+        property: (property_identifier))
+      arguments: (arguments)))
+  (expression_statement
+    (call_expression
+      function: (identifier)
+      type_arguments: (type_arguments
+        (predefined_type))
+      arguments: (arguments
+        (identifier))))
+  (expression_statement
+    (member_expression
+      object: (non_null_expression
+        (identifier))
+      property: (property_identifier))))
+
+================================================================================
+Operators
+================================================================================
+
+x = a ?? b || c && d
+x = !a + -b * ~c ** d
+x = a instanceof B && "k" in c
+x = typeof a === "string" ? void 0 : delete b.c
+x ??= y; x ||= y; x &&= y; x **= 2; x >>>= 1
+x++; --y
+x = (a, b)
+#y in obj
+
+--------------------------------------------------------------------------------
+
+(program
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (binary_expression
+        left: (identifier)
+        right: (binary_expression
+          left: (identifier)
+          right: (binary_expression
+            left: (identifier)
+            right: (identifier))))))
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (binary_expression
+        left: (unary_expression
+          argument: (identifier))
+        right: (binary_expression
+          left: (unary_expression
+            argument: (identifier))
+          right: (binary_expression
+            left: (unary_expression
+              argument: (identifier))
+            right: (identifier))))))
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (binary_expression
+        left: (binary_expression
+          left: (identifier)
+          right: (identifier))
+        right: (binary_expression
+          left: (string
+            (string_fragment))
+          right: (identifier)))))
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (ternary_expression
+        condition: (binary_expression
+          left: (unary_expression
+            argument: (identifier))
+          right: (string
+            (string_fragment)))
+        consequence: (unary_expression
+          argument: (number))
+        alternative: (unary_expression
+          argument: (member_expression
+            object: (identifier)
+            property: (property_identifier))))))
+  (expression_statement
+    (augmented_assignment_expression
+      left: (identifier)
+      right: (identifier)))
+  (expression_statement
+    (augmented_assignment_expression
+      left: (identifier)
+      right: (identifier)))
+  (expression_statement
+    (augmented_assignment_expression
+      left: (identifier)
+      right: (identifier)))
+  (expression_statement
+    (augmented_assignment_expression
+      left: (identifier)
+      right: (number)))
+  (expression_statement
+    (augmented_assignment_expression
+      left: (identifier)
+      right: (number)))
+  (expression_statement
+    (update_expression
+      argument: (identifier)))
+  (expression_statement
+    (update_expression
+      argument: (identifier)))
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (parenthesized_expression
+        (sequence_expression
+          left: (identifier)
+          right: (identifier)))))
+  (expression_statement
+    (binary_expression
+      left: (private_property_identifier)
+      right: (identifier))))
+
+================================================================================
+Comparisons and type arguments
+================================================================================
+
+a < b
+a < b > c
+f<T>(x)
+f(a < b, c > d)
+if (i < list.length) {}
+
+--------------------------------------------------------------------------------
+
+(program
+  (expression_statement
+    (binary_expression
+      left: (identifier)
+      right: (identifier)))
+  (expression_statement
+    (binary_expression
+      left: (binary_expression
+        left: (identifier)
+        right: (identifier))
+      right: (identifier)))
+  (expression_statement
+    (call_expression
+      function: (identifier)
+      type_arguments: (type_arguments
+        (type_identifier))
+      arguments: (arguments
+        (identifier))))
+  (expression_statement
+    (call_expression
+      function: (identifier)
+      arguments: (arguments
+        (binary_expression
+          left: (identifier)
+          right: (identifier))
+        (binary_expression
+          left: (identifier)
+          right: (identifier)))))
+  (if_statement
+    condition: (parenthesized_expression
+      (binary_expression
+        left: (identifier)
+        right: (member_expression
+          object: (identifier)
+          property: (property_identifier))))
+    consequence: (statement_block)))
+
+================================================================================
+TypeScript expressions
+================================================================================
+
+x = y as const
+x = y as unknown as T
+x = y satisfies T
+x = <T>y
+x = obj!
+x = f<T>
+
+--------------------------------------------------------------------------------
+
+(program
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (as_expression
+        (identifier)
+        (type_identifier))))
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (as_expression
+        (as_expression
+          (identifier)
+          (predefined_type))
+        (type_identifier))))
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (satisfies_expression
+        (identifier)
+        (type_identifier))))
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (type_assertion
+        (type_arguments
+          (type_identifier))
+        (identifier))))
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (non_null_expression
+        (identifier))))
+  (expression_statement
+    (assignment_expression
+      left: (identifier)
+      right: (instantiation_expression
+        (identifier)
+        type_arguments: (type_arguments
+          (type_identifier))))))
+
+================================================================================
+Yield and await
+================================================================================
+
+async function* f() {
+  await x
+  yield
+  yield* g()
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (generator_function_declaration
+    name: (identifier)
+    parameters: (formal_parameters)
+    body: (statement_block
+      (expression_statement
+        (await_expression
+          (identifier)))
+      (expression_statement
+        (yield_expression
+          (yield_expression
+            (call_expression
+              function: (identifier)
+              arguments: (arguments))))))))
