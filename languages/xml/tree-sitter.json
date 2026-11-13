@@ -1,0 +1,53 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "xml",
+      "camelcase": "Xml",
+      "title": "XML",
+      "scope": "text.xml",
+      "file-types": [
+        "xml",
+        "xsd",
+        "dtd",
+        "xsl",
+        "xslt",
+        "svg",
+        "plist",
+        "rss",
+        "atom",
+        "xhtml",
+        "xib",
+        "storyboard",
+        "csproj",
+        "vcxproj",
+        "props",
+        "targets",
+        "nuspec",
+        "resx",
+        "wsdl"
+      ],
+      "highlights": "queries/highlights.scm",
+      "injection-regex": "^(xml|svg|xsd|xslt?|plist)$",
+      "class-name": "TreeSitterXml"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "XML 1.0 grammar for tree-sitter",
+    "links": {
+      "repository": "https://github.com/OWNER/arborist"
+    }
+  },
+  "bindings": {
+    "c": false,
+    "go": false,
+    "java": false,
+    "node": false,
+    "python": false,
+    "rust": false,
+    "swift": false,
+    "zig": false
+  }
+}

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <- punctuation.bracket -->
+<!--      ^ tag.attribute -->
+<!--              ^ string -->
+<!DOCTYPE document [
+<!-- <- keyword -->
+<!--      ^ tag -->
+  <!ENTITY copy "&#169;">
+<!--        ^ constant -->
+<!--             ^ string.escape -->
+  <!ATTLIST document id ID #REQUIRED>
+<!--                 ^ tag.attribute -->
+<!--                    ^ type.builtin -->
+<!--                       ^ keyword -->
+]>
+<document id="n1">
+<!-- <- punctuation.bracket -->
+<!-- ^ tag -->
+<!--      ^ tag.attribute -->
+<!--         ^ string -->
+  <body>Fish &amp; chips</body>
+<!--           ^ string.escape -->
+  <![CDATA[ a < b ]]>
+<!--         ^ string -->
+  <?sort ascending?>
+<!--^ keyword.directive -->
+</document>
+<!-- <- punctuation.bracket -->
+<!-- ^ tag -->

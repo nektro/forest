@@ -1,0 +1,23 @@
+<?xml version="1.0" standalone="yes"?>
+<!DOCTYPE catalog [
+  <!ENTITY % inline "#PCDATA | em">
+  <!ELEMENT catalog (book+)>
+  <!ELEMENT book (title, author*, price?)>
+  <!ELEMENT title (%inline;)*>
+  <!ELEMENT author (#PCDATA)>
+  <!ELEMENT price EMPTY>
+  <!ATTLIST book
+    id       ID              #REQUIRED
+    format   (paper|ebook)   "paper">
+  <!ATTLIST price
+    currency NMTOKEN         #FIXED "EUR"
+    amount   CDATA           #REQUIRED>
+  <!ENTITY publisher "Grove &amp; Root">
+]>
+<catalog>
+  <book id="b1" format="ebook">
+    <title>Reading <em>Trees</em></title>
+    <author>A. Gardener</author>
+    <price amount="12.50"/>
+  </book>
+</catalog>

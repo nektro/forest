@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="feed.xsl" type="text/xsl"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+  <title>Arborist releases</title>
+  <link href="https://example.org/releases" rel="alternate"/>
+  <updated>2026-11-12T09:00:00Z</updated>
+  <!-- Newest entries first. -->
+  <entry>
+    <title>XML support</title>
+    <id>urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a</id>
+    <summary type="html">Highlighting for &lt;xml&gt; &amp; DTDs &#8212; no scanner.</summary>
+    <content type="xhtml"><![CDATA[<p>if (a < b && b > c) { ... }</p>]]></content>
+  </entry>
+</feed>

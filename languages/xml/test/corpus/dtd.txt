@@ -1,0 +1,250 @@
+================================================================================
+Internal subset
+================================================================================
+
+<!DOCTYPE doc [
+  <!-- a comment -->
+  <?pi data?>
+  %ext;
+]>
+<doc/>
+
+--------------------------------------------------------------------------------
+
+(document
+  (doctype
+    name: (name)
+    subset: (internal_subset
+      (comment)
+      (processing_instruction
+        target: (pi_target)
+        content: (pi_content))
+      (parameter_entity_reference)))
+  (element
+    (self_closing_tag
+      name: (tag_name))))
+
+================================================================================
+Element declarations
+================================================================================
+
+<!DOCTYPE d [
+  <!ELEMENT br EMPTY>
+  <!ELEMENT any ANY>
+  <!ELEMENT p (#PCDATA)>
+  <!ELEMENT q (#PCDATA | em | %inline;)*>
+  <!ELEMENT list (head?, (item | sep)+, foot*)>
+  <!ELEMENT %name; %model;>
+]>
+
+--------------------------------------------------------------------------------
+
+(document
+  (doctype
+    name: (name)
+    subset: (internal_subset
+      (element_declaration
+        name: (name)
+        content: (empty))
+      (element_declaration
+        name: (name)
+        content: (any))
+      (element_declaration
+        name: (name)
+        content: (mixed_content))
+      (element_declaration
+        name: (name)
+        content: (mixed_content
+          (name)
+          (parameter_entity_reference)))
+      (element_declaration
+        name: (name)
+        content: (content_sequence
+          (name)
+          (content_choice
+            (name)
+            (name))
+          (name)))
+      (element_declaration
+        name: (parameter_entity_reference)
+        content: (parameter_entity_reference)))))
+
+================================================================================
+Attribute list declarations
+================================================================================
+
+<!DOCTYPE d [
+  <!ATTLIST img
+    src    CDATA          #REQUIRED
+    id     ID             #IMPLIED
+    align  (left|right)   "left"
+    fmt    NOTATION (gif|png) #IMPLIED
+    lang   NMTOKEN        #FIXED 'en'>
+]>
+
+--------------------------------------------------------------------------------
+
+(document
+  (doctype
+    name: (name)
+    subset: (internal_subset
+      (attlist_declaration
+        name: (name)
+        (attribute_definition
+          name: (name)
+          type: (attribute_type)
+          default: (default_declaration))
+        (attribute_definition
+          name: (name)
+          type: (attribute_type)
+          default: (default_declaration))
+        (attribute_definition
+          name: (name)
+          type: (enumeration
+            (nmtoken)
+            (nmtoken))
+          default: (default_declaration
+            value: (attribute_value
+              (attribute_text))))
+        (attribute_definition
+          name: (name)
+          type: (notation_type
+            (name)
+            (name))
+          default: (default_declaration))
+        (attribute_definition
+          name: (name)
+          type: (attribute_type)
+          default: (default_declaration
+            value: (attribute_value
+              (attribute_text))))))))
+
+================================================================================
+Parameter entities in attribute lists
+================================================================================
+
+<!ATTLIST schema
+  %attrs;
+  %nds; %URIref; #FIXED 'http://www.w3.org/2001/XMLSchema'
+  version CDATA #IMPLIED>
+
+--------------------------------------------------------------------------------
+
+(document
+  (attlist_declaration
+    name: (name)
+    (parameter_entity_reference)
+    (attribute_definition
+      name: (parameter_entity_reference)
+      type: (parameter_entity_reference)
+      default: (default_declaration
+        value: (attribute_value
+          (attribute_text))))
+    (attribute_definition
+      name: (name)
+      type: (attribute_type)
+      default: (default_declaration))))
+
+================================================================================
+Entity declarations
+================================================================================
+
+<!DOCTYPE d [
+  <!ENTITY copy "&#169;">
+  <!ENTITY % inline "b | i | %more;">
+  <!ENTITY logo SYSTEM "logo.gif" NDATA gif>
+  <!ENTITY % ext PUBLIC "-//X//EN" 'ext.dtd'>
+  <!ENTITY quote 'say "&copy;"'>
+]>
+
+--------------------------------------------------------------------------------
+
+(document
+  (doctype
+    name: (name)
+    subset: (internal_subset
+      (entity_declaration
+        name: (name)
+        value: (entity_value
+          (character_reference)))
+      (entity_declaration
+        name: (name)
+        value: (entity_value
+          (entity_text)
+          (parameter_entity_reference)))
+      (entity_declaration
+        name: (name)
+        id: (external_id
+          system: (system_literal))
+        notation: (name))
+      (entity_declaration
+        name: (name)
+        id: (external_id
+          public: (pubid_literal)
+          system: (system_literal)))
+      (entity_declaration
+        name: (name)
+        value: (entity_value
+          (entity_text)
+          (entity_reference)
+          (entity_text))))))
+
+================================================================================
+Notation declarations
+================================================================================
+
+<!DOCTYPE d [
+  <!NOTATION gif PUBLIC "image/gif">
+  <!NOTATION png SYSTEM "png-viewer">
+  <!NOTATION jpg PUBLIC "image/jpeg" "jpeg-viewer">
+]>
+
+--------------------------------------------------------------------------------
+
+(document
+  (doctype
+    name: (name)
+    subset: (internal_subset
+      (notation_declaration
+        name: (name)
+        id: (public_id
+          public: (pubid_literal)))
+      (notation_declaration
+        name: (name)
+        id: (external_id
+          system: (system_literal)))
+      (notation_declaration
+        name: (name)
+        id: (external_id
+          public: (pubid_literal)
+          system: (system_literal))))))
+
+================================================================================
+External DTD with conditional sections
+================================================================================
+
+<!ENTITY % draft "INCLUDE">
+<![%draft;[
+  <!ELEMENT note (#PCDATA)>
+]]>
+<![ IGNORE [
+  <![INCLUDE[ <!ELEMENT x EMPTY> ]]>
+]]>
+
+--------------------------------------------------------------------------------
+
+(document
+  (entity_declaration
+    name: (name)
+    value: (entity_value
+      (entity_text)))
+  (conditional_section
+    keyword: (parameter_entity_reference)
+    (element_declaration
+      name: (name)
+      content: (mixed_content)))
+  (conditional_section
+    (conditional_section
+      (element_declaration
+        name: (name)
+        content: (empty)))))

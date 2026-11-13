@@ -48,4 +48,5 @@
 .arborist .hl-variable-parameter { font-style: italic; }
 .arborist .hl-label { color: var(--hl-label); }
 .arborist .hl-tag { color: var(--hl-label); }
+.arborist .hl-tag-attribute { color: var(--hl-property); }
 .arborist .hl-punctuation { color: var(--hl-punctuation); }

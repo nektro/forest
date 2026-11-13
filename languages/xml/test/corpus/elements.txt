@@ -1,0 +1,232 @@
+================================================================================
+Empty and self-closing elements
+================================================================================
+
+<a></a>
+<b/>
+<c />
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    end: (end_tag
+      name: (tag_name)))
+  (element
+    (self_closing_tag
+      name: (tag_name)))
+  (element
+    (self_closing_tag
+      name: (tag_name))))
+
+================================================================================
+Nested elements and text
+================================================================================
+
+<p>Hello, <em>big</em>  world!
+  Second line.</p>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (text)
+    (element
+      start: (start_tag
+        name: (tag_name))
+      (text)
+      end: (end_tag
+        name: (tag_name)))
+    (text)
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Attributes
+================================================================================
+
+<a href="x.html" title='It&apos;s "quoted"' empty="" ns:attr = "1" >link</a>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name)
+      (attribute
+        name: (attribute_name)
+        value: (attribute_value
+          (attribute_text)))
+      (attribute
+        name: (attribute_name)
+        value: (attribute_value
+          (attribute_text)
+          (entity_reference)
+          (attribute_text)))
+      (attribute
+        name: (attribute_name)
+        value: (attribute_value))
+      (attribute
+        name: (attribute_name)
+        value: (attribute_value
+          (attribute_text))))
+    (text)
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+References
+================================================================================
+
+<p>&lt;tag&gt; &#169; &#x1F600; &custom-entity;</p>
+<a v="&amp;&#10;x"/>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (entity_reference)
+    (text)
+    (entity_reference)
+    (character_reference)
+    (character_reference)
+    (entity_reference)
+    end: (end_tag
+      name: (tag_name)))
+  (element
+    (self_closing_tag
+      name: (tag_name)
+      (attribute
+        name: (attribute_name)
+        value: (attribute_value
+          (entity_reference)
+          (character_reference)
+          (attribute_text))))))
+
+================================================================================
+CDATA sections
+================================================================================
+
+<s><![CDATA[if (a < b && c) { x = "]]"; }]]><![CDATA[]]></s>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (cdata_section
+      (cdata))
+    (cdata_section)
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+CDATA ending in a bracket
+================================================================================
+
+<s><![CDATA[a]]]></s>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (cdata_section
+      (cdata))
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Names
+================================================================================
+
+<xs:schema xmlns:xs="u"><_x-y.z/><ñame·/><𐀀/></xs:schema>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name)
+      (attribute
+        name: (attribute_name)
+        value: (attribute_value
+          (attribute_text))))
+    (element
+      (self_closing_tag
+        name: (tag_name)))
+    (element
+      (self_closing_tag
+        name: (tag_name)))
+    (element
+      (self_closing_tag
+        name: (tag_name)))
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Whitespace around tags
+================================================================================
+
+<a
+  b="1"
+  c="2"
+></a
+>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name)
+      (attribute
+        name: (attribute_name)
+        value: (attribute_value
+          (attribute_text)))
+      (attribute
+        name: (attribute_name)
+        value: (attribute_value
+          (attribute_text))))
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Multiple top-level elements
+================================================================================
+
+<a/>
+<b/>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    (self_closing_tag
+      name: (tag_name)))
+  (element
+    (self_closing_tag
+      name: (tag_name))))
+
+================================================================================
+Mismatched end tags are not detected
+================================================================================
+
+<a></b>
+
+--------------------------------------------------------------------------------
+
+(document
+  (element
+    start: (start_tag
+      name: (tag_name))
+    end: (end_tag
+      name: (tag_name))))

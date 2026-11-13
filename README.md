@@ -14,6 +14,7 @@ A bundle of tree-sitter grammars.
 | Nix | [languages/nix](languages/nix) | none |
 | Swift | [languages/swift](languages/swift) | none |
 | Verilog (IEEE 1364-2005) | [languages/verilog](languages/verilog) | none |
+| XML (and DTD) | [languages/xml](languages/xml) | none |
 | Zig | [languages/zig](languages/zig) | none |
 
 ## On the web

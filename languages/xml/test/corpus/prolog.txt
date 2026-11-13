@@ -1,0 +1,148 @@
+================================================================================
+XML declaration
+================================================================================
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<doc/>
+
+--------------------------------------------------------------------------------
+
+(document
+  (xml_declaration
+    (attribute
+      name: (attribute_name)
+      value: (attribute_value
+        (attribute_text)))
+    (attribute
+      name: (attribute_name)
+      value: (attribute_value
+        (attribute_text)))
+    (attribute
+      name: (attribute_name)
+      value: (attribute_value
+        (attribute_text))))
+  (element
+    (self_closing_tag
+      name: (tag_name))))
+
+================================================================================
+Processing instructions
+================================================================================
+
+<?xml-stylesheet href="style.css" type="text/css"?>
+<doc><?php echo 1 ?><?empty?></doc>
+
+--------------------------------------------------------------------------------
+
+(document
+  (processing_instruction
+    target: (pi_target)
+    content: (pi_content))
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (processing_instruction
+      target: (pi_target)
+      content: (pi_content))
+    (processing_instruction
+      target: (pi_target))
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+xml as a processing instruction target after the start
+================================================================================
+
+<!-- first -->
+<?xml version="1.0"?>
+<doc/>
+
+--------------------------------------------------------------------------------
+
+(document
+  (comment)
+  (processing_instruction
+    target: (pi_target)
+    content: (pi_content))
+  (element
+    (self_closing_tag
+      name: (tag_name))))
+
+================================================================================
+Comments
+================================================================================
+
+<!---->
+<!-- a - b -->
+<!-- a -- b --->
+<doc><!-- inside --></doc>
+
+--------------------------------------------------------------------------------
+
+(document
+  (comment)
+  (comment)
+  (comment)
+  (element
+    start: (start_tag
+      name: (tag_name))
+    (comment)
+    end: (end_tag
+      name: (tag_name))))
+
+================================================================================
+Doctype with a public identifier
+================================================================================
+
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"/>
+
+--------------------------------------------------------------------------------
+
+(document
+  (doctype
+    name: (name)
+    id: (external_id
+      public: (pubid_literal)
+      system: (system_literal)))
+  (element
+    (self_closing_tag
+      name: (tag_name)
+      (attribute
+        name: (attribute_name)
+        value: (attribute_value
+          (attribute_text))))))
+
+================================================================================
+Doctype with a system identifier
+================================================================================
+
+<!DOCTYPE note SYSTEM 'note.dtd'>
+<note/>
+
+--------------------------------------------------------------------------------
+
+(document
+  (doctype
+    name: (name)
+    id: (external_id
+      system: (system_literal)))
+  (element
+    (self_closing_tag
+      name: (tag_name))))
+
+================================================================================
+Doctype without an identifier
+================================================================================
+
+<!DOCTYPE html>
+<html/>
+
+--------------------------------------------------------------------------------
+
+(document
+  (doctype
+    name: (name))
+  (element
+    (self_closing_tag
+      name: (tag_name))))
