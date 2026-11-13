@@ -26,6 +26,7 @@ type GrammarInfo = {
   title: string;
   scope: string;
   fileTypes: string[];
+  injectionRegex?: string;
   queries: Partial<Record<(typeof QUERY_KINDS)[number], string>>;
 };
 
@@ -87,6 +88,7 @@ for (const entry of (await readdir(languagesDir)).sort()) {
       title: grammar.title ?? grammar.name,
       scope: grammar.scope,
       fileTypes: grammar["file-types"] ?? [],
+      injectionRegex: grammar["injection-regex"],
       queries,
     };
 

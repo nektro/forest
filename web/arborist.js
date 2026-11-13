@@ -40,6 +40,93 @@ function captureClass(name) {
   return cls;
 }
 
+/**
+ * Sort ranges by start, outer first, and make them nest: a range that starts
+ * inside another but ends after it is cut off at the other's end. (Ranges
+ * from an injected language can cross the host's when the injection leaves
+ * out the content node's children.)
+ */
+function nest(ranges) {
+  ranges.sort((a, b) => a.start - b.start || b.end - a.end);
+  const out = [];
+  const stack = []; // end offsets of enclosing ranges
+  for (const { start, end, name } of ranges) {
+    while (stack.length && stack[stack.length - 1] <= start) stack.pop();
+    const limit = stack.length ? stack[stack.length - 1] : Infinity;
+    const clipped = Math.min(end, limit);
+    if (clipped <= start) continue;
+    out.push({ start, end: clipped, name });
+    stack.push(clipped);
+  }
+  return out;
+}
+
+// Grammars whose .wasm has loaded, by name. Injections use only these, so
+// highlighting stays synchronous; loadInjections() fills it in first.
+const loaded = new Map();
+
+// Injected regions nest at most this deep (HTML > TypeScript > CSS is 3).
+const MAX_INJECTION_DEPTH = 4;
+
+/** The bundled language for an injection's language name ("ts", "css"), or null. */
+const injectionCache = new Map();
+function resolveInjection(name) {
+  if (!name) return null;
+  if (injectionCache.has(name)) return injectionCache.get(name);
+  let found = LANGUAGES[name] ? name : null;
+  const lower = name.toLowerCase();
+  for (const [lang, info] of Object.entries(LANGUAGES)) {
+    if (found) break;
+    if (info.injectionRegex && new RegExp(info.injectionRegex).test(lower)) found = lang;
+  }
+  found ??= languageForFile(lower);
+  injectionCache.set(name, found);
+  return found;
+}
+
+const rangeOf = (node) => ({
+  startIndex: node.startIndex,
+  endIndex: node.endIndex,
+  startPosition: node.startPosition,
+  endPosition: node.endPosition,
+});
+
+/**
+ * The ranges of an injection's content node: the whole node, or (without
+ * injection.include-children) the node less its children.
+ */
+function contentRanges(node, includeChildren) {
+  const whole = rangeOf(node);
+  if (includeChildren || node.childCount === 0) return [whole];
+  const ranges = [];
+  let start = whole;
+  for (const child of node.children) {
+    if (child.startIndex > start.startIndex) {
+      ranges.push({ startIndex: start.startIndex, startPosition: start.startPosition,
+        endIndex: child.startIndex, endPosition: child.startPosition });
+    }
+    start = { startIndex: child.endIndex, startPosition: child.endPosition };
+  }
+  if (whole.endIndex > start.startIndex) {
+    ranges.push({ startIndex: start.startIndex, startPosition: start.startPosition,
+      endIndex: whole.endIndex, endPosition: whole.endPosition });
+  }
+  return ranges;
+}
+
+/** Apply `(#offset! @capture start-row start-col end-row end-col)`, same-row only. */
+function offsetRange(range, offset) {
+  if (!offset) return range;
+  const [sr, sc, er, ec] = offset;
+  if (sr || er) return range;
+  return {
+    startIndex: range.startIndex + sc,
+    endIndex: range.endIndex + ec,
+    startPosition: { ...range.startPosition, column: range.startPosition.column + sc },
+    endPosition: { ...range.endPosition, column: range.endPosition.column + ec },
+  };
+}
+
 class Grammar {
   #parser;
   #queries = new Map();
@@ -66,8 +153,79 @@ class Grammar {
   }
 
   /** Parse source text into a web-tree-sitter Tree. Call tree.delete() when done. */
-  parse(source, oldTree) {
-    return this.#parser.parse(source, oldTree ?? null);
+  parse(source, oldTree, options) {
+    return this.#parser.parse(source, oldTree ?? null, options);
+  }
+
+  /**
+   * The injected regions of a tree, from injections.scm, as
+   * `{ language, ranges }` with `language` a bundled language name. Regions
+   * in languages that are not bundled are left out.
+   */
+  injections(tree) {
+    const query = this.query("injections");
+    if (!query) return [];
+    const regions = [];
+    const combined = new Map();
+    for (const match of query.matches(tree.rootNode)) {
+      const props = match.setProperties ?? {};
+      let name = props["injection.language"];
+      const nodes = [];
+      for (const { name: capture, node } of match.captures) {
+        if (capture === "injection.language") name = node.text;
+        else if (capture === "injection.content") nodes.push(node);
+      }
+      const language = resolveInjection(name);
+      if (!language || !nodes.length) continue;
+      const offset = query.predicates[match.patternIndex]
+        ?.find((p) => p.operator === "offset!" && p.operands[0]?.name === "injection.content")
+        ?.operands.slice(1).map((o) => Number(o.value));
+      const includeChildren = "injection.include-children" in props;
+      const ranges = nodes
+        .flatMap((node) => contentRanges(node, includeChildren))
+        .map((r) => offsetRange(r, offset))
+        .filter((r) => r.endIndex > r.startIndex);
+      if (!ranges.length) continue;
+      if ("injection.combined" in props) {
+        const key = `${match.patternIndex}:${language}`;
+        if (combined.has(key)) combined.get(key).ranges.push(...ranges);
+        else {
+          const region = { language, ranges };
+          combined.set(key, region);
+          regions.push(region);
+        }
+      } else {
+        regions.push({ language, ranges });
+      }
+    }
+    for (const region of combined.values()) region.ranges.sort((a, b) => a.startIndex - b.startIndex);
+    return regions;
+  }
+
+  /**
+   * Load every grammar that `source` injects, at any depth, so that
+   * highlights() and highlightHTML() can use them. Resolves to this grammar.
+   */
+  async loadInjections(source, tree, depth = 0) {
+    if (depth >= MAX_INJECTION_DEPTH || !this.#info.queries.injections) return this;
+    const ownTree = !tree;
+    tree ??= this.parse(source);
+    try {
+      const regions = this.injections(tree);
+      const grammars = await Promise.all(regions.map((r) => load(r.language).catch(() => null)));
+      for (const [i, grammar] of grammars.entries()) {
+        if (!grammar) continue;
+        const inner = grammar.parse(source, null, { includedRanges: regions[i].ranges });
+        try {
+          await grammar.loadInjections(source, inner, depth + 1);
+        } finally {
+          inner.delete();
+        }
+      }
+    } finally {
+      if (ownTree) tree.delete();
+    }
+    return this;
   }
 
   /**
@@ -77,13 +235,18 @@ class Grammar {
    * same node, the last one in highlights.scm wins.
    */
   highlights(source, tree) {
+    return nest(this.#highlights(source, tree, 0));
+  }
+
+  // Unsorted ranges, with injected languages' ranges in place of the host's
+  // inside each injected region.
+  #highlights(source, tree, depth) {
     const query = this.query("highlights");
-    if (!query) return [];
     const ownTree = !tree;
     tree ??= this.parse(source);
     try {
       const byRange = new Map();
-      for (const { name, node, patternIndex } of query.captures(tree.rootNode)) {
+      for (const { name, node, patternIndex } of query?.captures(tree.rootNode) ?? []) {
         if (name.startsWith("_")) continue;
         const { startIndex: start, endIndex: end } = node;
         if (start === end) continue;
@@ -91,9 +254,27 @@ class Grammar {
         const prev = byRange.get(key);
         if (!prev || patternIndex >= prev.patternIndex) byRange.set(key, { start, end, name, patternIndex });
       }
-      return [...byRange.values()]
-        .sort((a, b) => a.start - b.start || b.end - a.end)
-        .map(({ start, end, name }) => ({ start, end, name }));
+      let ranges = [...byRange.values()];
+
+      if (depth < MAX_INJECTION_DEPTH) {
+        for (const { language, ranges: included } of this.injections(tree)) {
+          const grammar = loaded.get(language);
+          if (!grammar) continue;
+          const inner = grammar.parse(source, null, { includedRanges: included });
+          // The injected language owns its ranges: host ranges strictly
+          // inside one give way. Ranges covering it (like a string around an
+          // injected attribute value) stay, and so do the content node's
+          // children when the injection leaves them out.
+          ranges = ranges.filter((r) => !included.some((i) =>
+            r.start >= i.startIndex && r.end <= i.endIndex && r.end - r.start < i.endIndex - i.startIndex));
+          try {
+            ranges.push(...grammar.#highlights(source, inner, depth + 1));
+          } finally {
+            inner.delete();
+          }
+        }
+      }
+      return ranges;
     } finally {
       if (ownTree) tree.delete();
     }
@@ -133,7 +314,9 @@ function load(name) {
     promise = (async () => {
       await init();
       const language = await Language.load(new URL(info.wasm, Arborist.baseURL).href);
-      return new Grammar(name, language, info);
+      const grammar = new Grammar(name, language, info);
+      loaded.set(name, grammar);
+      return grammar;
     })();
     promise.catch(() => loading.delete(name));
     loading.set(name, promise);
@@ -172,7 +355,9 @@ async function highlightElement(el, language) {
   const name = language ?? elementLanguage(el);
   if (!name) throw new Error("arborist: cannot tell the element's language");
   const grammar = await load(name);
-  el.innerHTML = grammar.highlightHTML(el.textContent);
+  const source = el.textContent;
+  await grammar.loadInjections(source);
+  el.innerHTML = grammar.highlightHTML(source);
   el.classList.add("arborist");
   el.dataset.highlighted = name;
   return el;
@@ -202,7 +387,9 @@ const Arborist = {
   languageForFile,
   /** Highlighted HTML for `source` in language `name`. */
   async highlight(name, source) {
-    return (await load(name)).highlightHTML(source);
+    const grammar = await load(name);
+    await grammar.loadInjections(source);
+    return grammar.highlightHTML(source);
   },
   highlightElement,
   highlightAll,

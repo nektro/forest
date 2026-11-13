@@ -60,9 +60,13 @@
   // Live editor.
   let grammar = null;
   let generation = 0;
-  const update = () => {
+  const update = async () => {
     if (!grammar) return;
     const source = $("input").value;
+    const mine = generation;
+    // Fetch grammars for injected languages (CSS in HTML, ...) first.
+    await grammar.loadInjections(source);
+    if (mine !== generation || source !== $("input").value) return;
     $("output").innerHTML = grammar.highlightHTML(source);
     const tree = grammar.parse(source);
     $("tree").textContent = tree.rootNode.toString();
