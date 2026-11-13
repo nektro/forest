@@ -1,0 +1,119 @@
+================================================================================
+Macro invocations
+================================================================================
+
+fn f() { println!("{} {x}", a); vec![1, 2, 3]; std::assert_eq!(a, b); }
+thread_local! { static X: u8 = 0; }
+foo!(a);
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (macro_invocation
+          macro: (identifier)
+          (token_tree
+            (string_literal
+              (string_content))
+            (identifier))))
+      (empty_statement)
+      (expression_statement
+        (macro_invocation
+          macro: (identifier)
+          (token_tree
+            (integer_literal)
+            (integer_literal)
+            (integer_literal))))
+      (empty_statement)
+      (expression_statement
+        (macro_invocation
+          macro: (scoped_identifier
+            path: (identifier)
+            name: (identifier))
+          (token_tree
+            (identifier)
+            (identifier))))
+      (empty_statement)))
+  (expression_statement
+    (macro_invocation
+      macro: (identifier)
+      (token_tree
+        (identifier)
+        (identifier)
+        (integer_literal))))
+  (expression_statement
+    (macro_invocation
+      macro: (identifier)
+      (token_tree
+        (identifier))))
+  (empty_statement))
+
+================================================================================
+Macro definitions
+================================================================================
+
+macro_rules! square {
+    ($x:expr) => { $x * $x };
+    ($($y:ident),* $(,)?) => [ $( $y )* ];
+}
+macro_rules! m ( () => {} );
+pub macro m2($a:expr) { $a }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    name: (identifier)
+    (macro_rule
+      left: (token_tree
+        (metavariable)
+        (identifier))
+      right: (token_tree
+        (metavariable)
+        (metavariable)))
+    (macro_rule
+      left: (token_tree
+        (token_tree
+          (metavariable)
+          (identifier))
+        (token_tree))
+      right: (token_tree
+        (token_tree
+          (metavariable)))))
+  (macro_definition
+    name: (identifier)
+    (macro_rule
+      left: (token_tree)
+      right: (token_tree)))
+  (macro_definition
+    (visibility_modifier)
+    name: (identifier)
+    parameters: (token_tree
+      (metavariable)
+      (identifier))
+    body: (token_tree
+      (metavariable))))
+
+================================================================================
+Token trees with keywords and operators
+================================================================================
+
+m! { fn struct 'a 1.5 => :: <<= #[x] $crate::y }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (expression_statement
+    (macro_invocation
+      macro: (identifier)
+      (token_tree
+        (lifetime)
+        (float_literal)
+        (token_tree
+          (identifier))
+        (metavariable)
+        (identifier)))))

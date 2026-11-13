@@ -1,0 +1,412 @@
+================================================================================
+Functions
+================================================================================
+
+pub(crate) const unsafe extern "C" fn f<T: Clone, const N: usize>(x: T, mut y: [u8; N]) -> Option<T> where T: Send { None }
+async fn g(&self) {}
+fn h(&mut self, _: u8, (a, b): (u8, u8)) {}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    (visibility_modifier
+      (crate))
+    (function_modifiers
+      (extern_modifier
+        abi: (string_literal
+          (string_content))))
+    name: (identifier)
+    type_parameters: (type_parameters
+      (type_parameter
+        name: (type_identifier)
+        bounds: (trait_bounds
+          (type_identifier)))
+      (const_parameter
+        name: (identifier)
+        type: (type_identifier)))
+    parameters: (parameters
+      (parameter
+        pattern: (identifier)
+        type: (type_identifier))
+      (parameter
+        pattern: (mut_pattern
+          (mutable_specifier)
+          (identifier))
+        type: (array_type
+          element: (type_identifier)
+          length: (identifier))))
+    return_type: (generic_type
+      type: (type_identifier)
+      type_arguments: (type_arguments
+        (type_identifier)))
+    (where_clause
+      (where_predicate
+        left: (type_identifier)
+        bounds: (trait_bounds
+          (type_identifier))))
+    body: (block
+      (identifier)))
+  (function_item
+    (function_modifiers)
+    name: (identifier)
+    parameters: (parameters
+      (self_parameter
+        (self)))
+    body: (block))
+  (function_item
+    name: (identifier)
+    parameters: (parameters
+      (self_parameter
+        (mutable_specifier)
+        (self))
+      (parameter
+        type: (type_identifier))
+      (parameter
+        pattern: (tuple_pattern
+          (identifier)
+          (identifier))
+        type: (tuple_type
+          (type_identifier)
+          (type_identifier))))
+    body: (block)))
+
+================================================================================
+Structs, unions and enums
+================================================================================
+
+#[derive(Debug)]
+pub struct Point<T> { pub x: T, y: T }
+struct Tuple(pub u8, String);
+struct Unit;
+union U { a: u32, b: f32 }
+enum E { A, B(u8), C { x: i32 } = 3 }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (attribute_item
+    (attribute
+      (identifier)
+      arguments: (token_tree
+        (identifier))))
+  (struct_item
+    (visibility_modifier)
+    name: (type_identifier)
+    type_parameters: (type_parameters
+      (type_parameter
+        name: (type_identifier)))
+    body: (field_declaration_list
+      (field_declaration
+        (visibility_modifier)
+        name: (field_identifier)
+        type: (type_identifier))
+      (field_declaration
+        name: (field_identifier)
+        type: (type_identifier))))
+  (struct_item
+    name: (type_identifier)
+    body: (ordered_field_declaration_list
+      (visibility_modifier)
+      type: (type_identifier)
+      type: (type_identifier)))
+  (struct_item
+    name: (type_identifier))
+  (union_item
+    name: (type_identifier)
+    body: (field_declaration_list
+      (field_declaration
+        name: (field_identifier)
+        type: (type_identifier))
+      (field_declaration
+        name: (field_identifier)
+        type: (type_identifier))))
+  (enum_item
+    name: (type_identifier)
+    body: (enum_variant_list
+      (enum_variant
+        name: (identifier))
+      (enum_variant
+        name: (identifier)
+        body: (ordered_field_declaration_list
+          type: (type_identifier)))
+      (enum_variant
+        name: (identifier)
+        body: (field_declaration_list
+          (field_declaration
+            name: (field_identifier)
+            type: (type_identifier)))
+        value: (integer_literal)))))
+
+================================================================================
+Traits and impls
+================================================================================
+
+pub trait Shape: Debug + 'static { const SIDES: u32; type Out; fn area(&self) -> f64; fn name(&self) -> &str { "shape" } }
+impl<T> Shape for Square<T> where T: Copy { const SIDES: u32 = 4; type Out = (); fn area(&self) -> f64 { 1.0 } }
+unsafe impl Send for P {}
+impl !Sync for Q {}
+auto trait Marker {}
+trait Alias = Clone + Send;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (trait_item
+    (visibility_modifier)
+    name: (type_identifier)
+    bounds: (trait_bounds
+      (type_identifier)
+      (lifetime))
+    body: (declaration_list
+      (const_item
+        name: (identifier)
+        type: (type_identifier))
+      (type_item
+        name: (type_identifier))
+      (function_item
+        name: (identifier)
+        parameters: (parameters
+          (self_parameter
+            (self)))
+        return_type: (type_identifier))
+      (function_item
+        name: (identifier)
+        parameters: (parameters
+          (self_parameter
+            (self)))
+        return_type: (reference_type
+          type: (type_identifier))
+        body: (block
+          (string_literal
+            (string_content))))))
+  (impl_item
+    type_parameters: (type_parameters
+      (type_parameter
+        name: (type_identifier)))
+    trait: (type_identifier)
+    type: (generic_type
+      type: (type_identifier)
+      type_arguments: (type_arguments
+        (type_identifier)))
+    (where_clause
+      (where_predicate
+        left: (type_identifier)
+        bounds: (trait_bounds
+          (type_identifier))))
+    body: (declaration_list
+      (const_item
+        name: (identifier)
+        type: (type_identifier)
+        value: (integer_literal))
+      (type_item
+        name: (type_identifier)
+        type: (unit_type))
+      (function_item
+        name: (identifier)
+        parameters: (parameters
+          (self_parameter
+            (self)))
+        return_type: (type_identifier)
+        body: (block
+          (float_literal)))))
+  (impl_item
+    trait: (type_identifier)
+    type: (type_identifier)
+    body: (declaration_list))
+  (impl_item
+    trait: (type_identifier)
+    type: (type_identifier)
+    body: (declaration_list))
+  (trait_item
+    name: (type_identifier)
+    body: (declaration_list))
+  (trait_alias_item
+    name: (type_identifier)
+    bounds: (trait_bounds
+      (type_identifier)
+      (type_identifier))))
+
+================================================================================
+Modules, uses and externs
+================================================================================
+
+mod a;
+pub mod b { use super::*; }
+use std::collections::{HashMap, hash_map::Entry as E};
+use crate::x as _;
+extern crate alloc;
+unsafe extern "C" { safe fn abs(x: i32) -> i32; static mut ERRNO: i32; }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (mod_item
+    name: (identifier))
+  (mod_item
+    (visibility_modifier)
+    name: (identifier)
+    body: (declaration_list
+      (use_declaration
+        argument: (use_wildcard
+          (super)))))
+  (use_declaration
+    argument: (scoped_use_list
+      path: (scoped_identifier
+        path: (identifier)
+        name: (identifier))
+      list: (use_list
+        (identifier)
+        (use_as_clause
+          path: (scoped_identifier
+            path: (identifier)
+            name: (identifier))
+          alias: (identifier)))))
+  (use_declaration
+    argument: (use_as_clause
+      path: (scoped_identifier
+        path: (crate)
+        name: (identifier))))
+  (extern_crate_declaration
+    (crate)
+    name: (identifier))
+  (foreign_mod_item
+    (extern_modifier
+      abi: (string_literal
+        (string_content)))
+    body: (declaration_list
+      (function_item
+        (function_modifiers)
+        name: (identifier)
+        parameters: (parameters
+          (parameter
+            pattern: (identifier)
+            type: (type_identifier)))
+        return_type: (type_identifier))
+      (static_item
+        (mutable_specifier)
+        name: (identifier)
+        type: (type_identifier)))))
+
+================================================================================
+Type aliases, consts and statics
+================================================================================
+
+type R<T> = Result<T, Error>;
+const MAX: usize = 10;
+const _: () = ();
+static mut COUNT: AtomicUsize = AtomicUsize::new(0);
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (type_item
+    name: (type_identifier)
+    type_parameters: (type_parameters
+      (type_parameter
+        name: (type_identifier)))
+    type: (generic_type
+      type: (type_identifier)
+      type_arguments: (type_arguments
+        (type_identifier)
+        (type_identifier))))
+  (const_item
+    name: (identifier)
+    type: (type_identifier)
+    value: (integer_literal))
+  (const_item
+    type: (unit_type)
+    value: (unit_expression))
+  (static_item
+    (mutable_specifier)
+    name: (identifier)
+    type: (type_identifier)
+    value: (call_expression
+      function: (scoped_identifier
+        path: (identifier)
+        name: (identifier))
+      arguments: (arguments
+        (integer_literal)))))
+
+================================================================================
+Attributes
+================================================================================
+
+#![allow(dead_code)]
+#[cfg(test)]
+#[doc = "text"]
+#[unsafe(no_mangle)]
+fn f(#[attr] x: u8) {}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (inner_attribute_item
+    (attribute
+      (identifier)
+      arguments: (token_tree
+        (identifier))))
+  (attribute_item
+    (attribute
+      (identifier)
+      arguments: (token_tree
+        (identifier))))
+  (attribute_item
+    (attribute
+      (identifier)
+      value: (string_literal
+        (string_content))))
+  (attribute_item
+    (attribute
+      (attribute
+        (identifier))))
+  (function_item
+    name: (identifier)
+    parameters: (parameters
+      (attribute_item
+        (attribute
+          (identifier)))
+      (parameter
+        pattern: (identifier)
+        type: (type_identifier)))
+    body: (block)))
+
+================================================================================
+Weak keywords as names
+================================================================================
+
+fn union(default: u8, auto: u8, raw: u8, safe: u8) { let union = default + auto; macro_rules.len(); &raw const safe; }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters
+      (parameter
+        pattern: (identifier)
+        type: (type_identifier))
+      (parameter
+        pattern: (identifier)
+        type: (type_identifier))
+      (parameter
+        pattern: (identifier)
+        type: (type_identifier))
+      (parameter
+        pattern: (identifier)
+        type: (type_identifier)))
+    body: (block
+      (let_declaration
+        pattern: (identifier)
+        value: (binary_expression
+          left: (identifier)
+          right: (identifier)))
+      (expression_statement
+        (call_expression
+          function: (field_expression
+            value: (identifier)
+            field: (field_identifier))
+          arguments: (arguments)))
+      (expression_statement
+        (reference_expression
+          value: (identifier))))))

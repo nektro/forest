@@ -1,0 +1,80 @@
+================================================================================
+Line and doc comments
+================================================================================
+
+// line
+/// outer doc
+//! inner doc
+//// not a doc comment
+fn f() {}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (line_comment)
+  (doc_comment)
+  (doc_comment)
+  (line_comment)
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block)))
+
+================================================================================
+Nested block comments
+================================================================================
+
+/* outer /* inner */ still outer */
+/** doc */ /*! inner doc */ /**/ /***/
+fn f() {}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (block_comment
+    (block_comment))
+  (block_comment)
+  (block_comment)
+  (block_comment)
+  (block_comment)
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block)))
+
+================================================================================
+Comment markers inside block comments
+================================================================================
+
+/* see http://example.com and // or /// */
+/* a /* b */ // c */
+fn f() {}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (block_comment)
+  (block_comment
+    (block_comment))
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block)))
+
+================================================================================
+Comments inside strings
+================================================================================
+
+fn f() { let s = "// /* not comments */"; }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (let_declaration
+        pattern: (identifier)
+        value: (string_literal
+          (string_content))))))

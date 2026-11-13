@@ -1,0 +1,17 @@
+[
+  (block)
+  (declaration_list)
+  (field_declaration_list)
+  (ordered_field_declaration_list)
+  (enum_variant_list)
+  (field_initializer_list)
+  (match_block)
+  (match_arm)
+  (token_tree)
+  (use_list)
+  (parameters)
+  (arguments)
+  (array_expression)
+  (tuple_expression)
+  (block_comment)
+] @fold

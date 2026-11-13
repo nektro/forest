@@ -14,6 +14,7 @@
   --hl-constant: #0550ae;
   --hl-property: #0550ae;
   --hl-label: #116329;
+  --hl-tag: #1b7c83;
   --hl-punctuation: #57606a;
   color: var(--hl-fg);
 }
@@ -30,7 +31,8 @@
     --hl-type: #ffa657;
     --hl-constant: #79c0ff;
     --hl-property: #79c0ff;
-    --hl-label: #7ee787;
+    --hl-tag: #7ee787;
+    --hl-label: #56d4dd;
     --hl-punctuation: #8b949e;
   }
 }
@@ -47,6 +49,6 @@
 .arborist .hl-property { color: var(--hl-property); }
 .arborist .hl-variable-parameter { font-style: italic; }
 .arborist .hl-label { color: var(--hl-label); }
-.arborist .hl-tag { color: var(--hl-label); }
+.arborist .hl-tag { color: var(--hl-tag); }
 .arborist .hl-tag-attribute { color: var(--hl-property); }
 .arborist .hl-punctuation { color: var(--hl-punctuation); }

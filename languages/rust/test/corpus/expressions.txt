@@ -1,0 +1,604 @@
+================================================================================
+Operators and precedence
+================================================================================
+
+fn f() { a + b * c - d / e % g; a == b && c != d || !e; x = y += 1; a << 2 >> 3 & 4 | 5 ^ 6; -a.b()?; *x as u64; }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (binary_expression
+          left: (binary_expression
+            left: (identifier)
+            right: (binary_expression
+              left: (identifier)
+              right: (identifier)))
+          right: (binary_expression
+            left: (binary_expression
+              left: (identifier)
+              right: (identifier))
+            right: (identifier))))
+      (expression_statement
+        (binary_expression
+          left: (binary_expression
+            left: (binary_expression
+              left: (identifier)
+              right: (identifier))
+            right: (binary_expression
+              left: (identifier)
+              right: (identifier)))
+          right: (unary_expression
+            (identifier))))
+      (expression_statement
+        (assignment_expression
+          left: (identifier)
+          right: (compound_assignment_expr
+            left: (identifier)
+            right: (integer_literal))))
+      (expression_statement
+        (binary_expression
+          left: (binary_expression
+            left: (binary_expression
+              left: (binary_expression
+                left: (identifier)
+                right: (integer_literal))
+              right: (integer_literal))
+            right: (integer_literal))
+          right: (binary_expression
+            left: (integer_literal)
+            right: (integer_literal))))
+      (expression_statement
+        (unary_expression
+          (try_expression
+            (call_expression
+              function: (field_expression
+                value: (identifier)
+                field: (field_identifier))
+              arguments: (arguments)))))
+      (expression_statement
+        (type_cast_expression
+          value: (unary_expression
+            (identifier))
+          type: (type_identifier))))))
+
+================================================================================
+Calls, fields and indexing
+================================================================================
+
+fn f() { a.b.c(d)[0].e::<T>(); Vec::<u8>::new(); <T as Default>::default(); x.await; x.0; }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (call_expression
+          function: (generic_function
+            function: (field_expression
+              value: (index_expression
+                (call_expression
+                  function: (field_expression
+                    value: (field_expression
+                      value: (identifier)
+                      field: (field_identifier))
+                    field: (field_identifier))
+                  arguments: (arguments
+                    (identifier)))
+                (integer_literal))
+              field: (field_identifier))
+            type_arguments: (type_arguments
+              (type_identifier)))
+          arguments: (arguments)))
+      (expression_statement
+        (call_expression
+          function: (scoped_identifier
+            path: (generic_type
+              type: (type_identifier)
+              type_arguments: (type_arguments
+                (type_identifier)))
+            name: (identifier))
+          arguments: (arguments)))
+      (expression_statement
+        (call_expression
+          function: (scoped_identifier
+            path: (bracketed_type
+              (qualified_type
+                type: (type_identifier)
+                alias: (type_identifier)))
+            name: (identifier))
+          arguments: (arguments)))
+      (expression_statement
+        (await_expression
+          (identifier)))
+      (expression_statement
+        (field_expression
+          value: (identifier)
+          field: (integer_literal))))))
+
+================================================================================
+Struct literals
+================================================================================
+
+fn f() { let p = Point { x: 1, y, ..Default::default() }; let q = a::B::<T> { 0: 1 }; }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (let_declaration
+        pattern: (identifier)
+        value: (struct_expression
+          name: (type_identifier)
+          body: (field_initializer_list
+            (field_initializer
+              field: (field_identifier)
+              value: (integer_literal))
+            (shorthand_field_initializer
+              (identifier))
+            (base_field_initializer
+              (call_expression
+                function: (scoped_identifier
+                  path: (identifier)
+                  name: (identifier))
+                arguments: (arguments))))))
+      (let_declaration
+        pattern: (identifier)
+        value: (struct_expression
+          name: (generic_type_with_turbofish
+            type: (scoped_identifier
+              path: (identifier)
+              name: (identifier))
+            type_arguments: (type_arguments
+              (type_identifier)))
+          body: (field_initializer_list
+            (field_initializer
+              field: (integer_literal)
+              value: (integer_literal))))))))
+
+================================================================================
+Struct literal or block in conditions
+================================================================================
+
+fn f() { if a == b { c } else if d { e } else { g } while x { y } match v { A { b } => b, _ => 0 } for i in xs { i } }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (if_expression
+          condition: (binary_expression
+            left: (identifier)
+            right: (identifier))
+          consequence: (block
+            (identifier))
+          alternative: (else_clause
+            (if_expression
+              condition: (identifier)
+              consequence: (block
+                (identifier))
+              alternative: (else_clause
+                (block
+                  (identifier)))))))
+      (expression_statement
+        (while_expression
+          condition: (identifier)
+          body: (block
+            (identifier))))
+      (expression_statement
+        (match_expression
+          value: (identifier)
+          body: (match_block
+            (match_arm
+              pattern: (match_pattern
+                (struct_pattern
+                  type: (type_identifier)
+                  (field_pattern
+                    name: (shorthand_field_identifier))))
+              value: (identifier))
+            (match_arm
+              pattern: (match_pattern)
+              value: (integer_literal)))))
+      (expression_statement
+        (for_expression
+          pattern: (identifier)
+          value: (identifier)
+          body: (block
+            (identifier)))))))
+
+================================================================================
+Block-like expression statements
+================================================================================
+
+fn f() { if a {} *b = 1; match x {}.len(); unsafe { y } - 1; loop {} }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (if_expression
+          condition: (identifier)
+          consequence: (block)))
+      (expression_statement
+        (assignment_expression
+          left: (unary_expression
+            (identifier))
+          right: (integer_literal)))
+      (expression_statement
+        (call_expression
+          function: (field_expression
+            value: (match_expression
+              value: (identifier)
+              body: (match_block))
+            field: (field_identifier))
+          arguments: (arguments)))
+      (expression_statement
+        (unsafe_block
+          (block
+            (identifier))))
+      (expression_statement
+        (unary_expression
+          (integer_literal)))
+      (expression_statement
+        (loop_expression
+          body: (block))))))
+
+================================================================================
+Closures
+================================================================================
+
+fn f() { || 1; |x| x + 1; move |a: u8, b| -> u8 { a }; async move || {}; const |x| x; }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (closure_expression
+          parameters: (closure_parameters)
+          body: (integer_literal)))
+      (expression_statement
+        (closure_expression
+          parameters: (closure_parameters
+            (identifier))
+          body: (binary_expression
+            left: (identifier)
+            right: (integer_literal))))
+      (expression_statement
+        (closure_expression
+          parameters: (closure_parameters
+            (parameter
+              pattern: (identifier)
+              type: (type_identifier))
+            (identifier))
+          return_type: (type_identifier)
+          body: (block
+            (identifier))))
+      (expression_statement
+        (closure_expression
+          parameters: (closure_parameters)
+          body: (block)))
+      (expression_statement
+        (closure_expression
+          parameters: (closure_parameters
+            (identifier))
+          body: (identifier))))))
+
+================================================================================
+Ranges
+================================================================================
+
+fn f() { ..; a..; ..b; a..b; a..=b; ..=b; xs[1..]; }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (range_expression))
+      (expression_statement
+        (range_expression
+          (identifier)))
+      (expression_statement
+        (range_expression
+          (identifier)))
+      (expression_statement
+        (range_expression
+          (identifier)
+          (identifier)))
+      (expression_statement
+        (range_expression
+          (identifier)
+          (identifier)))
+      (expression_statement
+        (range_expression
+          (identifier)))
+      (expression_statement
+        (index_expression
+          (identifier)
+          (range_expression
+            (integer_literal)))))))
+
+================================================================================
+Control flow
+================================================================================
+
+fn f() { 'outer: loop { break 'outer; } 'b: { break 'b 1 } continue; return; return x; break [1]; let x = loop { break 5; }; }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (loop_expression
+          (label)
+          body: (block
+            (expression_statement
+              (break_expression
+                (label))))))
+      (expression_statement
+        (block
+          (label)
+          (break_expression
+            (label)
+            (integer_literal))))
+      (expression_statement
+        (continue_expression))
+      (expression_statement
+        (return_expression))
+      (expression_statement
+        (return_expression
+          (identifier)))
+      (expression_statement
+        (break_expression
+          (array_expression
+            (integer_literal))))
+      (let_declaration
+        pattern: (identifier)
+        value: (loop_expression
+          body: (block
+            (expression_statement
+              (break_expression
+                (integer_literal)))))))))
+
+================================================================================
+Let chains and let else
+================================================================================
+
+fn f() { if let Some(x) = a && let Ok(y) = b && x > y {} while let Some(t) = it.next() {} let Some(z) = w else { return }; }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (if_expression
+          condition: (let_chain
+            (let_condition
+              pattern: (tuple_struct_pattern
+                type: (identifier)
+                (identifier))
+              value: (identifier))
+            (let_condition
+              pattern: (tuple_struct_pattern
+                type: (identifier)
+                (identifier))
+              value: (identifier))
+            (binary_expression
+              left: (identifier)
+              right: (identifier)))
+          consequence: (block)))
+      (expression_statement
+        (while_expression
+          condition: (let_condition
+            pattern: (tuple_struct_pattern
+              type: (identifier)
+              (identifier))
+            value: (call_expression
+              function: (field_expression
+                value: (identifier)
+                field: (field_identifier))
+              arguments: (arguments)))
+          body: (block)))
+      (let_declaration
+        pattern: (tuple_struct_pattern
+          type: (identifier)
+          (identifier))
+        value: (identifier)
+        alternative: (block
+          (return_expression))))))
+
+================================================================================
+Async, unsafe, const and try blocks
+================================================================================
+
+fn f() { async { 1 }.await; async move {}; unsafe { g() }; const { 1 + 1 }; try { x? }; gen { yield 1; }; }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (await_expression
+          (async_block
+            (block
+              (integer_literal)))))
+      (expression_statement
+        (async_block
+          (block)))
+      (empty_statement)
+      (expression_statement
+        (unsafe_block
+          (block
+            (call_expression
+              function: (identifier)
+              arguments: (arguments)))))
+      (empty_statement)
+      (expression_statement
+        (const_block
+          body: (block
+            (binary_expression
+              left: (integer_literal)
+              right: (integer_literal)))))
+      (empty_statement)
+      (expression_statement
+        (try_block
+          (block
+            (try_expression
+              (identifier)))))
+      (empty_statement)
+      (expression_statement
+        (gen_block
+          (block
+            (expression_statement
+              (yield_expression
+                (integer_literal))))))
+      (empty_statement))))
+
+================================================================================
+References and pointers
+================================================================================
+
+fn f() { &x; &mut x; &&x; &raw const x; &raw mut x; *p; }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (reference_expression
+          value: (identifier)))
+      (expression_statement
+        (reference_expression
+          (mutable_specifier)
+          value: (identifier)))
+      (expression_statement
+        (reference_expression
+          value: (identifier)))
+      (expression_statement
+        (reference_expression
+          value: (identifier)))
+      (expression_statement
+        (reference_expression
+          (mutable_specifier)
+          value: (identifier)))
+      (expression_statement
+        (unary_expression
+          (identifier))))))
+
+================================================================================
+Arrays and tuples
+================================================================================
+
+fn f() { []; [1, 2, 3]; [0; 16]; (); (1,); (1, 2); (a); }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (array_expression))
+      (expression_statement
+        (array_expression
+          (integer_literal)
+          (integer_literal)
+          (integer_literal)))
+      (expression_statement
+        (array_expression
+          (integer_literal)
+          length: (integer_literal)))
+      (expression_statement
+        (unit_expression))
+      (expression_statement
+        (tuple_expression
+          (integer_literal)))
+      (expression_statement
+        (tuple_expression
+          (integer_literal)
+          (integer_literal)))
+      (expression_statement
+        (parenthesized_expression
+          (identifier))))))
+
+================================================================================
+Destructuring assignment
+================================================================================
+
+fn f() { (a, b) = (b, a); [x, .., y] = arr; S { f, .. } = s; _ = g(); }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (assignment_expression
+          left: (tuple_expression
+            (identifier)
+            (identifier))
+          right: (tuple_expression
+            (identifier)
+            (identifier))))
+      (expression_statement
+        (assignment_expression
+          left: (array_expression
+            (identifier)
+            (range_expression)
+            (identifier))
+          right: (identifier)))
+      (expression_statement
+        (assignment_expression
+          left: (struct_expression
+            name: (type_identifier)
+            body: (field_initializer_list
+              (shorthand_field_initializer
+                (identifier))
+              (base_field_initializer)))
+          right: (identifier)))
+      (expression_statement
+        (assignment_expression
+          left: (underscore_expression)
+          right: (call_expression
+            function: (identifier)
+            arguments: (arguments)))))))

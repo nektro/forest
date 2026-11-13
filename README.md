@@ -12,6 +12,7 @@ A bundle of tree-sitter grammars.
 | JSON (and JSONC, JSON Lines) | [languages/json](languages/json) | none |
 | Lua (5.1 to 5.5) | [languages/lua](languages/lua) | none |
 | Nix | [languages/nix](languages/nix) | none |
+| Rust | [languages/rust](languages/rust) | none |
 | SCSS | [languages/scss](languages/scss) | none |
 | Swift | [languages/swift](languages/swift) | none |
 | Verilog (IEEE 1364-2005) | [languages/verilog](languages/verilog) | none |

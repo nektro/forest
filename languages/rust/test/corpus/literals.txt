@@ -1,0 +1,215 @@
+================================================================================
+Integers
+================================================================================
+
+fn f() { 0; 1_000; 0xFF; 0o77; 0b1010; 1u8; 2i128; 3usize; 0xffu32; }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (integer_literal))
+      (expression_statement
+        (integer_literal))
+      (expression_statement
+        (integer_literal))
+      (expression_statement
+        (integer_literal))
+      (expression_statement
+        (integer_literal))
+      (expression_statement
+        (integer_literal))
+      (expression_statement
+        (integer_literal))
+      (expression_statement
+        (integer_literal))
+      (expression_statement
+        (integer_literal)))))
+
+================================================================================
+Floats
+================================================================================
+
+fn f() { 1.0; 1.5e10; 2E-3; 1f32; 1.0f64; 1.; 1e5_f64; }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (float_literal))
+      (expression_statement
+        (float_literal))
+      (expression_statement
+        (float_literal))
+      (expression_statement
+        (float_literal))
+      (expression_statement
+        (float_literal))
+      (expression_statement
+        (float_literal))
+      (expression_statement
+        (float_literal)))))
+
+================================================================================
+Float or method call after a decimal
+================================================================================
+
+fn f() { 1.max(2); 1..2; 1..=2; 1. + 2.; t.0.1; }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (call_expression
+          function: (field_expression
+            value: (integer_literal)
+            field: (field_identifier))
+          arguments: (arguments
+            (integer_literal))))
+      (expression_statement
+        (range_expression
+          (integer_literal)
+          (integer_literal)))
+      (expression_statement
+        (range_expression
+          (integer_literal)
+          (integer_literal)))
+      (expression_statement
+        (binary_expression
+          left: (float_literal)
+          right: (float_literal)))
+      (expression_statement
+        (field_expression
+          value: (field_expression
+            value: (identifier)
+            field: (integer_literal))
+          field: (integer_literal))))))
+
+================================================================================
+Characters and lifetimes
+================================================================================
+
+fn f<'a>(x: &'a str) -> &'static str { 'a'; '\n'; '\''; '\u{1F600}'; b'x'; x }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    type_parameters: (type_parameters
+      (lifetime_parameter
+        name: (lifetime)))
+    parameters: (parameters
+      (parameter
+        pattern: (identifier)
+        type: (reference_type
+          (lifetime)
+          type: (type_identifier))))
+    return_type: (reference_type
+      (lifetime)
+      type: (type_identifier))
+    body: (block
+      (expression_statement
+        (char_literal))
+      (expression_statement
+        (char_literal))
+      (expression_statement
+        (char_literal))
+      (expression_statement
+        (char_literal))
+      (expression_statement
+        (char_literal))
+      (identifier))))
+
+================================================================================
+Strings
+================================================================================
+
+fn f() { "a\n\"b\\"; b"bytes"; c"cstr"; "line\
+    continued"; "\x41\u{41}"; }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (string_literal
+          (string_content)
+          (escape_sequence)
+          (escape_sequence)
+          (string_content)
+          (escape_sequence)))
+      (expression_statement
+        (string_literal
+          (string_content)))
+      (expression_statement
+        (string_literal
+          (string_content)))
+      (expression_statement
+        (string_literal
+          (string_content)
+          (escape_sequence)
+          (string_content)))
+      (expression_statement
+        (string_literal
+          (escape_sequence)
+          (escape_sequence))))))
+
+================================================================================
+Raw strings
+================================================================================
+
+fn f() { r"raw"; r#"has "quotes""#; r##"has "# inside"##; br"bytes"; cr#"c"#; r#""#; }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (raw_string_literal))
+      (expression_statement
+        (raw_string_literal))
+      (expression_statement
+        (raw_string_literal))
+      (expression_statement
+        (raw_string_literal))
+      (expression_statement
+        (raw_string_literal))
+      (expression_statement
+        (raw_string_literal)))))
+
+================================================================================
+Booleans
+================================================================================
+
+fn f() { true; false; }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (boolean_literal))
+      (expression_statement
+        (boolean_literal)))))

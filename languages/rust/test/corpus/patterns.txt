@@ -1,0 +1,216 @@
+================================================================================
+Match patterns
+================================================================================
+
+fn f() { match x { 0 | 1 => {} 2..=9 => {} ..0 => {} 10.. => {} 'a'..='z' => {} -1 => {} _ => {} } }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (match_expression
+          value: (identifier)
+          body: (match_block
+            (match_arm
+              pattern: (match_pattern
+                (or_pattern
+                  (integer_literal)
+                  (integer_literal)))
+              value: (block))
+            (match_arm
+              pattern: (match_pattern
+                (range_pattern
+                  left: (integer_literal)
+                  right: (integer_literal)))
+              value: (block))
+            (match_arm
+              pattern: (match_pattern
+                (range_pattern
+                  right: (integer_literal)))
+              value: (block))
+            (match_arm
+              pattern: (match_pattern
+                (range_pattern
+                  left: (integer_literal)))
+              value: (block))
+            (match_arm
+              pattern: (match_pattern
+                (range_pattern
+                  left: (char_literal)
+                  right: (char_literal)))
+              value: (block))
+            (match_arm
+              pattern: (match_pattern
+                (negative_literal
+                  (integer_literal)))
+              value: (block))
+            (match_arm
+              pattern: (match_pattern)
+              value: (block))))))))
+
+================================================================================
+Bindings and destructuring
+================================================================================
+
+fn f() { match v { Some(ref mut x) => {} n @ 1..=5 => {} Point { x, y: 0, .. } => {} [first, .., last] => {} (a, b) => {} &(c, _) => {} box d => {} } }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (match_expression
+          value: (identifier)
+          body: (match_block
+            (match_arm
+              pattern: (match_pattern
+                (tuple_struct_pattern
+                  type: (identifier)
+                  (ref_pattern
+                    (ref_specifier)
+                    (mutable_specifier)
+                    (identifier))))
+              value: (block))
+            (match_arm
+              pattern: (match_pattern
+                (captured_pattern
+                  (identifier)
+                  (range_pattern
+                    left: (integer_literal)
+                    right: (integer_literal))))
+              value: (block))
+            (match_arm
+              pattern: (match_pattern
+                (struct_pattern
+                  type: (type_identifier)
+                  (field_pattern
+                    name: (shorthand_field_identifier))
+                  (field_pattern
+                    name: (field_identifier)
+                    pattern: (integer_literal))
+                  (remaining_field_pattern)))
+              value: (block))
+            (match_arm
+              pattern: (match_pattern
+                (slice_pattern
+                  (identifier)
+                  (remaining_field_pattern)
+                  (identifier)))
+              value: (block))
+            (match_arm
+              pattern: (match_pattern
+                (tuple_pattern
+                  (identifier)
+                  (identifier)))
+              value: (block))
+            (match_arm
+              pattern: (match_pattern
+                (reference_pattern
+                  (tuple_pattern
+                    (identifier))))
+              value: (block))
+            (match_arm
+              pattern: (match_pattern
+                (box_pattern
+                  (identifier)))
+              value: (block))))))))
+
+================================================================================
+Guards
+================================================================================
+
+fn f() { match x { Some(y) if y > 0 => 1, Some(_) | None => 0, } }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (match_expression
+          value: (identifier)
+          body: (match_block
+            (match_arm
+              pattern: (match_pattern
+                (tuple_struct_pattern
+                  type: (identifier)
+                  (identifier))
+                condition: (binary_expression
+                  left: (identifier)
+                  right: (integer_literal)))
+              value: (integer_literal))
+            (match_arm
+              pattern: (match_pattern
+                (or_pattern
+                  (tuple_struct_pattern
+                    type: (identifier))
+                  (identifier)))
+              value: (integer_literal))))))))
+
+================================================================================
+Patterns in let, for and parameters
+================================================================================
+
+fn f((a, b): (u8, u8), Point { x, .. }: Point) { let (mut c, ref d) = t; for (i, x) in xs.iter().enumerate() {} let [a, b @ ..] = s; }
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_item
+    name: (identifier)
+    parameters: (parameters
+      (parameter
+        pattern: (tuple_pattern
+          (identifier)
+          (identifier))
+        type: (tuple_type
+          (type_identifier)
+          (type_identifier)))
+      (parameter
+        pattern: (struct_pattern
+          type: (type_identifier)
+          (field_pattern
+            name: (shorthand_field_identifier))
+          (remaining_field_pattern))
+        type: (type_identifier)))
+    body: (block
+      (let_declaration
+        pattern: (tuple_pattern
+          (mut_pattern
+            (mutable_specifier)
+            (identifier))
+          (ref_pattern
+            (ref_specifier)
+            (identifier)))
+        value: (identifier))
+      (expression_statement
+        (for_expression
+          pattern: (tuple_pattern
+            (identifier)
+            (identifier))
+          value: (call_expression
+            function: (field_expression
+              value: (call_expression
+                function: (field_expression
+                  value: (identifier)
+                  field: (field_identifier))
+                arguments: (arguments))
+              field: (field_identifier))
+            arguments: (arguments))
+          body: (block)))
+      (let_declaration
+        pattern: (slice_pattern
+          (identifier)
+          (captured_pattern
+            (identifier)
+            (remaining_field_pattern)))
+        value: (identifier)))))
