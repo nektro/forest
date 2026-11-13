@@ -24,7 +24,7 @@
     "license": "MIT",
     "description": "Dockerfile grammar for tree-sitter",
     "links": {
-      "repository": "https://github.com/OWNER/arborist"
+      "repository": "https://github.com/nektro/arborist"
     }
   },
   "bindings": {

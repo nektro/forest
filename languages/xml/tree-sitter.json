@@ -37,7 +37,7 @@
     "license": "MIT",
     "description": "XML 1.0 grammar for tree-sitter",
     "links": {
-      "repository": "https://github.com/OWNER/arborist"
+      "repository": "https://github.com/nektro/arborist"
     }
   },
   "bindings": {

@@ -22,7 +22,7 @@
     "license": "MIT",
     "description": "Java grammar for tree-sitter, without an external scanner",
     "links": {
-      "repository": "https://github.com/OWNER/arborist"
+      "repository": "https://github.com/nektro/arborist"
     }
   },
   "bindings": {
