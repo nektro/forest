@@ -1,0 +1,167 @@
+================================================================================
+Wildcards
+================================================================================
+
+**/doc/**/*.md? text
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    pattern: (pattern
+      (wildcard)
+      (wildcard)
+      (wildcard)
+      (wildcard))
+    (attribute
+      name: (attribute_name))))
+
+================================================================================
+Bracket expressions
+================================================================================
+
+*.[ch] diff=cpp
+*.{bat,[bB][aA][tT]} eol=crlf
+[!a-z]* text
+[]x] text
+[[:digit:][:upper:]].c text
+[a\]b] text
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    pattern: (pattern
+      (wildcard)
+      (bracket_expression))
+    (attribute
+      name: (attribute_name)
+      value: (attribute_value)))
+  (rule
+    pattern: (pattern
+      (wildcard)
+      (bracket_expression)
+      (bracket_expression)
+      (bracket_expression))
+    (attribute
+      name: (attribute_name)
+      value: (attribute_value)))
+  (rule
+    pattern: (pattern
+      (bracket_expression)
+      (wildcard))
+    (attribute
+      name: (attribute_name)))
+  (rule
+    pattern: (pattern
+      (bracket_expression))
+    (attribute
+      name: (attribute_name)))
+  (rule
+    pattern: (pattern
+      (bracket_expression))
+    (attribute
+      name: (attribute_name)))
+  (rule
+    pattern: (pattern
+      (bracket_expression))
+    (attribute
+      name: (attribute_name))))
+
+================================================================================
+An unclosed bracket is literal
+================================================================================
+
+foo[bar text
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    pattern: (pattern)
+    (attribute
+      name: (attribute_name))))
+
+================================================================================
+Escapes
+================================================================================
+
+\#not-a-comment text
+\!x\*y\ text
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    pattern: (pattern
+      (escape_sequence))
+    (attribute
+      name: (attribute_name)))
+  (rule
+    pattern: (pattern
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence))
+    (attribute
+      name: (attribute_name))))
+
+================================================================================
+Negative patterns
+================================================================================
+
+!*.c text
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    pattern: (pattern
+      (wildcard))
+    (attribute
+      name: (attribute_name))))
+
+================================================================================
+Text that looks like other syntax
+================================================================================
+
+a#b!c-d=e"f text
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    pattern: (pattern)
+    (attribute
+      name: (attribute_name))))
+
+================================================================================
+Quoted patterns
+================================================================================
+
+"with space.txt" text
+"tab\there\303\251" -diff
+"glued"text
+"" text
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    pattern: (quoted_pattern)
+    (attribute
+      name: (attribute_name)))
+  (rule
+    pattern: (quoted_pattern
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence))
+    (attribute
+      name: (attribute_name)))
+  (rule
+    pattern: (quoted_pattern)
+    (attribute
+      name: (attribute_name)))
+  (rule
+    pattern: (quoted_pattern)
+    (attribute
+      name: (attribute_name))))

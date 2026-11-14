@@ -1,0 +1,26 @@
+# Normalize line endings.
+# <- comment
+* text=auto eol=lf
+# <- character.special
+# ^ property.builtin
+#     ^ operator
+#      ^ string
+#                ^ string
+*.png binary -diff !merge
+#^ string.special.path
+#     ^ property.builtin
+#            ^ operator
+#             ^ property.builtin
+#                  ^ operator
+*.[ch] diff=cpp linguist-language=C
+#  ^ character.special
+#               ^ property
+\#name text
+# <- string.escape
+"a b\tc" -text
+# <- string.special.path
+#   ^ string.escape
+[attr]generated linguist-generated=true -diff
+# <- keyword
+#     ^ function.macro
+#                                       ^ operator

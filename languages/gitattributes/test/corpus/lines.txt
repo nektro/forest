@@ -1,0 +1,190 @@
+================================================================================
+Comments and blank lines
+================================================================================
+
+# a comment
+   # indented comment
+
+	
+#no space
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (comment)
+  (comment)
+  (comment))
+
+================================================================================
+A pattern with attributes
+================================================================================
+
+*.c text diff=cpp
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    pattern: (pattern
+      (wildcard))
+    (attribute
+      name: (attribute_name))
+    (attribute
+      name: (attribute_name)
+      value: (attribute_value))))
+
+================================================================================
+Attribute states
+================================================================================
+
+*.png binary -diff !merge eol=lf filter=
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    pattern: (pattern
+      (wildcard))
+    (attribute
+      name: (attribute_name))
+    (attribute
+      name: (attribute_name))
+    (attribute
+      name: (attribute_name))
+    (attribute
+      name: (attribute_name)
+      value: (attribute_value))
+    (attribute
+      name: (attribute_name))))
+
+================================================================================
+A value may contain = and punctuation
+================================================================================
+
+*.rs whitespace=tab-in-indent,trailing-space,tabwidth=4 diff=a=b
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    pattern: (pattern
+      (wildcard))
+    (attribute
+      name: (attribute_name)
+      value: (attribute_value))
+    (attribute
+      name: (attribute_name)
+      value: (attribute_value))))
+
+================================================================================
+An unset attribute with a value
+================================================================================
+
+*.txt -text=ignored
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    pattern: (pattern
+      (wildcard))
+    (attribute
+      name: (attribute_name)
+      value: (attribute_value))))
+
+================================================================================
+Leading, trailing and repeated blanks
+================================================================================
+
+  *.c 	 text   eol=lf  
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    pattern: (pattern
+      (wildcard))
+    (attribute
+      name: (attribute_name))
+    (attribute
+      name: (attribute_name)
+      value: (attribute_value))))
+
+================================================================================
+A pattern with no attributes
+================================================================================
+
+docs/
+  -foo
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    pattern: (pattern))
+  (rule
+    pattern: (pattern)))
+
+================================================================================
+Macro definitions
+================================================================================
+
+[attr]binary -diff -merge -text
+[attr]generated linguist-generated=true diff=generated
+[attr]empty
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    name: (attribute_name)
+    (attribute
+      name: (attribute_name))
+    (attribute
+      name: (attribute_name))
+    (attribute
+      name: (attribute_name)))
+  (macro_definition
+    name: (attribute_name)
+    (attribute
+      name: (attribute_name)
+      value: (attribute_value))
+    (attribute
+      name: (attribute_name)
+      value: (attribute_value)))
+  (macro_definition
+    name: (attribute_name)))
+
+================================================================================
+No trailing newline
+================================================================================
+
+* text=auto
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    pattern: (pattern
+      (wildcard))
+    (attribute
+      name: (attribute_name)
+      value: (attribute_value))))
+
+================================================================================
+An invalid attribute name
+:error
+================================================================================
+
+*.c foo/bar
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    pattern: (pattern
+      (wildcard))
+    (attribute
+      name: (attribute_name)))
+  (ERROR
+    (ERROR)
+    (attribute_name)))

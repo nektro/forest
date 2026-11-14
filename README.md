@@ -9,6 +9,7 @@ A bundle of tree-sitter grammars.
 | CMake | [languages/cmake](languages/cmake) | none |
 | CSS | [languages/css](languages/css) | none |
 | Dockerfile | [languages/dockerfile](languages/dockerfile) | none |
+| gitattributes | [languages/gitattributes](languages/gitattributes) | none |
 | Go | [languages/go](languages/go) | none |
 | HTML | [languages/html](languages/html) | none |
 | Java | [languages/java](languages/java) | none |

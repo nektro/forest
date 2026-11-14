@@ -1,0 +1,24 @@
+================================================================================
+CRLF line endings
+================================================================================
+
+# comment
+*.bat text eol=crlf
+[attr]dos text
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (comment)
+  (rule
+    pattern: (pattern
+      (wildcard))
+    (attribute
+      name: (attribute_name))
+    (attribute
+      name: (attribute_name)
+      value: (attribute_value)))
+  (macro_definition
+    name: (attribute_name)
+    (attribute
+      name: (attribute_name))))
