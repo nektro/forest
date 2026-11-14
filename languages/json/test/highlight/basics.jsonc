@@ -1,7 +1,7 @@
 // A comment.
 // <- comment
 {
-  "name": "arborist",
+  "name": "forest",
 // ^ property
 //        ^ string
   "escaped": "a\nb",

@@ -22,7 +22,7 @@
     "license": "MIT",
     "description": "Swift grammar for tree-sitter, without an external scanner",
     "links": {
-      "repository": "https://github.com/nektro/arborist"
+      "repository": "https://github.com/nektro/forest"
     }
   },
   "bindings": {

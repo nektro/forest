@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>arborist</title>
-<link rel="stylesheet" href="arborist.css">
+<title>forest</title>
+<link rel="stylesheet" href="forest.css">
 <style>
   :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
   body { max-width: 60rem; margin: 2rem auto; padding: 0 1rem; }
@@ -15,10 +15,10 @@
   .controls { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center; margin-bottom: 0.5rem; }
   h3 { font-size: 0.9rem; font-weight: 600; margin: 1rem 0 0.25rem; }
 </style>
-<script src="arborist.js" data-auto></script>
+<script src="forest.js" data-auto></script>
 </head>
 <body>
-<h1>arborist</h1>
+<h1>forest</h1>
 <p>Bundled languages: <span id="languages"></span>.</p>
 
 <h2>Live</h2>
@@ -27,24 +27,24 @@
   <label>Example <select id="example"></select></label>
 </div>
 <textarea id="input" spellcheck="false"></textarea>
-<pre class="arborist" id="output"></pre>
+<pre class="forest" id="output"></pre>
 <details><summary>Syntax tree</summary><pre id="tree"></pre></details>
 
 <h2>Static</h2>
-<p>Highlighted by <code>&lt;script src="arborist.js" data-auto&gt;</code>:</p>
+<p>Highlighted by <code>&lt;script src="forest.js" data-auto&gt;</code>:</p>
 <div id="static"></div>
 
 <!-- Filled in by web/build.ts from each grammar's examples/ directory. -->
-<script type="application/json" id="examples">/*ARBORIST_EXAMPLES*/{}</script>
+<script type="application/json" id="examples">/*FOREST_EXAMPLES*/{}</script>
 <script>
   const EXAMPLES = JSON.parse(document.getElementById("examples").textContent);
   const $ = (id) => document.getElementById(id);
   const option = (value, text = value) => Object.assign(document.createElement("option"), { value, text });
 
-  $("languages").textContent = Arborist.languages.join(", ");
+  $("languages").textContent = Forest.languages.join(", ");
 
   // Static blocks; data-auto highlights them on DOMContentLoaded.
-  for (const lang of Arborist.languages) {
+  for (const lang of Forest.languages) {
     for (const { name, source } of EXAMPLES[lang] ?? []) {
       const h = document.createElement("h3");
       h.textContent = name;
@@ -82,12 +82,12 @@
     $("example").replaceChildren(...(EXAMPLES[lang] ?? []).map((ex, i) => option(i, ex.name)));
     const mine = ++generation;
     grammar = null;
-    const loaded = await Arborist.load(lang);
+    const loaded = await Forest.load(lang);
     if (mine !== generation) return;
     grammar = loaded;
     pickExample();
   };
-  $("language").replaceChildren(...Arborist.languages.map((lang) => option(lang)));
+  $("language").replaceChildren(...Forest.languages.map((lang) => option(lang)));
   $("language").addEventListener("change", pickLanguage);
   $("example").addEventListener("change", pickExample);
   $("input").addEventListener("input", update);

@@ -1,12 +1,12 @@
-// Browser entry point, bundled by web/build.ts into dist/arborist.js and
-// exposed as the global `Arborist`.
+// Browser entry point, bundled by web/build.ts into dist/forest.js and
+// exposed as the global `Forest`.
 
 import { Language, Parser, Query } from "web-tree-sitter";
-import LANGUAGES from "arborist:languages";
-import RUNTIME_WASM from "arborist:runtime-wasm";
+import LANGUAGES from "forest:languages";
+import RUNTIME_WASM from "forest:runtime-wasm";
 
 // Grammar .wasm files are fetched relative to this script, unless the script
-// tag has data-base="..." or Arborist.baseURL is set before the first load.
+// tag has data-base="..." or Forest.baseURL is set before the first load.
 const script = typeof document !== "undefined" ? document.currentScript : null;
 let baseURL =
   script?.dataset.base ??
@@ -305,10 +305,10 @@ class Grammar {
 
 const loading = new Map();
 
-/** Load a grammar by name (see Arborist.languages). Resolves to a Grammar. */
+/** Load a grammar by name (see Forest.languages). Resolves to a Grammar. */
 function load(name) {
   const info = LANGUAGES[name];
-  if (!info) return Promise.reject(new Error(`arborist: unknown language "${name}"`));
+  if (!info) return Promise.reject(new Error(`forest: unknown language "${name}"`));
   let promise = loading.get(name);
   if (!promise) {
     promise = (async () => {
@@ -316,8 +316,8 @@ function load(name) {
       // Pass the bytes, not the URL: from a URL web-tree-sitter compiles the
       // module and then instantiates it synchronously, which Chrome refuses
       // on the main thread for modules over 8 MB (Ruby's is about 16 MB).
-      const response = await fetch(new URL(info.wasm, Arborist.baseURL).href);
-      if (!response.ok) throw new Error(`arborist: ${info.wasm}: HTTP ${response.status}`);
+      const response = await fetch(new URL(info.wasm, Forest.baseURL).href);
+      if (!response.ok) throw new Error(`forest: ${info.wasm}: HTTP ${response.status}`);
       const language = await Language.load(new Uint8Array(await response.arrayBuffer()));
       const grammar = new Grammar(name, language, info);
       loaded.set(name, grammar);
@@ -358,12 +358,12 @@ function elementLanguage(el) {
  */
 async function highlightElement(el, language) {
   const name = language ?? elementLanguage(el);
-  if (!name) throw new Error("arborist: cannot tell the element's language");
+  if (!name) throw new Error("forest: cannot tell the element's language");
   const grammar = await load(name);
   const source = el.textContent;
   await grammar.loadInjections(source);
   el.innerHTML = grammar.highlightHTML(source);
-  el.classList.add("arborist");
+  el.classList.add("forest");
   el.dataset.highlighted = name;
   return el;
 }
@@ -376,8 +376,8 @@ async function highlightAll(selector = "pre code, code[data-lang], pre[data-lang
   return Promise.all(els.map((el) => highlightElement(el)));
 }
 
-const Arborist = {
-  version: __ARBORIST_VERSION__,
+const Forest = {
+  version: __FOREST_VERSION__,
   /** Base URL that grammar .wasm files are fetched from. */
   get baseURL() {
     return baseURL;
@@ -404,9 +404,9 @@ const Arborist = {
   Query,
 };
 
-globalThis.Arborist = Arborist;
+globalThis.Forest = Forest;
 
-// <script src="arborist.js" data-auto> highlights the page once it has loaded.
+// <script src="forest.js" data-auto> highlights the page once it has loaded.
 if (script?.hasAttribute("data-auto")) {
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => highlightAll());

@@ -172,7 +172,7 @@ Parsing runs at about 10 MB/s.
 The heredoc variants roughly double the parse table: about 15,000 states.
 The wasm build is about 16 MB, 700 KB gzipped, and `tree-sitter generate`
 takes a minute or two. Chrome will not instantiate a module over 8 MB
-synchronously on the main thread, so `arborist.js` fetches each grammar's
+synchronously on the main thread, so `forest.js` fetches each grammar's
 bytes and hands them to web-tree-sitter, which then instantiates them
 asynchronously.
 

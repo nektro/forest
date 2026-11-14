@@ -1,5 +1,5 @@
 {
-  "name": "arborist",
+  "name": "forest",
   "version": "0.1.0",
   "description": "A bundle of tree-sitter grammars, packaged for the web",
   "private": true,

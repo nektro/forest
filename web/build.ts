@@ -1,10 +1,10 @@
 // Builds the browser bundle into dist/:
 //
-//   arborist.js            one classic <script>: web-tree-sitter, its runtime
+//   forest.js            one classic <script>: web-tree-sitter, its runtime
 //                          wasm (inlined), every grammar's queries, and the
-//                          Arborist API
+//                          Forest API
 //   tree-sitter-<lang>.wasm one per grammar, fetched on first use
-//   arborist.css           default highlight theme
+//   forest.css           default highlight theme
 //   index.html             demo page, showing every grammar's examples/
 //
 // Nothing here is specific to one language. Every languages/*/tree-sitter.json
@@ -109,14 +109,14 @@ if (!(await Bun.file(runtimeWasm).exists())) {
 }
 
 const virtualModules: Plugin = {
-  name: "arborist-virtual",
+  name: "forest-virtual",
   setup(build) {
-    build.onResolve({ filter: /^arborist:/ }, (args) => ({ path: args.path, namespace: "arborist" }));
-    build.onLoad({ filter: /.*/, namespace: "arborist" }, async (args) => {
+    build.onResolve({ filter: /^forest:/ }, (args) => ({ path: args.path, namespace: "forest" }));
+    build.onLoad({ filter: /.*/, namespace: "forest" }, async (args) => {
       switch (args.path) {
-        case "arborist:languages":
+        case "forest:languages":
           return { contents: `export default ${JSON.stringify(languages)};`, loader: "js" };
-        case "arborist:runtime-wasm": {
+        case "forest:runtime-wasm": {
           const base64 = Buffer.from(await Bun.file(runtimeWasm).arrayBuffer()).toString("base64");
           return { contents: `export default ${JSON.stringify(base64)};`, loader: "js" };
         }
@@ -129,7 +129,7 @@ type Plugin = Parameters<typeof Bun.build>[0]["plugins"] extends (infer P)[] | u
 
 const pkg = await Bun.file(join(root, "package.json")).json();
 const result = await Bun.build({
-  entrypoints: [join(import.meta.dir, "arborist.js")],
+  entrypoints: [join(import.meta.dir, "forest.js")],
   outdir: dist,
   target: "browser",
   format: "iife",
@@ -142,20 +142,20 @@ const result = await Bun.build({
     // There is no import.meta in a classic script. web-tree-sitter only uses
     // it to find its wasm, which is inlined here instead.
     "import.meta.url": '""',
-    __ARBORIST_VERSION__: JSON.stringify(pkg.version),
+    __FOREST_VERSION__: JSON.stringify(pkg.version),
   },
 });
 if (!result.success) {
   for (const log of result.logs) console.error(log);
   process.exit(1);
 }
-console.log(`bundle    arborist.js`);
+console.log(`bundle    forest.js`);
 
-await cp(join(import.meta.dir, "arborist.css"), join(dist, "arborist.css"));
+await cp(join(import.meta.dir, "forest.css"), join(dist, "forest.css"));
 // The demo page gets the examples inlined as JSON (with `<` escaped so the
 // script element cannot be closed early).
 const demo = await Bun.file(join(import.meta.dir, "demo.html")).text();
-const PLACEHOLDER = "/*ARBORIST_EXAMPLES*/{}";
+const PLACEHOLDER = "/*FOREST_EXAMPLES*/{}";
 if (!demo.includes(PLACEHOLDER)) throw new Error(`demo.html is missing ${PLACEHOLDER}`);
 await Bun.write(join(dist, "index.html"), demo.replace(PLACEHOLDER, () => JSON.stringify(examples).replace(/</g, "\\u003c")));
 

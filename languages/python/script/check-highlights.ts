@@ -3,7 +3,7 @@
 // `tree-sitter test` finds assertions by the position of comment nodes, and a
 // comment on a line of its own starts at the line break before it here (see
 // grammar.js), so it misreads them. This script reads the assertions from the
-// text instead and highlights the way web/arborist.js does: the innermost
+// text instead and highlights the way web/forest.js does: the innermost
 // capture at a position wins, and of captures of the same node, the last
 // pattern in highlights.scm.
 //
@@ -21,7 +21,7 @@ import { join } from "node:path";
 import { Language, Parser, Query } from "web-tree-sitter";
 
 const here = join(import.meta.dir, "..");
-const work = await mkdtemp(join(tmpdir(), "arborist-python-"));
+const work = await mkdtemp(join(tmpdir(), "forest-python-"));
 let failures = 0;
 try {
   const wasm = join(work, "python.wasm");

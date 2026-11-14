@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="feed.xsl" type="text/xsl"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
-  <title>Arborist releases</title>
+  <title>Forest releases</title>
   <link href="https://example.org/releases" rel="alternate"/>
   <updated>2026-11-12T09:00:00Z</updated>
   <!-- Newest entries first. -->

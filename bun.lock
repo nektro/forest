@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "arborist",
+      "name": "forest",
       "devDependencies": {
         "tree-sitter-cli": "0.27.2",
         "web-tree-sitter": "0.27.2",

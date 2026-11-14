@@ -21,7 +21,7 @@
     "license": "MIT",
     "description": "Verilog (IEEE 1364-2005) grammar for tree-sitter",
     "links": {
-      "repository": "https://github.com/nektro/arborist"
+      "repository": "https://github.com/nektro/forest"
     }
   },
   "bindings": {

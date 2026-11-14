@@ -19,7 +19,7 @@
     "license": "MIT",
     "description": "CSS grammar for tree-sitter",
     "links": {
-      "repository": "https://github.com/nektro/arborist"
+      "repository": "https://github.com/nektro/forest"
     }
   },
   "bindings": {

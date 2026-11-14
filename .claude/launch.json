@@ -2,7 +2,7 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "arborist-web",
+      "name": "forest-web",
       "runtimeExecutable": "bun",
       "runtimeArgs": ["web/serve.ts", "8000"],
       "port": 8000

@@ -1,4 +1,4 @@
-# arborist
+# forest
 
 A bundle of tree-sitter grammars.
 
@@ -31,17 +31,17 @@ A bundle of tree-sitter grammars.
 
 | File | What it is |
 | --- | --- |
-| `arborist.js` | One classic script: the web-tree-sitter runtime (its wasm inlined), every grammar's queries, and the `Arborist` API |
+| `forest.js` | One classic script: the web-tree-sitter runtime (its wasm inlined), every grammar's queries, and the `Forest` API |
 | `tree-sitter-<lang>.wasm` | One per grammar, fetched the first time that language is used |
-| `arborist.css` | Optional default highlight theme (light and dark) |
+| `forest.css` | Optional default highlight theme (light and dark) |
 
 Host those files together and add one script tag. With `data-auto`, every
 `<pre><code class="language-zig">` (or anything with `data-lang="zig"`) is
 highlighted once the page loads:
 
 ```html
-<link rel="stylesheet" href="arborist.css">
-<script src="arborist.js" data-auto></script>
+<link rel="stylesheet" href="forest.css">
+<script src="forest.js" data-auto></script>
 
 <pre><code class="language-zig">const std = @import("std");</code></pre>
 ```
@@ -49,9 +49,9 @@ highlighted once the page loads:
 Or drive it yourself:
 
 ```html
-<script src="arborist.js"></script>
+<script src="forest.js"></script>
 <script>
-  Arborist.load("zig").then((zig) => {
+  Forest.load("zig").then((zig) => {
     out.innerHTML = zig.highlightHTML(source);   // escaped HTML with <span class="hl-…">
     const tree = zig.parse(source);              // a web-tree-sitter Tree
     console.log(tree.rootNode.toString());
@@ -64,14 +64,14 @@ Or drive it yourself:
 
 | | |
 | --- | --- |
-| `Arborist.languages` | Names of the bundled languages |
-| `Arborist.load(name)` | Promise of a grammar (loads the runtime and the `.wasm` once) |
-| `Arborist.highlight(name, source)` | Promise of highlighted HTML |
-| `Arborist.highlightElement(el, name?)` | Highlights an element's text in place; the language defaults to `data-lang` or a `language-xxx` class on it or an ancestor |
-| `Arborist.highlightAll(selector?)` | `highlightElement` on every match whose language is known |
-| `Arborist.languageForFile(path)` | Language name for a file name or extension, or `null` |
-| `Arborist.baseURL` | Where `.wasm` files are fetched from. Defaults to the directory of `arborist.js`; override with `data-base="…"` on the script tag or by setting it before the first `load` |
-| `Arborist.Parser`, `.Language`, `.Query` | The web-tree-sitter classes |
+| `Forest.languages` | Names of the bundled languages |
+| `Forest.load(name)` | Promise of a grammar (loads the runtime and the `.wasm` once) |
+| `Forest.highlight(name, source)` | Promise of highlighted HTML |
+| `Forest.highlightElement(el, name?)` | Highlights an element's text in place; the language defaults to `data-lang` or a `language-xxx` class on it or an ancestor |
+| `Forest.highlightAll(selector?)` | `highlightElement` on every match whose language is known |
+| `Forest.languageForFile(path)` | Language name for a file name or extension, or `null` |
+| `Forest.baseURL` | Where `.wasm` files are fetched from. Defaults to the directory of `forest.js`; override with `data-base="…"` on the script tag or by setting it before the first `load` |
+| `Forest.Parser`, `.Language`, `.Query` | The web-tree-sitter classes |
 
 A loaded grammar has `parse(source, oldTree?)`, `highlights(source, tree?)`
 (nested `{ start, end, name }` ranges in UTF-16 offsets), `highlightHTML(source)`,
@@ -114,7 +114,7 @@ The build has no per-language code. It picks up every `languages/*/tree-sitter.j
 
 - regenerates `src/parser.c` from `src/grammar.json` when needed and builds `tree-sitter-<name>.wasm`
 - bundles its queries: the paths `tree-sitter.json` lists, or else `queries/<kind>.scm` if it exists
-- takes `title`, `scope` and `file-types` for `Arborist.languageForFile`
+- takes `title`, `scope` and `file-types` for `Forest.languageForFile`
 - puts every file in `examples/` on the demo page
 
 The web-tree-sitter version in `package.json` should match the `tree-sitter` CLI's version, which sets the grammar ABI.

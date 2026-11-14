@@ -25,7 +25,7 @@
     "license": "MIT",
     "description": "TypeScript (with JSX) grammar for tree-sitter, without an external scanner",
     "links": {
-      "repository": "https://github.com/nektro/arborist"
+      "repository": "https://github.com/nektro/forest"
     }
   },
   "bindings": {

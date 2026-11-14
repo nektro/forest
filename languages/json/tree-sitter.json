@@ -21,7 +21,7 @@
     "license": "MIT",
     "description": "JSON (and JSONC) grammar for tree-sitter",
     "links": {
-      "repository": "https://github.com/nektro/arborist"
+      "repository": "https://github.com/nektro/forest"
     }
   },
   "bindings": {
