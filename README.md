@@ -15,6 +15,7 @@ A bundle of tree-sitter grammars.
 | JSON (and JSONC, JSON Lines) | [languages/json](languages/json) | none |
 | Lua (5.1 to 5.5) | [languages/lua](languages/lua) | none |
 | Nix | [languages/nix](languages/nix) | none |
+| Python (3.14) | [languages/python](languages/python) | none |
 | Rust | [languages/rust](languages/rust) | none |
 | SCSS | [languages/scss](languages/scss) | none |
 | Swift | [languages/swift](languages/swift) | none |

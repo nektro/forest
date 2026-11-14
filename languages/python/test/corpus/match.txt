@@ -1,0 +1,241 @@
+================================================================================
+Literal and capture patterns
+================================================================================
+
+match x:
+    case 0:
+        pass
+    case -1 | 1:
+        pass
+    case 1 + 2j:
+        pass
+    case "a" "b":
+        pass
+    case None | True | False:
+        pass
+    case y:
+        pass
+    case _:
+        pass
+
+--------------------------------------------------------------------------------
+
+(module
+  (match_statement
+    subject: (identifier)
+    body: (block
+      (case_clause
+        (case_pattern
+          (integer))
+        consequence: (block
+          (pass_statement)))
+      (case_clause
+        (case_pattern
+          (union_pattern
+            (integer)
+            (integer)))
+        consequence: (block
+          (pass_statement)))
+      (case_clause
+        (case_pattern
+          (complex_pattern
+            (integer)
+            (integer)))
+        consequence: (block
+          (pass_statement)))
+      (case_clause
+        (case_pattern
+          (concatenated_string
+            (string
+              (string_start)
+              (string_content)
+              (string_end))
+            (string
+              (string_start)
+              (string_content)
+              (string_end))))
+        consequence: (block
+          (pass_statement)))
+      (case_clause
+        (case_pattern
+          (union_pattern
+            (none)
+            (true)
+            (false)))
+        consequence: (block
+          (pass_statement)))
+      (case_clause
+        (case_pattern
+          (dotted_name
+            (identifier)))
+        consequence: (block
+          (pass_statement)))
+      (case_clause
+        (case_pattern
+          (dotted_name
+            (identifier)))
+        consequence: (block
+          (pass_statement))))))
+
+================================================================================
+Sequence and mapping patterns
+================================================================================
+
+match x:
+    case [a, *rest]:
+        pass
+    case (a, b):
+        pass
+    case a, *b:
+        pass
+    case {"k": v, **rest}:
+        pass
+
+--------------------------------------------------------------------------------
+
+(module
+  (match_statement
+    subject: (identifier)
+    body: (block
+      (case_clause
+        (case_pattern
+          (list_pattern
+            (case_pattern
+              (dotted_name
+                (identifier)))
+            (splat_pattern
+              (identifier))))
+        consequence: (block
+          (pass_statement)))
+      (case_clause
+        (case_pattern
+          (tuple_pattern
+            (case_pattern
+              (dotted_name
+                (identifier)))
+            (case_pattern
+              (dotted_name
+                (identifier)))))
+        consequence: (block
+          (pass_statement)))
+      (case_clause
+        (case_pattern
+          (dotted_name
+            (identifier)))
+        (splat_pattern
+          (identifier))
+        consequence: (block
+          (pass_statement)))
+      (case_clause
+        (case_pattern
+          (dict_pattern
+            key: (string
+              (string_start)
+              (string_content)
+              (string_end))
+            value: (case_pattern
+              (dotted_name
+                (identifier)))
+            (splat_pattern
+              (identifier))))
+        consequence: (block
+          (pass_statement))))))
+
+================================================================================
+Class patterns and guards
+================================================================================
+
+match command.split():
+    case Point(x=0, y=0) as p if p.ok:
+        pass
+    case module.Class(a, b=[c]):
+        pass
+
+--------------------------------------------------------------------------------
+
+(module
+  (match_statement
+    subject: (call
+      function: (attribute
+        object: (identifier)
+        attribute: (identifier))
+      arguments: (argument_list))
+    body: (block
+      (case_clause
+        (case_pattern
+          (as_pattern
+            (class_pattern
+              (dotted_name
+                (identifier))
+              (keyword_pattern
+                name: (identifier)
+                value: (case_pattern
+                  (integer)))
+              (keyword_pattern
+                name: (identifier)
+                value: (case_pattern
+                  (integer))))
+            alias: (identifier)))
+        guard: (if_clause
+          (attribute
+            object: (identifier)
+            attribute: (identifier)))
+        consequence: (block
+          (pass_statement)))
+      (case_clause
+        (case_pattern
+          (class_pattern
+            (dotted_name
+              (identifier)
+              (identifier))
+            (case_pattern
+              (dotted_name
+                (identifier)))
+            (keyword_pattern
+              name: (identifier)
+              value: (case_pattern
+                (list_pattern
+                  (case_pattern
+                    (dotted_name
+                      (identifier))))))))
+        consequence: (block
+          (pass_statement))))))
+
+================================================================================
+Match subject forms
+================================================================================
+
+match a, b:
+    case _:
+        pass
+match *a, b:
+    case _:
+        pass
+
+--------------------------------------------------------------------------------
+
+(module
+  (match_statement
+    subject: (expression_list
+      (identifier))
+    subject: (expression_list
+      (identifier))
+    body: (block
+      (case_clause
+        (case_pattern
+          (dotted_name
+            (identifier)))
+        consequence: (block
+          (pass_statement)))))
+  (match_statement
+    subject: (expression_list
+      (identifier))
+    subject: (expression_list
+      (identifier))
+    body: (block
+      (case_clause
+        (case_pattern
+          (dotted_name
+            (identifier)))
+        consequence: (block
+          (pass_statement))))))

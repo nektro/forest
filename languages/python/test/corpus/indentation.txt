@@ -1,0 +1,562 @@
+================================================================================
+Nested blocks and dedent
+================================================================================
+
+def f(a):
+    if a:
+        b()
+        c()
+    d()
+e()
+
+--------------------------------------------------------------------------------
+
+(module
+  (function_definition
+    name: (identifier)
+    parameters: (parameters
+      (identifier))
+    body: (block
+      (if_statement
+        condition: (identifier)
+        consequence: (block
+          (expression_statement
+            (call
+              function: (identifier)
+              arguments: (argument_list)))
+          (expression_statement
+            (call
+              function: (identifier)
+              arguments: (argument_list)))))
+      (expression_statement
+        (call
+          function: (identifier)
+          arguments: (argument_list)))))
+  (expression_statement
+    (call
+      function: (identifier)
+      arguments: (argument_list))))
+
+================================================================================
+Dedent by more than one level
+================================================================================
+
+class A:
+    def m(self):
+        for x in y:
+            if x:
+                pass
+z = 1
+
+--------------------------------------------------------------------------------
+
+(module
+  (class_definition
+    name: (identifier)
+    body: (block
+      (function_definition
+        name: (identifier)
+        parameters: (parameters
+          (identifier))
+        body: (block
+          (for_statement
+            left: (identifier)
+            right: (identifier)
+            body: (block
+              (if_statement
+                condition: (identifier)
+                consequence: (block
+                  (pass_statement)))))))))
+  (expression_statement
+    (assignment
+      left: (identifier)
+      right: (integer))))
+
+================================================================================
+Else belongs to the if at its own indentation
+================================================================================
+
+if a:
+    if b:
+        c
+else:
+    d
+
+--------------------------------------------------------------------------------
+
+(module
+  (if_statement
+    condition: (identifier)
+    consequence: (block
+      (if_statement
+        condition: (identifier)
+        consequence: (block
+          (expression_statement
+            (identifier)))))
+    alternative: (else_clause
+      body: (block
+        (expression_statement
+          (identifier))))))
+
+================================================================================
+Else of the inner if
+================================================================================
+
+if a:
+    if b:
+        c
+    else:
+        d
+
+--------------------------------------------------------------------------------
+
+(module
+  (if_statement
+    condition: (identifier)
+    consequence: (block
+      (if_statement
+        condition: (identifier)
+        consequence: (block
+          (expression_statement
+            (identifier)))
+        alternative: (else_clause
+          body: (block
+            (expression_statement
+              (identifier))))))))
+
+================================================================================
+Elif chain
+================================================================================
+
+if a:
+    x
+elif b:
+    y
+elif c:
+    z
+else:
+    w
+
+--------------------------------------------------------------------------------
+
+(module
+  (if_statement
+    condition: (identifier)
+    consequence: (block
+      (expression_statement
+        (identifier)))
+    alternative: (elif_clause
+      condition: (identifier)
+      consequence: (block
+        (expression_statement
+          (identifier))))
+    alternative: (elif_clause
+      condition: (identifier)
+      consequence: (block
+        (expression_statement
+          (identifier))))
+    alternative: (else_clause
+      body: (block
+        (expression_statement
+          (identifier))))))
+
+================================================================================
+Loop else
+================================================================================
+
+for x in y:
+    pass
+else:
+    done()
+while a:
+    break
+else:
+    done()
+
+--------------------------------------------------------------------------------
+
+(module
+  (for_statement
+    left: (identifier)
+    right: (identifier)
+    body: (block
+      (pass_statement))
+    alternative: (else_clause
+      body: (block
+        (expression_statement
+          (call
+            function: (identifier)
+            arguments: (argument_list))))))
+  (while_statement
+    condition: (identifier)
+    body: (block
+      (break_statement))
+    alternative: (else_clause
+      body: (block
+        (expression_statement
+          (call
+            function: (identifier)
+            arguments: (argument_list)))))))
+
+================================================================================
+Try clauses
+================================================================================
+
+try:
+    a()
+except E as e:
+    b()
+except* F:
+    c()
+else:
+    d()
+finally:
+    e()
+
+--------------------------------------------------------------------------------
+
+(module
+  (try_statement
+    body: (block
+      (expression_statement
+        (call
+          function: (identifier)
+          arguments: (argument_list))))
+    (except_clause
+      value: (identifier)
+      alias: (identifier)
+      body: (block
+        (expression_statement
+          (call
+            function: (identifier)
+            arguments: (argument_list)))))
+    (except_group_clause
+      value: (identifier)
+      body: (block
+        (expression_statement
+          (call
+            function: (identifier)
+            arguments: (argument_list)))))
+    (else_clause
+      body: (block
+        (expression_statement
+          (call
+            function: (identifier)
+            arguments: (argument_list)))))
+    (finally_clause
+      body: (block
+        (expression_statement
+          (call
+            function: (identifier)
+            arguments: (argument_list)))))))
+
+================================================================================
+Comments at any indentation
+================================================================================
+
+def f():
+    a
+# a comment at column 0
+        # and one indented further
+    b
+
+    # after a blank line
+    c
+
+--------------------------------------------------------------------------------
+
+(module
+  (function_definition
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (identifier))
+      (comment)
+      (comment)
+      (expression_statement
+        (identifier))
+      (comment)
+      (expression_statement
+        (identifier)))))
+
+================================================================================
+Comment between if and else
+================================================================================
+
+if a:
+    b
+# comment
+else:
+    c
+
+--------------------------------------------------------------------------------
+
+(module
+  (if_statement
+    condition: (identifier)
+    consequence: (block
+      (expression_statement
+        (identifier)))
+    (comment)
+    alternative: (else_clause
+      body: (block
+        (expression_statement
+          (identifier))))))
+
+================================================================================
+Blank lines
+================================================================================
+
+def f():
+
+    a
+
+
+    b
+
+c
+
+--------------------------------------------------------------------------------
+
+(module
+  (function_definition
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (expression_statement
+        (identifier))
+      (expression_statement
+        (identifier))))
+  (expression_statement
+    (identifier)))
+
+================================================================================
+Tabs
+================================================================================
+
+if a:
+	if b:
+		c
+	else:
+		d
+else:
+	e
+
+--------------------------------------------------------------------------------
+
+(module
+  (if_statement
+    condition: (identifier)
+    consequence: (block
+      (if_statement
+        condition: (identifier)
+        consequence: (block
+          (expression_statement
+            (identifier)))
+        alternative: (else_clause
+          body: (block
+            (expression_statement
+              (identifier))))))
+    alternative: (else_clause
+      body: (block
+        (expression_statement
+          (identifier))))))
+
+================================================================================
+Two-space indentation
+================================================================================
+
+def f():
+  if a:
+    b
+  c
+
+--------------------------------------------------------------------------------
+
+(module
+  (function_definition
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (if_statement
+        condition: (identifier)
+        consequence: (block
+          (expression_statement
+            (identifier))))
+      (expression_statement
+        (identifier)))))
+
+================================================================================
+Simple statements on the line of the header
+================================================================================
+
+if a: b; c
+else: d
+class E: pass
+def f(): return 1
+
+--------------------------------------------------------------------------------
+
+(module
+  (if_statement
+    condition: (identifier)
+    consequence: (block
+      (expression_statement
+        (identifier))
+      (expression_statement
+        (identifier)))
+    alternative: (else_clause
+      body: (block
+        (expression_statement
+          (identifier)))))
+  (class_definition
+    name: (identifier)
+    body: (block
+      (pass_statement)))
+  (function_definition
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (return_statement
+        (integer)))))
+
+================================================================================
+Indented snippet
+================================================================================
+
+    def f(self):
+        return 1
+
+    def g(self):
+        pass
+
+--------------------------------------------------------------------------------
+
+(module
+  (function_definition
+    name: (identifier)
+    parameters: (parameters
+      (identifier))
+    body: (block
+      (return_statement
+        (integer))))
+  (function_definition
+    name: (identifier)
+    parameters: (parameters
+      (identifier))
+    body: (block
+      (pass_statement))))
+
+================================================================================
+No newline at the end
+================================================================================
+
+def f():
+    return 1
+
+--------------------------------------------------------------------------------
+
+(module
+  (function_definition
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (return_statement
+        (integer)))))
+
+================================================================================
+Indented blank line at the end
+================================================================================
+
+def f():
+    return 1
+    
+
+--------------------------------------------------------------------------------
+
+(module
+  (function_definition
+    name: (identifier)
+    parameters: (parameters)
+    body: (block
+      (return_statement
+        (integer)))))
+
+================================================================================
+Brackets span lines
+================================================================================
+
+x = [
+    1,
+  2,
+        3,
+]
+f(a,
+  b)
+
+--------------------------------------------------------------------------------
+
+(module
+  (expression_statement
+    (assignment
+      left: (identifier)
+      right: (list
+        (integer)
+        (integer)
+        (integer))))
+  (expression_statement
+    (call
+      function: (identifier)
+      arguments: (argument_list
+        (identifier)
+        (identifier)))))
+
+================================================================================
+Line continuation
+================================================================================
+
+x = 1 + \
+    2
+if a and \
+        b:
+    pass
+
+--------------------------------------------------------------------------------
+
+(module
+  (expression_statement
+    (assignment
+      left: (identifier)
+      right: (binary_operator
+        left: (integer)
+        right: (integer))))
+  (if_statement
+    condition: (boolean_operator
+      left: (identifier)
+      right: (identifier))
+    consequence: (block
+      (pass_statement))))
+
+================================================================================
+CRLF line endings
+================================================================================
+
+if a:
+    b
+else:
+    c
+
+
+--------------------------------------------------------------------------------
+
+(module
+  (if_statement
+    condition: (identifier)
+    consequence: (block
+      (expression_statement
+        (identifier)))
+    alternative: (else_clause
+      body: (block
+        (expression_statement
+          (identifier))))))

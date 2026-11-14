@@ -1,0 +1,42 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "python",
+      "camelcase": "Python",
+      "title": "Python",
+      "scope": "source.python",
+      "file-types": [
+        "py",
+        "pyi",
+        "pyw",
+        "SConstruct",
+        "SConscript",
+        "wscript"
+      ],
+      "highlights": "queries/highlights.scm",
+      "injection-regex": "^(py|python)$",
+      "class-name": "TreeSitterPython",
+      "locals": "queries/locals.scm",
+      "tags": "queries/tags.scm"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "Python grammar for tree-sitter",
+    "links": {
+      "repository": "https://github.com/nektro/arborist"
+    }
+  },
+  "bindings": {
+    "c": false,
+    "go": false,
+    "java": false,
+    "node": false,
+    "python": false,
+    "rust": false,
+    "swift": false,
+    "zig": false
+  }
+}

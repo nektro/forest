@@ -1,0 +1,288 @@
+================================================================================
+Strings
+================================================================================
+
+'a'
+"b"
+'''c'''
+"""d"""
+r'\d'
+b"bytes"
+rb'\x'
+u"unicode"
+
+--------------------------------------------------------------------------------
+
+(module
+  (expression_statement
+    (string
+      (string_start)
+      (string_content)
+      (string_end)))
+  (expression_statement
+    (string
+      (string_start)
+      (string_content)
+      (string_end)))
+  (expression_statement
+    (string
+      (string_start)
+      (string_content)
+      (string_end)))
+  (expression_statement
+    (string
+      (string_start)
+      (string_content)
+      (string_end)))
+  (expression_statement
+    (string
+      (string_start)
+      (string_content)
+      (string_end)))
+  (expression_statement
+    (string
+      (string_start)
+      (string_content)
+      (string_end)))
+  (expression_statement
+    (string
+      (string_start)
+      (string_content)
+      (string_end)))
+  (expression_statement
+    (string
+      (string_start)
+      (string_content)
+      (string_end))))
+
+================================================================================
+Escape sequences
+================================================================================
+
+'\n\t\\\x41\u0041\U00000041\N{BULLET}\101'
+'\d'
+
+--------------------------------------------------------------------------------
+
+(module
+  (expression_statement
+    (string
+      (string_start)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (string_end)))
+  (expression_statement
+    (string
+      (string_start)
+      (string_content)
+      (string_end))))
+
+================================================================================
+Quotes inside triple-quoted strings
+================================================================================
+
+"""a "b" ""c"" \""""
+
+--------------------------------------------------------------------------------
+
+(module
+  (expression_statement
+    (string
+      (string_start)
+      (string_content)
+      (escape_sequence)
+      (string_end))))
+
+================================================================================
+Concatenated strings
+================================================================================
+
+x = ("a"
+     'b')
+
+--------------------------------------------------------------------------------
+
+(module
+  (expression_statement
+    (assignment
+      left: (identifier)
+      right: (parenthesized_expression
+        (concatenated_string
+          (string
+            (string_start)
+            (string_content)
+            (string_end))
+          (string
+            (string_start)
+            (string_content)
+            (string_end)))))))
+
+================================================================================
+F-strings
+================================================================================
+
+f"a {b} c"
+f'{x!r:>10}'
+f"{x = }"
+f"{x:{width}.{precision}}"
+f"{{escaped}}"
+f"{a["key"]}"
+f'''{
+    x
+}'''
+t"{template}"
+
+--------------------------------------------------------------------------------
+
+(module
+  (expression_statement
+    (string
+      (string_start)
+      (string_content)
+      (interpolation
+        expression: (identifier))
+      (string_content)
+      (string_end)))
+  (expression_statement
+    (string
+      (string_start)
+      (interpolation
+        expression: (identifier)
+        type_conversion: (type_conversion)
+        format_specifier: (format_specifier))
+      (string_end)))
+  (expression_statement
+    (string
+      (string_start)
+      (interpolation
+        expression: (identifier))
+      (string_end)))
+  (expression_statement
+    (string
+      (string_start)
+      (interpolation
+        expression: (identifier)
+        format_specifier: (format_specifier
+          (interpolation
+            expression: (identifier))
+          (interpolation
+            expression: (identifier))))
+      (string_end)))
+  (expression_statement
+    (string
+      (string_start)
+      (escape_interpolation)
+      (string_content)
+      (escape_interpolation)
+      (string_end)))
+  (expression_statement
+    (string
+      (string_start)
+      (interpolation
+        expression: (subscript
+          value: (identifier)
+          subscript: (string
+            (string_start)
+            (string_content)
+            (string_end))))
+      (string_end)))
+  (expression_statement
+    (string
+      (string_start)
+      (interpolation
+        expression: (identifier))
+      (string_end)))
+  (expression_statement
+    (string
+      (string_start)
+      (interpolation
+        expression: (identifier))
+      (string_end))))
+
+================================================================================
+Hash inside a string
+================================================================================
+
+"# not a comment"
+'''
+# not a comment either
+'''
+f"{x:#x}"
+
+--------------------------------------------------------------------------------
+
+(module
+  (expression_statement
+    (string
+      (string_start)
+      (string_content)
+      (string_content)
+      (string_end)))
+  (expression_statement
+    (string
+      (string_start)
+      (string_content)
+      (string_content)
+      (string_content)
+      (string_end)))
+  (expression_statement
+    (string
+      (string_start)
+      (interpolation
+        expression: (identifier)
+        format_specifier: (format_specifier))
+      (string_end))))
+
+================================================================================
+Raw strings with backslashes
+================================================================================
+
+r'\''
+fr'\{x}'
+rb"\\\""
+
+--------------------------------------------------------------------------------
+
+(module
+  (expression_statement
+    (string
+      (string_start)
+      (string_content)
+      (string_end)))
+  (expression_statement
+    (string
+      (string_start)
+      (string_content)
+      (interpolation
+        expression: (identifier))
+      (string_end)))
+  (expression_statement
+    (string
+      (string_start)
+      (string_content)
+      (string_end))))
+
+================================================================================
+Comments
+================================================================================
+
+# comment
+x = 1  # trailing
+#!/usr/bin/env python
+
+--------------------------------------------------------------------------------
+
+(module
+  (comment)
+  (expression_statement
+    (assignment
+      left: (identifier)
+      right: (integer)))
+  (comment)
+  (comment))
