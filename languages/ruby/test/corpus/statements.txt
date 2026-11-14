@@ -1,0 +1,314 @@
+================================================================================
+Method definitions
+================================================================================
+
+def foo
+end
+
+def bar(a, b = 1, *c, d:, e: 2, **f, &g)
+  a
+end
+
+def baz a, b
+end
+
+def self.create(*) = new(*)
+
+def ==(other) = other.equal?(self)
+
+def name=(value)
+  @name = value
+end
+
+def empty?; true; end
+
+def m(...) = other(...)
+
+--------------------------------------------------------------------------------
+
+(program
+  (method
+    name: (identifier))
+  (method
+    name: (identifier)
+    parameters: (parameters
+      (identifier)
+      (optional_parameter
+        name: (identifier)
+        value: (integer))
+      (splat_parameter
+        name: (identifier))
+      (keyword_parameter
+        name: (identifier))
+      (keyword_parameter
+        name: (identifier)
+        value: (integer))
+      (hash_splat_parameter
+        name: (identifier))
+      (block_parameter
+        name: (identifier)))
+    body: (body_statement
+      (identifier)))
+  (method
+    name: (identifier)
+    parameters: (method_parameters
+      (identifier)
+      (identifier)))
+  (singleton_method
+    object: (self)
+    name: (identifier)
+    parameters: (parameters
+      (splat_parameter))
+    body: (call
+      method: (identifier)
+      arguments: (argument_list
+        (splat_argument))))
+  (method
+    name: (operator)
+    parameters: (parameters
+      (identifier))
+    body: (call
+      receiver: (identifier)
+      method: (identifier)
+      arguments: (argument_list
+        (self))))
+  (method
+    name: (setter
+      name: (identifier))
+    parameters: (parameters
+      (identifier))
+    body: (body_statement
+      (assignment
+        left: (instance_variable)
+        right: (identifier))))
+  (method
+    name: (identifier)
+    body: (body_statement
+      (true)))
+  (method
+    name: (identifier)
+    parameters: (parameters
+      (forward_parameter))
+    body: (call
+      method: (identifier)
+      arguments: (argument_list
+        (forward_argument)))))
+
+================================================================================
+Classes and modules
+================================================================================
+
+module A::B
+  class C < D
+    include E
+  end
+
+  class << self
+    def f; end
+  end
+end
+class F; end
+
+--------------------------------------------------------------------------------
+
+(program
+  (module
+    name: (scope_resolution
+      scope: (constant)
+      name: (constant))
+    body: (body_statement
+      (class
+        name: (constant)
+        superclass: (superclass
+          (constant))
+        body: (body_statement
+          (call
+            method: (identifier)
+            arguments: (argument_list
+              (constant)))))
+      (singleton_class
+        value: (self)
+        body: (body_statement
+          (method
+            name: (identifier))))))
+  (class
+    name: (constant)))
+
+================================================================================
+Conditionals
+================================================================================
+
+if a
+  b
+elsif c then d
+else
+  e
+end
+unless a then b end
+x = if a then 1 else 2 end
+case x
+when 1, 2 then :small
+when *list
+  :listed
+else
+  :big
+end
+
+--------------------------------------------------------------------------------
+
+(program
+  (if
+    condition: (identifier)
+    consequence: (then
+      (identifier))
+    alternative: (elsif
+      condition: (identifier)
+      consequence: (then
+        (identifier))
+      alternative: (else
+        (identifier))))
+  (unless
+    condition: (identifier)
+    consequence: (then
+      (identifier)))
+  (assignment
+    left: (identifier)
+    right: (if
+      condition: (identifier)
+      consequence: (then
+        (integer))
+      alternative: (else
+        (integer))))
+  (case
+    value: (identifier)
+    (when
+      pattern: (integer)
+      pattern: (integer)
+      body: (then
+        (simple_symbol)))
+    (when
+      pattern: (splat_argument
+        (identifier))
+      body: (then
+        (simple_symbol)))
+    (else
+      (simple_symbol))))
+
+================================================================================
+Loops
+================================================================================
+
+while a
+  b
+end
+until a do b end
+for x in list do
+  next if x
+end
+begin
+  redo
+end while cond
+
+--------------------------------------------------------------------------------
+
+(program
+  (while
+    condition: (identifier)
+    body: (do
+      (identifier)))
+  (until
+    condition: (identifier)
+    body: (do
+      (identifier)))
+  (for
+    pattern: (identifier)
+    value: (identifier)
+    body: (do
+      (if_modifier
+        body: (next)
+        condition: (identifier))))
+  (while_modifier
+    body: (begin
+      (body_statement
+        (redo)))
+    condition: (identifier)))
+
+================================================================================
+Exceptions
+================================================================================
+
+begin
+  risky
+rescue ArgumentError, TypeError => e
+  retry
+rescue
+  raise
+else
+  ok
+ensure
+  done
+end
+
+def m
+  work
+rescue => e
+  e
+end
+
+--------------------------------------------------------------------------------
+
+(program
+  (begin
+    (body_statement
+      (identifier)
+      (rescue
+        exceptions: (exceptions
+          (constant)
+          (constant))
+        variable: (exception_variable
+          (identifier))
+        body: (then
+          (retry)))
+      (rescue
+        body: (then
+          (identifier)))
+      (else
+        (identifier))
+      (ensure
+        (identifier))))
+  (method
+    name: (identifier)
+    body: (body_statement
+      (identifier)
+      (rescue
+        variable: (exception_variable
+          (identifier))
+        body: (then
+          (identifier))))))
+
+================================================================================
+Other statements
+================================================================================
+
+alias new_name old_name
+alias $new $old
+undef foo, :bar
+BEGIN { a }
+END { b }
+
+--------------------------------------------------------------------------------
+
+(program
+  (alias
+    name: (identifier)
+    alias: (identifier))
+  (alias
+    name: (global_variable)
+    alias: (global_variable))
+  (undef
+    (identifier)
+    (simple_symbol))
+  (begin_block
+    (identifier))
+  (end_block
+    (identifier)))

@@ -1,0 +1,335 @@
+================================================================================
+Operators
+================================================================================
+
+a + b * c ** d
+-a ** 2
+!a && b || c
+a <=> b
+a =~ b
+a & b | c ^ d
+a << b >> c
+a ? b : c
+a ? b: c
+x.empty? ? 1 : 2
+not a
+a and b or c
+defined?(x)
+defined? x
+
+--------------------------------------------------------------------------------
+
+(program
+  (binary
+    left: (identifier)
+    right: (binary
+      left: (identifier)
+      right: (binary
+        left: (identifier)
+        right: (identifier))))
+  (unary
+    operand: (binary
+      left: (identifier)
+      right: (integer)))
+  (binary
+    left: (binary
+      left: (unary
+        operand: (identifier))
+      right: (identifier))
+    right: (identifier))
+  (binary
+    left: (identifier)
+    right: (identifier))
+  (binary
+    left: (identifier)
+    right: (identifier))
+  (binary
+    left: (binary
+      left: (binary
+        left: (identifier)
+        right: (identifier))
+      right: (identifier))
+    right: (identifier))
+  (binary
+    left: (binary
+      left: (identifier)
+      right: (identifier))
+    right: (identifier))
+  (conditional
+    condition: (identifier)
+    consequence: (identifier)
+    alternative: (identifier))
+  (conditional
+    condition: (identifier)
+    consequence: (identifier)
+    alternative: (identifier))
+  (conditional
+    condition: (call
+      receiver: (identifier)
+      method: (identifier))
+    consequence: (integer)
+    alternative: (integer))
+  (unary
+    operand: (identifier))
+  (binary
+    left: (binary
+      left: (identifier)
+      right: (identifier))
+    right: (identifier))
+  (unary
+    operand: (parenthesized_statements
+      (identifier)))
+  (unary
+    operand: (identifier)))
+
+================================================================================
+Assignments
+================================================================================
+
+a = 1
+a, b = 1, 2
+a, *b = c
+(a, b), c = d
+*a = b
+a.b = c
+a.b, c[0] = d, e
+a += 1
+a ||= b
+a &&= b
+x = y = 1
+x = foo bar
+x = foo rescue nil
+
+--------------------------------------------------------------------------------
+
+(program
+  (assignment
+    left: (identifier)
+    right: (integer))
+  (assignment
+    left: (left_assignment_list
+      (identifier)
+      (identifier))
+    right: (right_assignment_list
+      (integer)
+      (integer)))
+  (assignment
+    left: (left_assignment_list
+      (identifier)
+      (rest_assignment
+        (identifier)))
+    right: (identifier))
+  (assignment
+    left: (left_assignment_list
+      (destructured_left_assignment
+        (identifier)
+        (identifier))
+      (identifier))
+    right: (identifier))
+  (assignment
+    left: (left_assignment_list
+      (rest_assignment
+        (identifier)))
+    right: (identifier))
+  (assignment
+    left: (call
+      receiver: (identifier)
+      method: (identifier))
+    right: (identifier))
+  (assignment
+    left: (left_assignment_list
+      (call
+        receiver: (identifier)
+        method: (identifier))
+      (element_reference
+        object: (identifier)
+        (integer)))
+    right: (right_assignment_list
+      (identifier)
+      (identifier)))
+  (operator_assignment
+    left: (identifier)
+    right: (integer))
+  (operator_assignment
+    left: (identifier)
+    right: (identifier))
+  (operator_assignment
+    left: (identifier)
+    right: (identifier))
+  (assignment
+    left: (identifier)
+    right: (assignment
+      left: (identifier)
+      right: (integer)))
+  (assignment
+    left: (identifier)
+    right: (call
+      method: (identifier)
+      arguments: (argument_list
+        (identifier))))
+  (assignment
+    left: (identifier)
+    right: (rescue_modifier
+      body: (identifier)
+      handler: (nil))))
+
+================================================================================
+Ranges
+================================================================================
+
+1..10
+1...10
+1..
+(..5)
+a[1..]
+
+--------------------------------------------------------------------------------
+
+(program
+  (range
+    begin: (integer)
+    end: (integer))
+  (range
+    begin: (integer)
+    end: (integer))
+  (range
+    begin: (integer))
+  (parenthesized_statements
+    (range
+      end: (integer)))
+  (element_reference
+    object: (identifier)
+    (range
+      begin: (integer))))
+
+================================================================================
+Modifiers
+================================================================================
+
+foo if bar
+foo unless bar
+foo while bar
+foo until bar
+foo rescue bar
+return if x
+
+--------------------------------------------------------------------------------
+
+(program
+  (if_modifier
+    body: (identifier)
+    condition: (identifier))
+  (unless_modifier
+    body: (identifier)
+    condition: (identifier))
+  (while_modifier
+    body: (identifier)
+    condition: (identifier))
+  (until_modifier
+    body: (identifier)
+    condition: (identifier))
+  (rescue_modifier
+    body: (identifier)
+    handler: (identifier))
+  (if_modifier
+    body: (return)
+    condition: (identifier)))
+
+================================================================================
+Pattern matching
+================================================================================
+
+case value
+in Integer | Float => n if n > 0
+  :positive
+in [first, *rest]
+  :array
+in {name: String => name, age:}
+  :hash
+in [*, 3, *]
+  :find
+in ^expected
+  :pinned
+in Point(x:, y:)
+  :const
+in nil
+  :nil
+else
+  :other
+end
+config => {db: {user:}}
+value in Integer
+
+--------------------------------------------------------------------------------
+
+(program
+  (case_match
+    value: (identifier)
+    clauses: (in_clause
+      pattern: (as_pattern
+        value: (alternative_pattern
+          alternatives: (constant)
+          alternatives: (constant))
+        name: (identifier))
+      guard: (if_guard
+        condition: (binary
+          left: (identifier)
+          right: (integer)))
+      body: (then
+        (simple_symbol)))
+    clauses: (in_clause
+      pattern: (array_pattern
+        (identifier)
+        (splat_parameter
+          name: (identifier)))
+      body: (then
+        (simple_symbol)))
+    clauses: (in_clause
+      pattern: (hash_pattern
+        (keyword_pattern
+          key: (hash_key_symbol)
+          value: (as_pattern
+            value: (constant)
+            name: (identifier)))
+        (keyword_pattern
+          key: (hash_key_symbol)))
+      body: (then
+        (simple_symbol)))
+    clauses: (in_clause
+      pattern: (find_pattern
+        (splat_parameter)
+        (integer)
+        (splat_parameter))
+      body: (then
+        (simple_symbol)))
+    clauses: (in_clause
+      pattern: (variable_reference_pattern
+        name: (identifier))
+      body: (then
+        (simple_symbol)))
+    clauses: (in_clause
+      pattern: (hash_pattern
+        class: (constant)
+        (keyword_pattern
+          key: (hash_key_symbol))
+        (keyword_pattern
+          key: (hash_key_symbol)))
+      body: (then
+        (simple_symbol)))
+    clauses: (in_clause
+      pattern: (nil)
+      body: (then
+        (simple_symbol)))
+    else: (else
+      (simple_symbol)))
+  (match_pattern
+    value: (identifier)
+    pattern: (hash_pattern
+      (keyword_pattern
+        key: (hash_key_symbol)
+        value: (hash_pattern
+          (keyword_pattern
+            key: (hash_key_symbol))))))
+  (test_pattern
+    value: (identifier)
+    pattern: (constant)))

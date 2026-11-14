@@ -1,0 +1,308 @@
+================================================================================
+Numbers
+================================================================================
+
+1
+-2
+1_000
+0x1F
+0b1010
+0o17
+017
+3.14
+1e10
+2.5e-3
+3r
+1.5r
+2i
+3ri
+
+--------------------------------------------------------------------------------
+
+(program
+  (integer)
+  (integer)
+  (integer)
+  (integer)
+  (integer)
+  (integer)
+  (integer)
+  (float)
+  (float)
+  (float)
+  (rational)
+  (rational)
+  (complex)
+  (complex))
+
+================================================================================
+Symbols
+================================================================================
+
+:foo
+:foo?
+:foo=
+:@ivar
+:$global
+:+
+:[]=
+:"quoted #{x}"
+%s(sym)
+
+--------------------------------------------------------------------------------
+
+(program
+  (simple_symbol)
+  (simple_symbol)
+  (simple_symbol)
+  (simple_symbol)
+  (simple_symbol)
+  (simple_symbol)
+  (simple_symbol)
+  (delimited_symbol
+    (string_content)
+    (interpolation
+      (identifier)))
+  (delimited_symbol
+    (string_content)))
+
+================================================================================
+Strings
+================================================================================
+
+"double #{name} and #@ivar #$global\n"
+'single \' quote'
+"a" "b"
+?a
+?\n
+
+--------------------------------------------------------------------------------
+
+(program
+  (string
+    (string_content)
+    (interpolation
+      (identifier))
+    (string_content)
+    (interpolation
+      (instance_variable))
+    (string_content)
+    (interpolation
+      (global_variable))
+    (escape_sequence))
+  (string
+    (string_content)
+    (escape_sequence)
+    (string_content))
+  (chained_string
+    (string
+      (string_content))
+    (string
+      (string_content)))
+  (character)
+  (character))
+
+================================================================================
+Percent literals
+================================================================================
+
+%w[a b c]
+%W[a#{1}b c]
+%i(x y)
+%q{a {nested} b}
+%Q|x #{y}|
+%(plain)
+%r{a/b}i
+%x(ls -l)
+
+--------------------------------------------------------------------------------
+
+(program
+  (string_array
+    (bare_string
+      (string_content))
+    (bare_string
+      (string_content))
+    (bare_string
+      (string_content)))
+  (string_array
+    (bare_string
+      (string_content)
+      (interpolation
+        (integer))
+      (string_content))
+    (bare_string
+      (string_content)))
+  (symbol_array
+    (bare_symbol
+      (string_content))
+    (bare_symbol
+      (string_content)))
+  (string
+    (string_content)
+    (string_content)
+    (string_content)
+    (string_content)
+    (string_content))
+  (string
+    (string_content)
+    (interpolation
+      (identifier)))
+  (string
+    (string_content))
+  (regex
+    (string_content))
+  (subshell
+    (string_content)))
+
+================================================================================
+Regular expressions
+================================================================================
+
+/ab+c/i
+x =~ /\d+#{suffix}/
+foo.split /,/
+
+--------------------------------------------------------------------------------
+
+(program
+  (regex
+    (string_content))
+  (binary
+    left: (identifier)
+    right: (regex
+      (string_content)
+      (interpolation
+        (identifier))))
+  (call
+    receiver: (identifier)
+    method: (identifier)
+    arguments: (argument_list
+      (regex
+        (string_content)))))
+
+================================================================================
+Arrays and hashes
+================================================================================
+
+[1, *rest, [2, 3]]
+{ a: 1, "b": 2, :c => 3, if: 4, **opts }
+{ x:, y: }
+[]
+{}
+
+--------------------------------------------------------------------------------
+
+(program
+  (array
+    (integer)
+    (splat_argument
+      (identifier))
+    (array
+      (integer)
+      (integer)))
+  (hash
+    (pair
+      key: (hash_key_symbol)
+      value: (integer))
+    (pair
+      key: (string
+        (string_content))
+      value: (integer))
+    (pair
+      key: (simple_symbol)
+      value: (integer))
+    (pair
+      key: (hash_key_symbol)
+      value: (integer))
+    (hash_splat_argument
+      (identifier)))
+  (hash
+    (pair
+      key: (hash_key_symbol))
+    (pair
+      key: (hash_key_symbol)))
+  (array)
+  (hash))
+
+================================================================================
+Variables and constants
+================================================================================
+
+@a
+@@b
+$c
+$0
+$1
+Foo
+Foo::Bar
+::Baz
+self
+nil
+true
+false
+__FILE__
+
+--------------------------------------------------------------------------------
+
+(program
+  (instance_variable)
+  (class_variable)
+  (global_variable)
+  (global_variable)
+  (global_variable)
+  (constant)
+  (scope_resolution
+    scope: (constant)
+    name: (constant))
+  (scope_resolution
+    name: (constant))
+  (self)
+  (nil)
+  (true)
+  (false)
+  (file))
+
+================================================================================
+Comments
+================================================================================
+
+# line comment
+x = 1 # trailing
+=begin
+block comment
+=end
+y = 2
+
+--------------------------------------------------------------------------------
+
+(program
+  (comment)
+  (assignment
+    left: (identifier)
+    right: (integer))
+  (comment)
+  (comment)
+  (assignment
+    left: (identifier)
+    right: (integer)))
+
+================================================================================
+Data after __END__
+================================================================================
+
+puts DATA.read
+__END__
+anything here
+is data
+
+--------------------------------------------------------------------------------
+
+(program
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (call
+        receiver: (constant)
+        method: (identifier))))
+  (uninterpreted))

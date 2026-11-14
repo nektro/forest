@@ -1,0 +1,202 @@
+================================================================================
+Heredocs
+================================================================================
+
+x = <<~EOS
+  hello #{name}
+EOS
+y = <<-'RAW'
+  #{not interpolated}
+  RAW
+z = <<SQL
+select 1
+SQL
+
+--------------------------------------------------------------------------------
+
+(program
+  (assignment
+    left: (identifier)
+    right: (heredoc_beginning))
+  (heredoc_body)
+  (assignment
+    left: (identifier)
+    right: (heredoc_beginning))
+  (heredoc_body)
+  (assignment
+    left: (identifier)
+    right: (heredoc_beginning))
+  (heredoc_body))
+
+================================================================================
+Heredoc with the rest of its line
+================================================================================
+
+foo(<<~EOS, 1).bar
+  text
+EOS
+assert_equal(<<~EXPECTED, actual)
+  stuff
+EXPECTED
+x = <<~EOS.strip if cond
+  a
+EOS
+
+--------------------------------------------------------------------------------
+
+(program
+  (call
+    receiver: (call
+      method: (identifier)
+      arguments: (argument_list
+        (heredoc_beginning)
+        (integer)))
+    method: (identifier))
+  (heredoc_body)
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (heredoc_beginning)
+      (identifier)))
+  (heredoc_body)
+  (if_modifier
+    body: (assignment
+      left: (identifier)
+      right: (call
+        receiver: (heredoc_beginning)
+        method: (identifier)))
+    condition: (identifier))
+  (heredoc_body))
+
+================================================================================
+Heredoc body lines that look like delimiters
+================================================================================
+
+x = <<~EOS
+  USAGE
+  end
+  EOS2
+EOS
+
+--------------------------------------------------------------------------------
+
+(program
+  (assignment
+    left: (identifier)
+    right: (heredoc_beginning))
+  (heredoc_body))
+
+================================================================================
+Two heredocs on a line
+================================================================================
+
+foo(<<~A, <<~END)
+  a
+A
+  b
+END
+assert_normal_exit("#{<<-"begin;"}\n#{<<-'end;'}")
+begin;
+  x = 1
+end;
+
+--------------------------------------------------------------------------------
+
+(program
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (heredoc_beginning)
+      (heredoc_beginning)))
+  (heredoc_body)
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (string
+        (interpolation
+          (heredoc_beginning))
+        (escape_sequence)
+        (interpolation
+          (heredoc_beginning)))))
+  (heredoc_body))
+
+================================================================================
+Heredocs in lists and blocks
+================================================================================
+
+list = [
+  [<<-RUBY, :one],
+    foo
+  RUBY
+  <<~EOS,
+    bar
+  EOS
+]
+assert_in_out_err([], <<~RUBY) do |out, err|
+  puts 1
+RUBY
+  assert_equal([], out)
+end
+if try_compile(<<SRC)
+int x;
+SRC
+  ok
+end
+
+--------------------------------------------------------------------------------
+
+(program
+  (assignment
+    left: (identifier)
+    right: (array
+      (array
+        (heredoc_beginning)
+        (simple_symbol))
+      (heredoc_body)
+      (heredoc_beginning)
+      (heredoc_body)))
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (array)
+      (heredoc_beginning))
+    block: (do_block
+      parameters: (block_parameters
+        (identifier)
+        (identifier))
+      (heredoc_body)
+      body: (body_statement
+        (call
+          method: (identifier)
+          arguments: (argument_list
+            (array)
+            (identifier))))))
+  (if
+    condition: (call
+      method: (identifier)
+      arguments: (argument_list
+        (heredoc_beginning)))
+    (heredoc_body)
+    consequence: (then
+      (identifier))))
+
+================================================================================
+Heredoc with a generic delimiter
+================================================================================
+
+x = <<~TEXT
+  some text
+  more Text here
+TEXT
+y = 1
+
+--------------------------------------------------------------------------------
+
+(program
+  (assignment
+    left: (identifier)
+    right: (heredoc_beginning))
+  (heredoc_body)
+  (assignment
+    left: (identifier)
+    right: (integer)))

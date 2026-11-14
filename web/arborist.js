@@ -313,7 +313,12 @@ function load(name) {
   if (!promise) {
     promise = (async () => {
       await init();
-      const language = await Language.load(new URL(info.wasm, Arborist.baseURL).href);
+      // Pass the bytes, not the URL: from a URL web-tree-sitter compiles the
+      // module and then instantiates it synchronously, which Chrome refuses
+      // on the main thread for modules over 8 MB (Ruby's is about 16 MB).
+      const response = await fetch(new URL(info.wasm, Arborist.baseURL).href);
+      if (!response.ok) throw new Error(`arborist: ${info.wasm}: HTTP ${response.status}`);
+      const language = await Language.load(new Uint8Array(await response.arrayBuffer()));
       const grammar = new Grammar(name, language, info);
       loaded.set(name, grammar);
       return grammar;

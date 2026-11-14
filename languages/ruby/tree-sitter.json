@@ -1,0 +1,51 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "ruby",
+      "camelcase": "Ruby",
+      "title": "Ruby",
+      "scope": "source.ruby",
+      "file-types": [
+        "rb",
+        "rake",
+        "gemspec",
+        "ru",
+        "rbw",
+        "Rakefile",
+        "Gemfile",
+        "Guardfile",
+        "Vagrantfile",
+        "Podfile",
+        "Brewfile",
+        "Capfile",
+        "Fastfile",
+        "Dangerfile"
+      ],
+      "highlights": "queries/highlights.scm",
+      "locals": "queries/locals.scm",
+      "tags": "queries/tags.scm",
+      "injections": "queries/injections.scm",
+      "injection-regex": "^(ruby|rb)$",
+      "class-name": "TreeSitterRuby"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "Ruby grammar for tree-sitter, without an external scanner",
+    "links": {
+      "repository": "https://github.com/nektro/arborist"
+    }
+  },
+  "bindings": {
+    "c": false,
+    "go": false,
+    "java": false,
+    "node": false,
+    "python": false,
+    "rust": false,
+    "swift": false,
+    "zig": false
+  }
+}

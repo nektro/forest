@@ -1,0 +1,447 @@
+================================================================================
+Method calls
+================================================================================
+
+foo
+foo()
+foo(1, 2)
+a.b
+a&.b
+a.b(c)
+A::b
+A::B()
+a.()
+foo?
+bar!
+
+--------------------------------------------------------------------------------
+
+(program
+  (identifier)
+  (call
+    method: (identifier)
+    arguments: (argument_list))
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (integer)
+      (integer)))
+  (call
+    receiver: (identifier)
+    method: (identifier))
+  (call
+    receiver: (identifier)
+    method: (identifier))
+  (call
+    receiver: (identifier)
+    method: (identifier)
+    arguments: (argument_list
+      (identifier)))
+  (call
+    receiver: (constant)
+    method: (identifier))
+  (call
+    receiver: (constant)
+    method: (constant)
+    arguments: (argument_list))
+  (call
+    receiver: (identifier)
+    arguments: (argument_list))
+  (identifier)
+  (identifier))
+
+================================================================================
+Commands
+================================================================================
+
+puts "hello", world
+require "set"
+attr_reader :a, :b
+foo.bar baz
+raise ArgumentError, "bad" unless ok
+puts foo bar
+
+--------------------------------------------------------------------------------
+
+(program
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (string
+        (string_content))
+      (identifier)))
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (string
+        (string_content))))
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (simple_symbol)
+      (simple_symbol)))
+  (call
+    receiver: (identifier)
+    method: (identifier)
+    arguments: (argument_list
+      (identifier)))
+  (unless_modifier
+    body: (call
+      method: (identifier)
+      arguments: (argument_list
+        (constant)
+        (string
+          (string_content))))
+    condition: (identifier))
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (call
+        method: (identifier)
+        arguments: (argument_list
+          (identifier))))))
+
+================================================================================
+Spacing around operators after a method name
+================================================================================
+
+foo -1
+foo - 1
+foo-1
+foo *args
+foo * x
+foo &blk
+foo [1]
+foo[1]
+foo (1), 2
+foo /re/
+foo / 2
+foo ::Bar
+
+--------------------------------------------------------------------------------
+
+(program
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (integer)))
+  (binary
+    left: (identifier)
+    right: (integer))
+  (binary
+    left: (identifier)
+    right: (integer))
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (splat_argument
+        (identifier))))
+  (binary
+    left: (identifier)
+    right: (identifier))
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (block_argument
+        (identifier))))
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (array
+        (integer))))
+  (element_reference
+    object: (identifier)
+    (integer))
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (parenthesized_statements
+        (integer))
+      (integer)))
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (regex
+        (string_content))))
+  (binary
+    left: (identifier)
+    right: (integer))
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (scope_resolution
+        name: (constant)))))
+
+================================================================================
+Keyword arguments
+================================================================================
+
+foo(a: 1, b: 2)
+foo a: 1, if: 2
+foo(*args, **opts, &blk)
+foo(...)
+foo("key": 1)
+
+--------------------------------------------------------------------------------
+
+(program
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (pair
+        key: (hash_key_symbol)
+        value: (integer))
+      (pair
+        key: (hash_key_symbol)
+        value: (integer))))
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (pair
+        key: (hash_key_symbol)
+        value: (integer))
+      (pair
+        key: (hash_key_symbol)
+        value: (integer))))
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (splat_argument
+        (identifier))
+      (hash_splat_argument
+        (identifier))
+      (block_argument
+        (identifier))))
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (forward_argument)))
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (pair
+        key: (string
+          (string_content))
+        value: (integer)))))
+
+================================================================================
+Blocks
+================================================================================
+
+list.each { |x| puts x }
+list.map do |a, (b, c), *d, e: 1, **f, &g|
+  a
+end
+foo { |x; y| x }
+loop do
+  break
+end
+list.each {
+  |x| x
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (call
+    receiver: (identifier)
+    method: (identifier)
+    block: (block
+      parameters: (block_parameters
+        (identifier))
+      body: (block_body
+        (call
+          method: (identifier)
+          arguments: (argument_list
+            (identifier))))))
+  (call
+    receiver: (identifier)
+    method: (identifier)
+    block: (do_block
+      parameters: (block_parameters
+        (identifier)
+        (destructured_parameter
+          (identifier)
+          (identifier))
+        (splat_parameter
+          name: (identifier))
+        (keyword_parameter
+          name: (identifier)
+          value: (integer))
+        (hash_splat_parameter
+          name: (identifier))
+        (block_parameter
+          name: (identifier)))
+      body: (body_statement
+        (identifier))))
+  (call
+    method: (identifier)
+    block: (block
+      parameters: (block_parameters
+        (identifier)
+        locals: (identifier))
+      body: (block_body
+        (identifier))))
+  (call
+    method: (identifier)
+    block: (do_block
+      body: (body_statement
+        (break))))
+  (call
+    receiver: (identifier)
+    method: (identifier)
+    block: (block
+      parameters: (block_parameters
+        (identifier))
+      body: (block_body
+        (identifier)))))
+
+================================================================================
+Block binding
+================================================================================
+
+foo bar do
+end
+foo bar { 1 }
+x = foo bar do |y|
+end
+
+--------------------------------------------------------------------------------
+
+(program
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (identifier))
+    block: (do_block
+      body: (body_statement)))
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (call
+        method: (identifier)
+        block: (block
+          body: (block_body
+            (integer))))))
+  (assignment
+    left: (identifier)
+    right: (call
+      method: (identifier)
+      arguments: (argument_list
+        (identifier))
+      block: (do_block
+        parameters: (block_parameters
+          (identifier))
+        body: (body_statement)))))
+
+================================================================================
+Method chains on new lines
+================================================================================
+
+items
+  .select(&:valid?)
+
+  .map { |i| i * 2 }
+  &.first
+
+--------------------------------------------------------------------------------
+
+(program
+  (call
+    receiver: (call
+      receiver: (call
+        receiver: (identifier)
+        method: (identifier)
+        arguments: (argument_list
+          (block_argument
+            (simple_symbol))))
+      method: (identifier)
+      block: (block
+        parameters: (block_parameters
+          (identifier))
+        body: (block_body
+          (binary
+            left: (identifier)
+            right: (integer)))))
+    method: (identifier)))
+
+================================================================================
+Lambdas
+================================================================================
+
+->(x) { x + 1 }
+-> x, y { x }
+-> { 1 }
+->(a) do a end
+lambda { |x| x }
+
+--------------------------------------------------------------------------------
+
+(program
+  (lambda
+    parameters: (lambda_parameters
+      (identifier))
+    body: (block
+      body: (block_body
+        (binary
+          left: (identifier)
+          right: (integer)))))
+  (lambda
+    parameters: (lambda_parameters
+      (identifier)
+      (identifier))
+    body: (block
+      body: (block_body
+        (identifier))))
+  (lambda
+    body: (block
+      body: (block_body
+        (integer))))
+  (lambda
+    parameters: (lambda_parameters
+      (identifier))
+    body: (do_block
+      body: (body_statement
+        (identifier))))
+  (call
+    method: (identifier)
+    block: (block
+      parameters: (block_parameters
+        (identifier))
+      body: (block_body
+        (identifier)))))
+
+================================================================================
+Element references
+================================================================================
+
+a[1]
+a[1, 2]
+a[..2]
+a[1] = 2
+a[k] ||= []
+
+--------------------------------------------------------------------------------
+
+(program
+  (element_reference
+    object: (identifier)
+    (integer))
+  (element_reference
+    object: (identifier)
+    (integer)
+    (integer))
+  (element_reference
+    object: (identifier)
+    (range
+      end: (integer)))
+  (assignment
+    left: (element_reference
+      object: (identifier)
+      (integer))
+    right: (integer))
+  (operator_assignment
+    left: (element_reference
+      object: (identifier)
+      (identifier))
+    right: (array)))
