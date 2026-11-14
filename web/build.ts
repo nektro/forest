@@ -11,7 +11,9 @@
 // is picked up; per grammar, queries come from the paths it lists, falling
 // back to queries/<kind>.scm, and files in examples/ feed the demo page.
 //
-// Usage: bun web/build.ts
+// Usage: bun web/build.ts [--debug]
+//
+//   --debug  compile the grammar wasm with `tree-sitter build --debug`
 
 import { $ } from "bun";
 import { cp, mkdir, readdir, rm, stat } from "node:fs/promises";
@@ -19,6 +21,7 @@ import { join } from "node:path";
 
 const root = join(import.meta.dir, "..");
 const dist = join(root, "dist");
+const debug = process.argv.slice(2).includes("--debug");
 const QUERY_KINDS = ["highlights", "injections", "locals", "tags", "folds"] as const;
 
 type GrammarInfo = {
@@ -76,7 +79,7 @@ for (const entry of (await readdir(languagesDir)).sort()) {
 
     const wasm = `tree-sitter-${grammar.name}.wasm`;
     console.log(`wasm      ${wasm}`);
-    await $`tree-sitter build --wasm -o ${join(dist, wasm)} ${grammarDir}`.quiet();
+    await $`tree-sitter build --wasm ${debug ? ["--debug"] : []} -o ${join(dist, wasm)} ${grammarDir}`.quiet();
 
     const queries: GrammarInfo["queries"] = {};
     for (const kind of QUERY_KINDS) {

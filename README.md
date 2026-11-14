@@ -27,7 +27,7 @@ A bundle of tree-sitter grammars.
 
 ## On the web
 
-`bun run build` writes a self-contained web package to `dist/`:
+`bun run build:debug` writes a self-contained web package to `dist/`:
 
 | File | What it is |
 | --- | --- |
@@ -99,7 +99,7 @@ bun install
 ```
 
 ```bash
-bun run build
+bun run build:debug
 ```
 
 ```bash
