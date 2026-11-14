@@ -11,6 +11,7 @@
     "serve": "bun web/serve.ts"
   },
   "devDependencies": {
+    "@types/bun": "^1.4.4",
     "tree-sitter-cli": "0.27.2",
     "web-tree-sitter": "0.27.2"
   }
