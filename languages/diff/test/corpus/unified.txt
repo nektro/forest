@@ -1,0 +1,308 @@
+================================================================================|||
+git diff
+================================================================================|||
+
+diff --git a/src/main.c b/src/main.c
+index 1a2b3c4..5d6e7f8 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -1,4 +1,5 @@ int main(void)
+ #include <stdio.h>
+-int x;
++int y;
++int z;
+ 
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (file_diff
+    (command
+      (option)
+      (argument)
+      (argument))
+    (index
+      (hash)
+      (hash)
+      (mode))
+    (old_file
+      (path))
+    (new_file
+      (path))
+    (hunk
+      (hunk_header
+        old: (range
+          start: (number)
+          count: (number))
+        new: (range
+          start: (number)
+          count: (number))
+        (heading))
+      (context)
+      (deletion)
+      (addition)
+      (addition)
+      (context))))
+
+================================================================================|||
+diff -u with timestamps
+================================================================================|||
+
+--- old.txt	2026-11-14 14:38:03.000000000 -0800
++++ new.txt	2026-11-14 14:38:04.000000000 -0800
+@@ -1 +1 @@
+-a
++b
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (file_diff
+    (old_file
+      (path)
+      (timestamp))
+    (new_file
+      (path)
+      (timestamp))
+    (hunk
+      (hunk_header
+        old: (range
+          start: (number))
+        new: (range
+          start: (number)))
+      (deletion)
+      (addition))))
+
+================================================================================|||
+Hunk header without counts or heading
+================================================================================|||
+
+@@ -0,0 +1 @@
++first
+@@ -10,2 +11 @@
+-x
+-y
++z
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (hunk
+    (hunk_header
+      old: (range
+        start: (number)
+        count: (number))
+      new: (range
+        start: (number)))
+    (addition))
+  (hunk
+    (hunk_header
+      old: (range
+        start: (number)
+        count: (number))
+      new: (range
+        start: (number)))
+    (deletion)
+    (deletion)
+    (addition)))
+
+================================================================================|||
+No newline at end of file
+================================================================================|||
+
+@@ -1 +1 @@
+-old
+\ No newline at end of file
++new
+\ No newline at end of file
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (hunk
+    (hunk_header
+      old: (range
+        start: (number))
+      new: (range
+        start: (number)))
+    (deletion)
+    (no_newline)
+    (addition)
+    (no_newline)))
+
+================================================================================|||
+Deleted lines that start with dashes
+================================================================================|||
+
+@@ -1,3 +1,1 @@
+--- a Lua comment
+---
+----
++x
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (hunk
+    (hunk_header
+      old: (range
+        start: (number)
+        count: (number))
+      new: (range
+        start: (number)
+        count: (number)))
+    (deletion
+      (deleted_text))
+    (deletion)
+    (deletion)
+    (addition)))
+
+================================================================================|||
+A new file after a hunk
+================================================================================|||
+
+--- a/one
++++ b/one
+@@ -1 +1 @@
+-a
++b
+--- a/two
++++ b/two
+@@ -1 +1 @@
+-c
++d
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (file_diff
+    (old_file
+      (path))
+    (new_file
+      (path))
+    (hunk
+      (hunk_header
+        old: (range
+          start: (number))
+        new: (range
+          start: (number)))
+      (deletion)
+      (addition)))
+  (file_diff
+    (old_file
+      (path))
+    (new_file
+      (path))
+    (hunk
+      (hunk_header
+        old: (range
+          start: (number))
+        new: (range
+          start: (number)))
+      (deletion)
+      (addition))))
+
+================================================================================|||
+Lines with no header
+================================================================================|||
+
+- removed
++ added
+  unchanged
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (hunk
+    (deletion)
+    (addition)
+    (context)))
+
+================================================================================|||
+Text between hunks with no header
+================================================================================|||
+
+Change this:
+-foo()
++bar()
+and this:
+-baz()
++qux()
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (text)
+  (hunk
+    (deletion)
+    (addition))
+  (text)
+  (hunk
+    (deletion)
+    (addition)))
+
+================================================================================|||
+Empty context lines
+================================================================================|||
+
+@@ -1,3 +1,3 @@
+ a
+
+-b
++c
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (hunk
+    (hunk_header
+      old: (range
+        start: (number)
+        count: (number))
+      new: (range
+        start: (number)
+        count: (number)))
+    (context)
+    (deletion)
+    (addition)))
+
+================================================================================|||
+CRLF line endings
+================================================================================|||
+
+@@ -1 +1 @@
+-a
+---
++b
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (hunk
+    (hunk_header
+      old: (range
+        start: (number))
+      new: (range
+        start: (number)))
+    (deletion)
+    (deletion)
+    (addition)))
+
+================================================================================|||
+No final newline
+================================================================================|||
+
+@@ -1 +1 @@
+-a
++b
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (hunk
+    (hunk_header
+      old: (range
+        start: (number))
+      new: (range
+        start: (number)))
+    (deletion)
+    (addition)))

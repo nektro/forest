@@ -1,0 +1,21 @@
+*** config.ini	2026-11-14 09:00:00.000000000 -0800
+--- config.ini	2026-11-14 09:05:12.000000000 -0800
+***************
+*** 1,4 ****
+  [server]
+! port = 8080
+  host = localhost
+- debug = true
+--- 1,4 ----
+  [server]
+! port = 9090
+  host = localhost
++ workers = 4
+2c2
+< port = 8080
+---
+> port = 9090
+4c4
+< debug = true
+---
+> workers = 4

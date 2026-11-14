@@ -1,0 +1,207 @@
+================================================================================|||
+git format-patch
+================================================================================|||
+
+From fed1f64468aa191d5ac8b8217ec9c480c754e02d Mon Sep 17 00:00:00 2001
+From: A U Thor <author@example.com>
+Date: Sat, 14 Nov 2026 14:38:03 -0800
+Subject: [PATCH] Rename f to g
+ and change it
+
+- a bullet in the message
+---
+ bin    | Bin 5 -> 6 bytes
+ f => g |   2 +-
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+ rename f => g (50%)
+
+diff --git a/f b/g
+similarity index 50%
+rename from f
+rename to g
+index 422c2b7..3b8c5cb 100644
+--- a/f
++++ b/g
+@@ -1,2 +1,2 @@
+ a
+-b
++Y
+-- 
+2.39.2
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (text)
+  (text)
+  (text)
+  (text)
+  (hunk
+    (context)
+    (deletion))
+  (separator)
+  (diffstat
+    (diffstat_file
+      (path)
+      (binary))
+    (diffstat_file
+      (path)
+      (number)
+      (added)
+      (removed))
+    (diffstat_summary))
+  (text)
+  (file_diff
+    (command
+      (option)
+      (argument)
+      (argument))
+    (similarity
+      (percentage))
+    (rename
+      (path))
+    (rename
+      (path))
+    (index
+      (hash)
+      (hash)
+      (mode))
+    (old_file
+      (path))
+    (new_file
+      (path))
+    (hunk
+      (hunk_header
+        old: (range
+          start: (number)
+          count: (number))
+        new: (range
+          start: (number)
+          count: (number)))
+      (context)
+      (deletion)
+      (addition)))
+  (signature
+    (text)))
+
+================================================================================|||
+git log -p
+================================================================================|||
+
+commit 9df19519301b000867f600752f0af918fae8b8f3
+Author: A U Thor <author@example.com>
+Date:   Sat Nov 14 14:38:03 2026 -0800
+
+    Fix the thing
+
+diff --git a/f b/f
+index 422c2b7..3b8c5cb 100644
+--- a/f
++++ b/f
+@@ -1 +1 @@
+-b
++c
+commit 0ecb54c3b8c5cb19ad5dd9df19519301b000867f
+Author: A U Thor <author@example.com>
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (text)
+  (text)
+  (text)
+  (hunk
+    (context))
+  (file_diff
+    (command
+      (option)
+      (argument)
+      (argument))
+    (index
+      (hash)
+      (hash)
+      (mode))
+    (old_file
+      (path))
+    (new_file
+      (path))
+    (hunk
+      (hunk_header
+        old: (range
+          start: (number))
+        new: (range
+          start: (number)))
+      (deletion)
+      (addition)))
+  (text)
+  (text))
+
+================================================================================|||
+svn diff
+================================================================================|||
+
+Index: trunk/foo.c
+===================================================================
+--- trunk/foo.c	(revision 123)
++++ trunk/foo.c	(working copy)
+@@ -1 +1 @@
+-a
++b
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (file_diff
+    (svn_index
+      (path))
+    (separator)
+    (old_file
+      (path)
+      (timestamp))
+    (new_file
+      (path)
+      (timestamp))
+    (hunk
+      (hunk_header
+        old: (range
+          start: (number))
+        new: (range
+          start: (number)))
+      (deletion)
+      (addition))))
+
+================================================================================|||
+diff -r
+================================================================================|||
+
+Only in a: gone.txt
+diff -ruN a/x.txt b/x.txt
+--- a/x.txt	2026-11-14 14:38:03.000000000 -0800
++++ b/x.txt	2026-11-14 14:38:04.000000000 -0800
+@@ -1 +1 @@
+-a
++b
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (text)
+  (file_diff
+    (command
+      (option)
+      (argument)
+      (argument))
+    (old_file
+      (path)
+      (timestamp))
+    (new_file
+      (path)
+      (timestamp))
+    (hunk
+      (hunk_header
+        old: (range
+          start: (number))
+        new: (range
+          start: (number)))
+      (deletion)
+      (addition))))

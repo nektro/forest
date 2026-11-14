@@ -1,0 +1,96 @@
+================================================================================|||
+Context diff
+================================================================================|||
+
+*** o	Sat Nov 14 14:38:03 2026
+--- n	Sat Nov 14 14:38:03 2026
+***************
+*** 1,5 ****
+  a
+! b
+  c
+- d
+  e
+--- 1,5 ----
+  a
+! B
+  c
+  e
++ f
+\ No newline at end of file
+*************** int main()
+*** 9 ****
+--- 9,10 ----
++ g
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (file_diff
+    (old_file
+      (path)
+      (timestamp))
+    (new_file
+      (path)
+      (timestamp))
+    (context_hunk
+      old: (old_lines
+        (range
+          start: (number)
+          end: (number))
+        (context)
+        (change)
+        (context)
+        (deletion)
+        (context))
+      new: (new_lines
+        (range
+          start: (number)
+          end: (number))
+        (context)
+        (change)
+        (context)
+        (context)
+        (addition)
+        (no_newline)))
+    (context_hunk
+      (heading)
+      old: (old_lines
+        (range
+          start: (number)))
+      new: (new_lines
+        (range
+          start: (number)
+          end: (number))
+        (addition)))))
+
+================================================================================|||
+Normal diff
+================================================================================|||
+
+2c2
+< b
+---
+> B
+4a5,6
+> x
+> y
+7,8d8
+< gone
+< also gone
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (normal_hunk
+    (change_command)
+    (deletion)
+    (addition))
+  (normal_hunk
+    (change_command)
+    (addition)
+    (addition))
+  (normal_hunk
+    (change_command)
+    (deletion)
+    (deletion)))

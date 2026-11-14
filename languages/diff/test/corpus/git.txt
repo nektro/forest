@@ -1,0 +1,250 @@
+================================================================================|||
+New file
+================================================================================|||
+
+diff --git a/new.txt b/new.txt
+new file mode 100644
+index 0000000..e69de29
+--- /dev/null
++++ b/new.txt
+@@ -0,0 +1 @@
++hello
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (file_diff
+    (command
+      (option)
+      (argument)
+      (argument))
+    (file_mode
+      (mode))
+    (index
+      (hash)
+      (hash))
+    (old_file
+      (path))
+    (new_file
+      (path))
+    (hunk
+      (hunk_header
+        old: (range
+          start: (number)
+          count: (number))
+        new: (range
+          start: (number)))
+      (addition))))
+
+================================================================================|||
+Deleted file and mode change
+================================================================================|||
+
+diff --git a/old.sh b/old.sh
+deleted file mode 100755
+index e69de29..0000000
+diff --git a/run.sh b/run.sh
+old mode 100644
+new mode 100755
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (file_diff
+    (command
+      (option)
+      (argument)
+      (argument))
+    (file_mode
+      (mode))
+    (index
+      (hash)
+      (hash)))
+  (file_diff
+    (command
+      (option)
+      (argument)
+      (argument))
+    (file_mode
+      (mode))
+    (file_mode
+      (mode))))
+
+================================================================================|||
+Rename and copy
+================================================================================|||
+
+diff --git a/a.c b/b.c
+similarity index 90%
+rename from a.c
+rename to b.c
+diff --git a/x.c b/y.c
+dissimilarity index 60%
+copy from x.c
+copy to y.c
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (file_diff
+    (command
+      (option)
+      (argument)
+      (argument))
+    (similarity
+      (percentage))
+    (rename
+      (path))
+    (rename
+      (path)))
+  (file_diff
+    (command
+      (option)
+      (argument)
+      (argument))
+    (similarity
+      (percentage))
+    (copy
+      (path))
+    (copy
+      (path))))
+
+================================================================================|||
+Binary files
+================================================================================|||
+
+diff --git a/logo.png b/logo.png
+index 88768ef..f68ed80 100644
+Binary files a/logo.png and b/logo.png differ
+Binary files old/icon.ico and new/icon.ico differ
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (file_diff
+    (command
+      (option)
+      (argument)
+      (argument))
+    (index
+      (hash)
+      (hash)
+      (mode))
+    (binary_files)
+    (binary_files)))
+
+================================================================================|||
+GIT binary patch
+================================================================================|||
+
+diff --git a/bin b/bin
+index 88768efdf77ec78c9a995f94881793be6a41752b..f68ed8037341be54a4bad1485a8deb1be7188467 100644
+GIT binary patch
+literal 6
+NcmZQzO3KVL0ssTy0d4>Q
+
+literal 5
+McmZQzOv=my00M6TI{*Lx
+
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (file_diff
+    (command
+      (option)
+      (argument)
+      (argument))
+    (index
+      (hash)
+      (hash)
+      (mode))
+    (binary_patch
+      (binary_hunk
+        (size)
+        (binary_data))
+      (binary_hunk
+        (size)
+        (binary_data)))))
+
+================================================================================|||
+Combined diff
+================================================================================|||
+
+diff --cc g
+index 3b8c5cb,19ad5dd..0ecb54c
+--- a/g
++++ b/g
+@@@ -1,2 -1,2 +1,2 @@@ heading
+  a
+- Y
+ -X
+++Z
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (file_diff
+    (command
+      (option)
+      (argument))
+    (index
+      (hash)
+      (hash)
+      (hash))
+    (old_file
+      (path))
+    (new_file
+      (path))
+    (combined_hunk
+      (combined_hunk_header
+        (range
+          start: (number)
+          count: (number))
+        (range
+          start: (number)
+          count: (number))
+        (range
+          start: (number)
+          count: (number))
+        (heading))
+      (context)
+      (deletion)
+      (deletion)
+      (addition))))
+
+================================================================================|||
+hg diff
+================================================================================|||
+
+diff -r 1a2b3c4d5e6f -r 6f5e4d3c2b1a src/lib.rs
+--- a/src/lib.rs	Sat Nov 14 14:38:03 2026 -0800
++++ b/src/lib.rs	Sat Nov 14 14:38:04 2026 -0800
+@@ -1 +1 @@
+-a
++b
+
+--------------------------------------------------------------------------------|||
+
+(source_file
+  (file_diff
+    (command
+      (option)
+      (argument)
+      (option)
+      (argument)
+      (argument))
+    (old_file
+      (path)
+      (timestamp))
+    (new_file
+      (path)
+      (timestamp))
+    (hunk
+      (hunk_header
+        old: (range
+          start: (number))
+        new: (range
+          start: (number)))
+      (deletion)
+      (addition))))

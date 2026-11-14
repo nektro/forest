@@ -1,0 +1,913 @@
+[
+  {
+    "type": "binary_hunk",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "binary_data",
+          "named": true
+        },
+        {
+          "type": "size",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "binary_patch",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "binary_hunk",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "combined_hunk",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "addition",
+          "named": true
+        },
+        {
+          "type": "combined_hunk_header",
+          "named": true
+        },
+        {
+          "type": "context",
+          "named": true
+        },
+        {
+          "type": "deletion",
+          "named": true
+        },
+        {
+          "type": "no_newline",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "combined_hunk_header",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "heading",
+          "named": true
+        },
+        {
+          "type": "range",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "command",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "argument",
+          "named": true
+        },
+        {
+          "type": "option",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "context_hunk",
+    "named": true,
+    "fields": {
+      "new": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "new_lines",
+            "named": true
+          }
+        ]
+      },
+      "old": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "old_lines",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "heading",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "copy",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "path",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "deletion",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "deleted_text",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "diffstat",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "diffstat_file",
+          "named": true
+        },
+        {
+          "type": "diffstat_summary",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "diffstat_file",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "added",
+          "named": true
+        },
+        {
+          "type": "binary",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "path",
+          "named": true
+        },
+        {
+          "type": "removed",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "file_diff",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "binary_files",
+          "named": true
+        },
+        {
+          "type": "binary_patch",
+          "named": true
+        },
+        {
+          "type": "combined_hunk",
+          "named": true
+        },
+        {
+          "type": "command",
+          "named": true
+        },
+        {
+          "type": "context_hunk",
+          "named": true
+        },
+        {
+          "type": "copy",
+          "named": true
+        },
+        {
+          "type": "file_mode",
+          "named": true
+        },
+        {
+          "type": "hunk",
+          "named": true
+        },
+        {
+          "type": "index",
+          "named": true
+        },
+        {
+          "type": "new_file",
+          "named": true
+        },
+        {
+          "type": "normal_hunk",
+          "named": true
+        },
+        {
+          "type": "old_file",
+          "named": true
+        },
+        {
+          "type": "rename",
+          "named": true
+        },
+        {
+          "type": "separator",
+          "named": true
+        },
+        {
+          "type": "similarity",
+          "named": true
+        },
+        {
+          "type": "svn_index",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "file_mode",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "mode",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "heading",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "hunk",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "addition",
+          "named": true
+        },
+        {
+          "type": "context",
+          "named": true
+        },
+        {
+          "type": "deletion",
+          "named": true
+        },
+        {
+          "type": "hunk_header",
+          "named": true
+        },
+        {
+          "type": "no_newline",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "hunk_header",
+    "named": true,
+    "fields": {
+      "new": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "range",
+            "named": true
+          }
+        ]
+      },
+      "old": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "range",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "heading",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "index",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "hash",
+          "named": true
+        },
+        {
+          "type": "mode",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "new_file",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "path",
+          "named": true
+        },
+        {
+          "type": "timestamp",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "new_lines",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "addition",
+          "named": true
+        },
+        {
+          "type": "change",
+          "named": true
+        },
+        {
+          "type": "context",
+          "named": true
+        },
+        {
+          "type": "deletion",
+          "named": true
+        },
+        {
+          "type": "no_newline",
+          "named": true
+        },
+        {
+          "type": "range",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "normal_hunk",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "addition",
+          "named": true
+        },
+        {
+          "type": "change_command",
+          "named": true
+        },
+        {
+          "type": "deletion",
+          "named": true
+        },
+        {
+          "type": "no_newline",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "number",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "old_file",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "path",
+          "named": true
+        },
+        {
+          "type": "timestamp",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "old_lines",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "addition",
+          "named": true
+        },
+        {
+          "type": "change",
+          "named": true
+        },
+        {
+          "type": "context",
+          "named": true
+        },
+        {
+          "type": "deletion",
+          "named": true
+        },
+        {
+          "type": "no_newline",
+          "named": true
+        },
+        {
+          "type": "range",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "range",
+    "named": true,
+    "fields": {
+      "count": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "number",
+            "named": true
+          }
+        ]
+      },
+      "end": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "number",
+            "named": true
+          }
+        ]
+      },
+      "start": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "number",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "rename",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "path",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "separator",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "signature",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "text",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "similarity",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "percentage",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "size",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "source_file",
+    "named": true,
+    "root": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "binary_files",
+          "named": true
+        },
+        {
+          "type": "combined_hunk",
+          "named": true
+        },
+        {
+          "type": "context_hunk",
+          "named": true
+        },
+        {
+          "type": "diffstat",
+          "named": true
+        },
+        {
+          "type": "file_diff",
+          "named": true
+        },
+        {
+          "type": "hunk",
+          "named": true
+        },
+        {
+          "type": "normal_hunk",
+          "named": true
+        },
+        {
+          "type": "separator",
+          "named": true
+        },
+        {
+          "type": "signature",
+          "named": true
+        },
+        {
+          "type": "text",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "svn_index",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "path",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "timestamp",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "\t",
+    "named": false
+  },
+  {
+    "type": " ",
+    "named": false
+  },
+  {
+    "type": "***",
+    "named": false
+  },
+  {
+    "type": "****",
+    "named": false
+  },
+  {
+    "type": "***************",
+    "named": false
+  },
+  {
+    "type": "+++",
+    "named": false
+  },
+  {
+    "type": ",",
+    "named": false
+  },
+  {
+    "type": "-- ",
+    "named": false
+  },
+  {
+    "type": "---",
+    "named": false
+  },
+  {
+    "type": "----",
+    "named": false
+  },
+  {
+    "type": "===",
+    "named": false
+  },
+  {
+    "type": "@@",
+    "named": false
+  },
+  {
+    "type": "@@@",
+    "named": false
+  },
+  {
+    "type": "GIT binary patch",
+    "named": false
+  },
+  {
+    "type": "Index:",
+    "named": false
+  },
+  {
+    "type": "added",
+    "named": true
+  },
+  {
+    "type": "addition",
+    "named": true
+  },
+  {
+    "type": "argument",
+    "named": true
+  },
+  {
+    "type": "binary",
+    "named": true
+  },
+  {
+    "type": "binary_data",
+    "named": true
+  },
+  {
+    "type": "binary_files",
+    "named": true
+  },
+  {
+    "type": "change",
+    "named": true
+  },
+  {
+    "type": "change_command",
+    "named": true
+  },
+  {
+    "type": "context",
+    "named": true
+  },
+  {
+    "type": "copy from",
+    "named": false
+  },
+  {
+    "type": "copy to",
+    "named": false
+  },
+  {
+    "type": "deleted file mode",
+    "named": false
+  },
+  {
+    "type": "deleted_text",
+    "named": true
+  },
+  {
+    "type": "delta",
+    "named": false
+  },
+  {
+    "type": "diff",
+    "named": false
+  },
+  {
+    "type": "diffstat_summary",
+    "named": true
+  },
+  {
+    "type": "dissimilarity index",
+    "named": false
+  },
+  {
+    "type": "hash",
+    "named": true
+  },
+  {
+    "type": "index",
+    "named": false
+  },
+  {
+    "type": "literal",
+    "named": false
+  },
+  {
+    "type": "mode",
+    "named": false
+  },
+  {
+    "type": "mode",
+    "named": true
+  },
+  {
+    "type": "new file mode",
+    "named": false
+  },
+  {
+    "type": "new mode",
+    "named": false
+  },
+  {
+    "type": "no_newline",
+    "named": true
+  },
+  {
+    "type": "old mode",
+    "named": false
+  },
+  {
+    "type": "option",
+    "named": true
+  },
+  {
+    "type": "path",
+    "named": true
+  },
+  {
+    "type": "percentage",
+    "named": true
+  },
+  {
+    "type": "removed",
+    "named": true
+  },
+  {
+    "type": "rename from",
+    "named": false
+  },
+  {
+    "type": "rename new",
+    "named": false
+  },
+  {
+    "type": "rename old",
+    "named": false
+  },
+  {
+    "type": "rename to",
+    "named": false
+  },
+  {
+    "type": "similarity index",
+    "named": false
+  },
+  {
+    "type": "text",
+    "named": true
+  },
+  {
+    "type": "|",
+    "named": false
+  }
+]

@@ -8,6 +8,7 @@ A bundle of tree-sitter grammars.
 | C (C23, with GNU and MSVC extensions) | [languages/c](languages/c) | none |
 | CMake | [languages/cmake](languages/cmake) | none |
 | CSS | [languages/css](languages/css) | none |
+| Diff (unified, git, combined, context and normal) | [languages/diff](languages/diff) | none |
 | Dockerfile | [languages/dockerfile](languages/dockerfile) | none |
 | gitattributes | [languages/gitattributes](languages/gitattributes) | none |
 | Go | [languages/go](languages/go) | none |
