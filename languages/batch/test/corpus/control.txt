@@ -1,0 +1,225 @@
+================================================================================
+If comparisons
+================================================================================
+
+if "%~1"=="" goto :usage
+if /i %x% == y echo same
+if not %ERRORLEVEL% NEQ 0 exit /b 1
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (if_statement
+    condition: (comparison
+      left: (string
+        (parameter))
+      right: (string))
+    consequence: (command
+      name: (command_name)
+      argument: (word)))
+  (if_statement
+    condition: (comparison
+      left: (variable)
+      right: (word))
+    consequence: (command
+      name: (command_name)
+      argument: (word)))
+  (if_statement
+    condition: (comparison
+      left: (variable)
+      right: (word))
+    consequence: (command
+      name: (command_name)
+      argument: (word)
+      argument: (word))))
+
+================================================================================
+If conditions
+================================================================================
+
+if exist "%dir%\" rd /s /q "%dir%"
+if defined DEBUG set FLAGS=-g
+if errorlevel 1 goto failed
+if cmdextversion 2 echo ok
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (if_statement
+    condition: (exist_condition
+      path: (string
+        (variable)))
+    consequence: (command
+      name: (command_name)
+      argument: (word)
+      argument: (word)
+      argument: (string
+        (variable))))
+  (if_statement
+    condition: (defined_condition
+      variable: (word))
+    consequence: (set_statement
+      name: (variable_name)
+      value: (value)))
+  (if_statement
+    condition: (errorlevel_condition
+      level: (word))
+    consequence: (command
+      name: (command_name)
+      argument: (word)))
+  (if_statement
+    condition: (cmdextversion_condition
+      version: (word))
+    consequence: (command
+      name: (command_name)
+      argument: (word))))
+
+================================================================================
+If bodies run to the end of the line
+================================================================================
+
+if a==b echo one & echo two
+if a==b (echo one) & echo two
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (if_statement
+    condition: (comparison
+      left: (word)
+      right: (word))
+    consequence: (list
+      left: (command
+        name: (command_name)
+        argument: (word))
+      right: (command
+        name: (command_name)
+        argument: (word))))
+  (if_statement
+    condition: (comparison
+      left: (word)
+      right: (word))
+    consequence: (list
+      left: (block
+        (command
+          name: (command_name)
+          argument: (word)))
+      right: (command
+        name: (command_name)
+        argument: (word)))))
+
+================================================================================
+If with else
+================================================================================
+
+if exist x (
+  echo yes
+) else if exist y (
+  echo maybe
+) else (
+  echo no
+)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (if_statement
+    condition: (exist_condition
+      path: (word))
+    consequence: (block
+      (command
+        name: (command_name)
+        argument: (word)))
+    alternative: (if_statement
+      condition: (exist_condition
+        path: (word))
+      consequence: (block
+        (command
+          name: (command_name)
+          argument: (word)))
+      alternative: (block
+        (command
+          name: (command_name)
+          argument: (word))))))
+
+================================================================================
+For loops
+================================================================================
+
+for %%f in (*.c, *.h) do echo %%~nxf
+for /l %%i in (1,1,10) do echo %%i
+for /r "%ROOT%" %%f in (*.txt) do del "%%f"
+for /d %%d in (*) do echo %%d
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (for_statement
+    variable: (for_variable)
+    item: (word)
+    item: (word)
+    body: (command
+      name: (command_name)
+      argument: (for_variable)))
+  (for_statement
+    variable: (for_variable)
+    item: (word)
+    item: (word)
+    item: (word)
+    body: (command
+      name: (command_name)
+      argument: (for_variable)))
+  (for_statement
+    option: (string
+      (variable))
+    variable: (for_variable)
+    item: (word)
+    body: (command
+      name: (command_name)
+      argument: (string
+        (for_variable))))
+  (for_statement
+    variable: (for_variable)
+    item: (word)
+    body: (command
+      name: (command_name)
+      argument: (for_variable))))
+
+================================================================================
+For /f
+================================================================================
+
+for /f "tokens=1,* delims==" %%a in ('set') do (
+  echo %%a is %%b
+)
+for /f "usebackq delims=" %%l in (`type "a b.txt"`) do echo %%l
+for /f %%# in ("%x%") do set "y=%%#"
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (for_statement
+    option: (string)
+    variable: (for_variable)
+    item: (word)
+    body: (block
+      (command
+        name: (command_name)
+        argument: (for_variable)
+        argument: (word)
+        argument: (for_variable))))
+  (for_statement
+    option: (string)
+    variable: (for_variable)
+    item: (command_string)
+    body: (command
+      name: (command_name)
+      argument: (for_variable)))
+  (for_statement
+    variable: (for_variable)
+    item: (string
+      (variable))
+    body: (set_statement
+      name: (variable_name)
+      value: (value
+        (for_variable)))))

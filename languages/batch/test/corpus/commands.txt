@@ -1,0 +1,153 @@
+================================================================================
+Commands and arguments
+================================================================================
+
+@echo off
+copy /y "a b.txt" %TEMP%\out.txt
+"C:\Program Files\tool.exe" --flag=1
+%~dp0helper.cmd arg
+echo.
+echo.Usage: build [options]
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (command_name)
+    argument: (word))
+  (command
+    name: (command_name)
+    argument: (word)
+    argument: (string)
+    argument: (concatenation
+      (variable)
+      (word)))
+  (command
+    name: (command_name
+      (string))
+    argument: (word))
+  (command
+    name: (command_name
+      (parameter))
+    argument: (word))
+  (command
+    name: (command_name))
+  (command
+    name: (command_name)
+    argument: (word)
+    argument: (word)))
+
+================================================================================
+Parentheses at the top level are text
+================================================================================
+
+echo Usage: build (see docs)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (command_name)
+    argument: (word)
+    argument: (word)
+    argument: (word)
+    argument: (word)))
+
+================================================================================
+Redirections
+================================================================================
+
+dir >nul 2>&1
+echo>>log.txt text
+sort < in.txt > out.txt
+echo error 1>&2
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (command_name)
+    redirect: (redirect
+      destination: (word))
+    redirect: (redirect))
+  (command
+    name: (command_name)
+    redirect: (redirect
+      destination: (word))
+    argument: (word))
+  (command
+    name: (command_name)
+    redirect: (redirect
+      destination: (word))
+    redirect: (redirect
+      destination: (word)))
+  (command
+    name: (command_name)
+    argument: (word)
+    redirect: (redirect)))
+
+================================================================================
+Lists and pipelines
+================================================================================
+
+a & b && c || d
+dir | findstr x | sort
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (list
+    left: (command
+      name: (command_name))
+    right: (list
+      left: (list
+        left: (command
+          name: (command_name))
+        right: (command
+          name: (command_name)))
+      right: (command
+        name: (command_name))))
+  (pipeline
+    (pipeline
+      (command
+        name: (command_name))
+      (command
+        name: (command_name)
+        argument: (word)))
+    (command
+      name: (command_name))))
+
+================================================================================
+Blocks
+================================================================================
+
+(
+  echo one
+  echo two (^)
+) > out.txt
+(echo a) & (echo b)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (block
+    (command
+      name: (command_name)
+      argument: (word))
+    (command
+      name: (command_name)
+      argument: (word)
+      argument: (concatenation
+        (word)
+        (escape_sequence)))
+    redirect: (redirect
+      destination: (word)))
+  (list
+    left: (block
+      (command
+        name: (command_name)
+        argument: (word)))
+    right: (block
+      (command
+        name: (command_name)
+        argument: (word)))))

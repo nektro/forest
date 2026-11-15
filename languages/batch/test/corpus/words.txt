@@ -1,0 +1,119 @@
+================================================================================
+Variables
+================================================================================
+
+echo %USERNAME% %date:~-4% %str:a=b% %ProgramFiles(x86)%
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (command_name)
+    argument: (variable)
+    argument: (variable)
+    argument: (variable)
+    argument: (variable)))
+
+================================================================================
+Delayed variables
+================================================================================
+
+echo !count! !line:~0,5!
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (command_name)
+    argument: (delayed_variable)
+    argument: (delayed_variable)))
+
+================================================================================
+Parameters
+================================================================================
+
+echo %0 %1 %* %~1 %~dp0 %~nx1 %~$PATH:1
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (command_name)
+    argument: (parameter)
+    argument: (parameter)
+    argument: (parameter)
+    argument: (parameter)
+    argument: (parameter)
+    argument: (parameter)
+    argument: (parameter)))
+
+================================================================================
+For variables
+================================================================================
+
+echo %%i %%~nxi %%~$PATH:i %%#
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (command_name)
+    argument: (for_variable)
+    argument: (for_variable)
+    argument: (for_variable)
+    argument: (for_variable)))
+
+================================================================================
+Escapes and lone percent signs
+================================================================================
+
+echo ^<b^> 100%% done ^& more
+echo 50% off!
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (command_name)
+    argument: (concatenation
+      (escape_sequence)
+      (word)
+      (escape_sequence))
+    argument: (concatenation
+      (word)
+      (escape_sequence))
+    argument: (word)
+    argument: (escape_sequence)
+    argument: (word))
+  (command
+    name: (command_name)
+    argument: (concatenation
+      (word)
+      (word))
+    argument: (concatenation
+      (word)
+      (word))))
+
+================================================================================
+Strings and concatenation
+================================================================================
+
+echo "a & b" "%x%\sub" pre"mid"post
+echo "unterminated %x%
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (command_name)
+    argument: (string)
+    argument: (string
+      (variable))
+    argument: (concatenation
+      (word)
+      (string)
+      (word)))
+  (command
+    name: (command_name)
+    argument: (string
+      (variable))))

@@ -1,0 +1,28 @@
+================================================================================
+CRLF line endings
+================================================================================
+
+@echo off
+set "a=b"
+if "%a%"=="b" (
+  echo yes
+)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (command_name)
+    argument: (word))
+  (set_statement
+    name: (variable_name)
+    value: (value))
+  (if_statement
+    condition: (comparison
+      left: (string
+        (variable))
+      right: (string))
+    consequence: (block
+      (command
+        name: (command_name)
+        argument: (word)))))

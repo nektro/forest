@@ -1,0 +1,97 @@
+================================================================================
+Unquoted assignments
+================================================================================
+
+set NAME=some value
+set EMPTY=
+set PATH=%PATH%;C:\bin
+set a b=c
+set
+set PREFIX
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (set_statement
+    name: (variable_name)
+    value: (value))
+  (set_statement
+    name: (variable_name))
+  (set_statement
+    name: (variable_name)
+    value: (value
+      (variable)))
+  (set_statement
+    name: (variable_name)
+    value: (value))
+  (set_statement)
+  (set_statement
+    name: (variable_name)))
+
+================================================================================
+Quoted assignments
+================================================================================
+
+set "NAME=a & b"
+set "WIN32DIR=%WIN32DIR:\=/%"
+set "args=%args% "%~1""
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (set_statement
+    name: (variable_name)
+    value: (value))
+  (set_statement
+    name: (variable_name)
+    value: (value
+      (variable)))
+  (set_statement
+    name: (variable_name)
+    value: (value
+      (variable))
+    (parameter)
+    (string)))
+
+================================================================================
+Arithmetic and prompts
+================================================================================
+
+set /a COUNT=%COUNT%+1
+set /A "x = (1 + 2) * 3"
+set /p ANSWER=Continue? 
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (set_statement
+    value: (value
+      (variable)))
+  (set_statement
+    value: (value
+      (string)))
+  (set_statement
+    name: (variable_name)
+    value: (value)))
+
+================================================================================
+Assignments in blocks end at a closing parenthesis
+================================================================================
+
+if 1==1 (set X=1) else (set "Y=2")
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (if_statement
+    condition: (comparison
+      left: (word)
+      right: (word))
+    consequence: (block
+      (set_statement
+        name: (variable_name)
+        value: (value)))
+    alternative: (block
+      (set_statement
+        name: (variable_name)
+        value: (value)))))

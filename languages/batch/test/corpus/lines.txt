@@ -1,0 +1,74 @@
+================================================================================
+Labels and comments
+================================================================================
+
+:main
+:loop trailing text is ignored
+rem A comment & not a command
+REM
+@rem quiet comment
+:: label-style comment
+echo hi & rem rest of line
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (label)
+  (label)
+  (comment)
+  (comment)
+  (comment)
+  (comment)
+  (list
+    left: (command
+      name: (command_name)
+      argument: (word))
+    right: (comment)))
+
+================================================================================
+Line continuation
+================================================================================
+
+echo one ^
+  two
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (command_name)
+    argument: (word)
+    argument: (word)))
+
+================================================================================
+Blank lines and no final newline
+================================================================================
+
+
+echo a
+
+echo b
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (command_name)
+    argument: (word))
+  (command
+    name: (command_name)
+    argument: (word)))
+
+================================================================================
+Stray closing parenthesis at the top level
+================================================================================
+
+echo a
+) this line is ignored
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (command
+    name: (command_name)
+    argument: (word))
+  (comment))
