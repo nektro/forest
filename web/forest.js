@@ -54,9 +54,10 @@ function tagForCapture(capture) {
     case "string.special.path":
     case "string.special.symbol":
     case "character":
-    case "string.escape":
     case "string.regexp":
       return "s";
+    case "string.escape":
+      return "es";
     case "variable":
     case "variable.parameter":
     case "variable.builtin":
