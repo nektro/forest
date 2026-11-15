@@ -1,10 +1,17 @@
 {
-  "name": "forest",
+  "name": "@nektro/forest",
   "version": "0.1.0",
   "description": "A bundle of tree-sitter grammars, packaged for the web",
   "license": "MIT",
-  "private": true,
   "type": "module",
+  "author": "Meghan Denny <hello@nektro.net>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nektro/forest.git"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "bun web/build.ts",
     "build:debug": "bun web/build.ts --debug",
