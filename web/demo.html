@@ -13,9 +13,8 @@
   textarea { width: 100%; height: 12rem; box-sizing: border-box; tab-size: 4; }
   details pre { max-height: 20rem; }
   .controls { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center; margin-bottom: 0.5rem; }
-  h3 { font-size: 0.9rem; font-weight: 600; margin: 1rem 0 0.25rem; }
 </style>
-<script src="forest.js" data-auto></script>
+<script src="forest.js"></script>
 </head>
 <body>
 <h1>forest</h1>
@@ -30,10 +29,6 @@
 <pre class="forest" id="output"></pre>
 <details><summary>Syntax tree</summary><pre id="tree"></pre></details>
 
-<h2>Static</h2>
-<p>Highlighted by <code>&lt;script src="forest.js" data-auto&gt;</code>:</p>
-<div id="static"></div>
-
 <!-- Filled in by web/build.ts from each grammar's examples/ directory. -->
 <script type="application/json" id="examples">/*FOREST_EXAMPLES*/{}</script>
 <script>
@@ -42,20 +37,6 @@
   const option = (value, text = value) => Object.assign(document.createElement("option"), { value, text });
 
   $("languages").textContent = Forest.languages.join(", ");
-
-  // Static blocks; data-auto highlights them on DOMContentLoaded.
-  for (const lang of Forest.languages) {
-    for (const { name, source } of EXAMPLES[lang] ?? []) {
-      const h = document.createElement("h3");
-      h.textContent = name;
-      const pre = document.createElement("pre");
-      const code = document.createElement("code");
-      code.className = `language-${lang}`;
-      code.textContent = source;
-      pre.append(code);
-      $("static").append(h, pre);
-    }
-  }
 
   // Live editor.
   let grammar = null;

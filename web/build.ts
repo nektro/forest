@@ -5,7 +5,7 @@
 //                          Forest API
 //   tree-sitter-<lang>.wasm one per grammar, fetched on first use
 //   forest.css           default highlight theme
-//   index.html             demo page, showing every grammar's examples/
+//   index.html             demo page, with every grammar's examples/ in a picker
 //
 // Nothing here is specific to one language. Every languages/*/tree-sitter.json
 // is picked up; per grammar, queries come from the paths it lists, falling
