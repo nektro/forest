@@ -44,11 +44,11 @@ function tagForCapture(capture) {
   switch (capture) {
     case "comment":
     case "comment.documentation":
-        return "c";
+      return "c";
     case "punctuation.bracket":
     case "punctuation.special":
     case "punctuation.delimiter":
-        return "p";
+      return "p";
     case "string":
     case "string.special":
     case "string.special.path":
@@ -56,7 +56,7 @@ function tagForCapture(capture) {
     case "character":
     case "string.escape":
     case "string.regexp":
-        return "s";
+      return "s";
     case "variable":
     case "variable.parameter":
     case "variable.builtin":
@@ -70,7 +70,7 @@ function tagForCapture(capture) {
     case "function.call":
     case "function.method.call":
     case "function.method":
-        return "f";
+      return "f";
     case "keyword":
     case "keyword.conditional":
     case "keyword.repeat":
@@ -84,29 +84,29 @@ function tagForCapture(capture) {
     case "keyword.conditional.ternary":
     case "keyword.coroutine":
     case "keyword.exception":
-        return "k";
+      return "k";
     case "label":
-        return "l";
+      return "l";
     case "type":
     case "type.builtin":
-        return "t";
+      return "t";
     case "constant":
     case "constant.builtin":
     case "boolean":
-        return "co";
+      return "co";
     case "property":
-        return "pr";
+      return "pr";
     case "number":
-        return "n";
+      return "n";
     case "attribute":
     case "tag.attribute":
-        return "at";
+      return "at";
     case "tag":
-        return "tg";
+      return "tg";
     case "module":
-        return "ns";
+      return "ns";
     case "constructor":
-        return "cr";
+      return "cr";
   }
 }
 
