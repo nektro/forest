@@ -11,3 +11,6 @@ pkgs.mkShell {
 
   hardeningDisable = [ "all" ];
 }
+
+# Install tree-sitter with:
+#   nix-shell -p gcc stdenv.cc.cc.lib --run 'cargo install --locked tree-sitter-cli'
