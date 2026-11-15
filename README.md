@@ -65,6 +65,12 @@ Or drive it yourself:
 </script>
 ```
 
+Or via a CDN:
+
+```html
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@nektro/forest@0.1.0/dist/forest.js" integrity="sha384-O9FZyOTXXLYn6IBTrn8kABlERDlnK2zVDbVZSmn8LE2EGspI25JrqVsq+sfm9x/o" crossorigin="anonymous" defer data-auto></script>
+```
+
 ### API
 
 | | |
