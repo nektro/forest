@@ -1,0 +1,492 @@
+================================================================================|||
+Plain scalars
+================================================================================|||
+- a b c
+- a:b
+- http://example.com/a#b
+- -x
+- ?x
+- :x
+- a,b[c]{d}
+- C:\path
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_sequence
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (string_scalar))))
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (string_scalar))))
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (string_scalar))))
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (string_scalar))))
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (string_scalar))))
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (string_scalar))))
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (string_scalar))))
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (string_scalar))))))))
+
+================================================================================|||
+Core schema scalars
+================================================================================|||
+- ~
+- null
+- true
+- False
+- 12
+- -3
+- 0x1F
+- 0o17
+- 1.5
+- -.5e3
+- .inf
+- .NaN
+- 12abc
+- true story
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_sequence
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (null_scalar))))
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (null_scalar))))
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (boolean_scalar))))
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (boolean_scalar))))
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (integer_scalar))))
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (integer_scalar))))
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (integer_scalar))))
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (integer_scalar))))
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (float_scalar))))
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (float_scalar))))
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (float_scalar))))
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (float_scalar))))
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (string_scalar))))
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (string_scalar))))))))
+
+================================================================================|||
+Multi-line plain scalars
+================================================================================|||
+a: one
+  two
+
+  three
+b: four
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (string_scalar))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (string_scalar))))))))
+
+================================================================================|||
+Multi-line plain scalar in a sequence
+================================================================================|||
+- one
+  two
+- name: a
+    b
+  next: c
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_sequence
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (string_scalar))))
+        (block_sequence_item
+          (block_node
+            (block_mapping
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (string_scalar))))
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (string_scalar)))))))))))
+
+================================================================================|||
+Plain scalar on the line after its key
+================================================================================|||
+key:
+  value
+  more
+next: 1
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (string_scalar))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))))))
+
+================================================================================|||
+Double-quoted scalars
+================================================================================|||
+a: "x \" \\ \n \x41 \u00e9 \U0001F600"
+"b c": "# not a comment"
+d: "one
+  two \
+  three"
+e: "\d"
+f: ""
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (double_quote_scalar
+              (escape_sequence)
+              (escape_sequence)
+              (escape_sequence)
+              (escape_sequence)
+              (escape_sequence)
+              (escape_sequence))))
+        (block_mapping_pair
+          key: (flow_node
+            (double_quote_scalar))
+          value: (flow_node
+            (double_quote_scalar)))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (double_quote_scalar
+              (escape_sequence))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (double_quote_scalar
+              (escape_sequence))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (double_quote_scalar)))))))
+
+================================================================================|||
+Single-quoted scalars
+================================================================================|||
+a: 'it''s'
+'b': '# not a comment'
+c: 'one
+  two'
+d: ''
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (single_quote_scalar
+              (escape_sequence))))
+        (block_mapping_pair
+          key: (flow_node
+            (single_quote_scalar))
+          value: (flow_node
+            (single_quote_scalar)))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (single_quote_scalar)))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (single_quote_scalar)))))))
+
+================================================================================|||
+Literal block scalar
+================================================================================|||
+a: |
+  line 1
+    indented
+  # not a comment
+
+  line 3
+b: 1
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (block_scalar)))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))))))
+
+================================================================================|||
+Folded block scalar with indicators
+================================================================================|||
+a: >-
+  folded
+  text
+b: |+2
+    keep
+
+c: >1
+  x
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (block_scalar)))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (block_scalar)))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (block_scalar)))))))
+
+================================================================================|||
+Block scalar in a sequence
+================================================================================|||
+- |
+  one
+- key: |
+    two
+  next: 1
+- >
+ three
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_sequence
+        (block_sequence_item
+          (block_node
+            (block_scalar)))
+        (block_sequence_item
+          (block_node
+            (block_mapping
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (block_node
+                  (block_scalar)))
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (integer_scalar)))))))
+        (block_sequence_item
+          (block_node
+            (block_scalar)))))))
+
+================================================================================|||
+Empty block scalar
+================================================================================|||
+a: |
+b: 1
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (block_scalar)))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))))))
+
+================================================================================|||
+Block scalar followed by a less indented comment
+================================================================================|||
+a:
+  b: |
+    text
+  # comment
+  c: 1
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (block_mapping
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (block_node
+                  (block_scalar)))
+              (comment)
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (integer_scalar)))))))))))

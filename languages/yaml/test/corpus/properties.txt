@@ -1,0 +1,373 @@
+================================================================================|||
+Anchors and aliases
+================================================================================|||
+a: &x 1
+b: *x
+c: &y
+  d: 2
+e:
+  <<: *y
+  f: 3
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (anchor
+              (anchor_name))
+            (plain_scalar
+              (integer_scalar))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (alias
+              (alias_name))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (anchor
+              (anchor_name))
+            (block_mapping
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (integer_scalar)))))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (block_mapping
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (alias
+                    (alias_name))))
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (integer_scalar)))))))))))
+
+================================================================================|||
+Tags
+================================================================================|||
+a: !!str 1
+b: !custom
+  c: 1
+d: !<tag:yaml.org,2002:int> 2
+e: !e!local x
+f: !Ref name
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (tag)
+            (plain_scalar
+              (integer_scalar))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (tag)
+            (block_mapping
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (integer_scalar)))))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (tag)
+            (plain_scalar
+              (integer_scalar))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (tag)
+            (plain_scalar
+              (string_scalar))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (tag)
+            (plain_scalar
+              (string_scalar))))))))
+
+================================================================================|||
+Tag and anchor together
+================================================================================|||
+a: !!map &x
+  b: 1
+c: &y !!seq
+- 1
+d: *y
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (tag)
+            (anchor
+              (anchor_name))
+            (block_mapping
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (integer_scalar)))))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (anchor
+              (anchor_name))
+            (tag)
+            (block_sequence
+              (block_sequence_item
+                (flow_node
+                  (plain_scalar
+                    (integer_scalar)))))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (alias
+              (alias_name))))))))
+
+================================================================================|||
+Anchor before a sequence at its key's width
+================================================================================|||
+a: &x
+- 1
+- 2
+b: *x
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (anchor
+              (anchor_name))
+            (block_sequence
+              (block_sequence_item
+                (flow_node
+                  (plain_scalar
+                    (integer_scalar))))
+              (block_sequence_item
+                (flow_node
+                  (plain_scalar
+                    (integer_scalar)))))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (alias
+              (alias_name))))))))
+
+================================================================================|||
+Anchor with no node
+================================================================================|||
+a: &x
+b: !!null
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (anchor
+              (anchor_name))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (tag)))))))
+
+================================================================================|||
+Anchor before a scalar on the next line
+================================================================================|||
+a: &x
+  some text
+  more
+b: 1
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (anchor
+              (anchor_name))
+            (plain_scalar
+              (string_scalar))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))))))
+
+================================================================================|||
+Properties on a sequence entry
+================================================================================|||
+- &x
+  a: 1
+- !!str
+- *x
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_sequence
+        (block_sequence_item
+          (block_node
+            (anchor
+              (anchor_name))
+            (block_mapping
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (integer_scalar)))))))
+        (block_sequence_item
+          (flow_node
+            (tag)))
+        (block_sequence_item
+          (flow_node
+            (alias
+              (alias_name))))))))
+
+================================================================================|||
+Anchored keys
+================================================================================|||
+&k a: 1
+b:
+- &x c: 2
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (anchor
+              (anchor_name))
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (block_sequence
+              (block_sequence_item
+                (block_node
+                  (block_mapping
+                    (block_mapping_pair
+                      key: (flow_node
+                        (anchor
+                          (anchor_name))
+                        (plain_scalar
+                          (string_scalar)))
+                      value: (flow_node
+                        (plain_scalar
+                          (integer_scalar))))))))))))))
+
+================================================================================|||
+Tagged block scalar
+================================================================================|||
+a: !!binary |
+  R0lGODlh
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (tag)
+            (block_scalar)))))))

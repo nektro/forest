@@ -1,0 +1,394 @@
+================================================================================|||
+Empty input
+================================================================================|||
+
+--------------------------------------------------------------------------------|||
+
+(stream)
+
+================================================================================|||
+Comments only
+================================================================================|||
+# one
+
+# two
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (comment)
+  (comment))
+
+================================================================================|||
+Comments
+================================================================================|||
+# heading
+a: 1 # trailing
+  # indented
+b: # before value
+  c: 2
+# last
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (comment)
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))
+        (comment)
+        (comment)
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          (comment)
+          value: (block_node
+            (block_mapping
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (integer_scalar)))))))
+        (comment)))))
+
+================================================================================|||
+Explicit document
+================================================================================|||
+---
+a: 1
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))))))
+
+================================================================================|||
+Several documents
+================================================================================|||
+a: 1
+---
+b: 2
+--- c
+...
+---
+- d
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar)))))))
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar)))))))
+  (document
+    (flow_node
+      (plain_scalar
+        (string_scalar))))
+  (document
+    (block_node
+      (block_sequence
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (string_scalar))))))))
+
+================================================================================|||
+Document end then bare document
+================================================================================|||
+a: 1
+...
+b: 2
+...
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar)))))))
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))))))
+
+================================================================================|||
+Directives
+================================================================================|||
+%YAML 1.2
+%TAG !e! tag:example.com,2000:
+%FOO bar baz
+---
+a: !e!x 1
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (yaml_directive
+      (yaml_version))
+    (tag_directive
+      (tag_handle)
+      (tag_prefix))
+    (reserved_directive
+      (directive_name)
+      (directive_parameter)
+      (directive_parameter))
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (tag)
+            (plain_scalar
+              (integer_scalar))))))))
+
+================================================================================|||
+Directives after a comment
+================================================================================|||
+# SPDX
+%YAML 1.2
+---
+a: 1
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (comment)
+  (document
+    (yaml_directive
+      (yaml_version))
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))))))
+
+================================================================================|||
+Directives after a document end
+================================================================================|||
+a: 1
+...
+%YAML 1.2
+---
+b: 2
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar)))))))
+  (document
+    (yaml_directive
+      (yaml_version))
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))))))
+
+================================================================================|||
+Root scalar on the marker line
+================================================================================|||
+--- "text"
+--- |
+line at column 0
+  indented
+--- >
+  folded
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (flow_node
+      (double_quote_scalar)))
+  (document
+    (block_node
+      (block_scalar)))
+  (document
+    (block_node
+      (block_scalar))))
+
+================================================================================|||
+Tagged root
+================================================================================|||
+--- !tag
+a: 1
+--- &x
+- 1
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (tag)
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar)))))))
+  (document
+    (block_node
+      (anchor
+        (anchor_name))
+      (block_sequence
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (integer_scalar))))))))
+
+================================================================================|||
+Root block scalar ends at a marker
+================================================================================|||
+--- |
+a
+---
+b
+...
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_scalar)))
+  (document
+    (flow_node
+      (plain_scalar
+        (string_scalar)))))
+
+================================================================================|||
+Root flow collection
+================================================================================|||
+[1, 2]
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (flow_node
+      (flow_sequence
+        (flow_node
+          (plain_scalar
+            (integer_scalar)))
+        (flow_node
+          (plain_scalar
+            (integer_scalar)))))))
+
+================================================================================|||
+Root scalar
+================================================================================|||
+just text
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (flow_node
+      (plain_scalar
+        (string_scalar)))))
+
+================================================================================|||
+Lines starting with dots or dashes
+================================================================================|||
+a: 1
+.b: 2
+-c: 3
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))))))

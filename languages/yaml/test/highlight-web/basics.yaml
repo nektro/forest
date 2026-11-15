@@ -1,0 +1,47 @@
+%YAML 1.2
+# <- keyword.directive
+#     ^ number
+---
+# <- punctuation.special
+name: CI
+# <- property
+#   ^ punctuation.delimiter
+#     ^ string
+"quoted key": 'value'
+# <- property
+#             ^ string
+count: 12
+#      ^ number
+ratio: -1.5e3
+#      ^ number
+enabled: true
+#        ^ boolean
+missing: ~
+#        ^ constant.builtin
+1: numeric key
+# <- property
+escapes: "tab\t"
+#            ^ string.escape
+anchored: &base
+#         ^ punctuation.special
+#          ^ label
+  key: !!str value
+#      ^ type
+merged:
+  <<: *base
+# ^ keyword
+#     ^ punctuation.special
+#      ^ label
+list:
+  - a
+# ^ punctuation.delimiter
+#   ^ string
+  - [x, {y: z}]
+#   ^ punctuation.bracket
+#        ^ property
+script: |
+  echo "# not a comment"
+# ^ string
+#        ^ string
+...
+# <- punctuation.special

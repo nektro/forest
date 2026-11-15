@@ -1,0 +1,745 @@
+================================================================================|||
+Mapping
+================================================================================|||
+a: 1
+b: two
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (string_scalar))))))))
+
+================================================================================|||
+Nested mapping
+================================================================================|||
+a:
+  b:
+    c: 1
+  d: 2
+e: 3
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (block_mapping
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (block_node
+                  (block_mapping
+                    (block_mapping_pair
+                      key: (flow_node
+                        (plain_scalar
+                          (string_scalar)))
+                      value: (flow_node
+                        (plain_scalar
+                          (integer_scalar)))))))
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (integer_scalar)))))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))))))
+
+================================================================================|||
+Mapping with empty values
+================================================================================|||
+a:
+b:
+  c:
+  d:
+e:
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (block_mapping
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar))))
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar))))))))
+
+================================================================================|||
+Sequence
+================================================================================|||
+- a
+- b
+-
+- c
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_sequence
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (string_scalar))))
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (string_scalar))))
+        (block_sequence_item)
+        (block_sequence_item
+          (flow_node
+            (plain_scalar
+              (string_scalar))))))))
+
+================================================================================|||
+Sequence under a key, indented
+================================================================================|||
+key:
+  - a
+  - b
+next: 1
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (block_sequence
+              (block_sequence_item
+                (flow_node
+                  (plain_scalar
+                    (string_scalar))))
+              (block_sequence_item
+                (flow_node
+                  (plain_scalar
+                    (string_scalar)))))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))))))
+
+================================================================================|||
+Sequence at its key's width
+================================================================================|||
+key:
+- a
+- b
+next: 1
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (block_sequence
+              (block_sequence_item
+                (flow_node
+                  (plain_scalar
+                    (string_scalar))))
+              (block_sequence_item
+                (flow_node
+                  (plain_scalar
+                    (string_scalar)))))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))))))
+
+================================================================================|||
+Sequence at its key's width, nested
+================================================================================|||
+a:
+  b:
+  - 1
+  - 2
+  c:
+  - 3
+d: 4
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (block_mapping
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (block_node
+                  (block_sequence
+                    (block_sequence_item
+                      (flow_node
+                        (plain_scalar
+                          (integer_scalar))))
+                    (block_sequence_item
+                      (flow_node
+                        (plain_scalar
+                          (integer_scalar)))))))
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (block_node
+                  (block_sequence
+                    (block_sequence_item
+                      (flow_node
+                        (plain_scalar
+                          (integer_scalar))))))))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))))))
+
+================================================================================|||
+Compact mapping in a sequence
+================================================================================|||
+- name: a
+  value: 1
+- name: b
+  value: 2
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_sequence
+        (block_sequence_item
+          (block_node
+            (block_mapping
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (string_scalar))))
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (integer_scalar)))))))
+        (block_sequence_item
+          (block_node
+            (block_mapping
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (string_scalar))))
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (integer_scalar)))))))))))
+
+================================================================================|||
+Compact mapping after a wide dash
+================================================================================|||
+-   a: 1
+    b: 2
+-  c: 3
+   d: 4
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_sequence
+        (block_sequence_item
+          (block_node
+            (block_mapping
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (integer_scalar))))
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (integer_scalar)))))))
+        (block_sequence_item
+          (block_node
+            (block_mapping
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (integer_scalar))))
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (integer_scalar)))))))))))
+
+================================================================================|||
+Compact sequence in a sequence
+================================================================================|||
+- - a
+  - b
+- - c
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_sequence
+        (block_sequence_item
+          (block_node
+            (block_sequence
+              (block_sequence_item
+                (flow_node
+                  (plain_scalar
+                    (string_scalar))))
+              (block_sequence_item
+                (flow_node
+                  (plain_scalar
+                    (string_scalar)))))))
+        (block_sequence_item
+          (block_node
+            (block_sequence
+              (block_sequence_item
+                (flow_node
+                  (plain_scalar
+                    (string_scalar)))))))))))
+
+================================================================================|||
+Sequence item on the next line
+================================================================================|||
+-
+  a: 1
+-
+  - b
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_sequence
+        (block_sequence_item
+          (block_node
+            (block_mapping
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (integer_scalar)))))))
+        (block_sequence_item
+          (block_node
+            (block_sequence
+              (block_sequence_item
+                (flow_node
+                  (plain_scalar
+                    (string_scalar)))))))))))
+
+================================================================================|||
+Explicit keys
+================================================================================|||
+? a
+: 1
+? - b
+  - c
+: - d
+?
+: e
+? f
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))
+        (block_mapping_pair
+          key: (block_node
+            (block_sequence
+              (block_sequence_item
+                (flow_node
+                  (plain_scalar
+                    (string_scalar))))
+              (block_sequence_item
+                (flow_node
+                  (plain_scalar
+                    (string_scalar))))))
+          value: (block_node
+            (block_sequence
+              (block_sequence_item
+                (flow_node
+                  (plain_scalar
+                    (string_scalar)))))))
+        (block_mapping_pair
+          value: (flow_node
+            (plain_scalar
+              (string_scalar))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar))))))))
+
+================================================================================|||
+Indentation of four
+================================================================================|||
+a:
+    b: 1
+    c:
+        - d
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (block_mapping
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (integer_scalar))))
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (block_node
+                  (block_sequence
+                    (block_sequence_item
+                      (flow_node
+                        (plain_scalar
+                          (string_scalar))))))))))))))
+
+================================================================================|||
+Blank lines and trailing spaces
+================================================================================|||
+a: 1   
+
+
+b:
+
+  c: 2
+  
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (block_mapping
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (flow_node
+                  (plain_scalar
+                    (integer_scalar)))))))))))
+
+================================================================================|||
+Indented top level
+================================================================================|||
+  a: x
+  b: 2
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (string_scalar))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))))))
+
+================================================================================|||
+Deeper than MAX_INDENT
+================================================================================|||
+k0:
+  k1:
+    k2:
+      k3:
+        k4:
+          k5:
+            k6:
+              k7:
+                k8:
+                  k9:
+                    k10:
+                      k11:
+                        k12:
+                          k13:
+                            k14:
+                              k15:
+                                k16:
+                                  k17:
+                                    leaf: 1
+                                        deep: 2
+back: 3
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (block_mapping
+              (block_mapping_pair
+                key: (flow_node
+                  (plain_scalar
+                    (string_scalar)))
+                value: (block_node
+                  (block_mapping
+                    (block_mapping_pair
+                      key: (flow_node
+                        (plain_scalar
+                          (string_scalar)))
+                      value: (block_node
+                        (block_mapping
+                          (block_mapping_pair
+                            key: (flow_node
+                              (plain_scalar
+                                (string_scalar)))
+                            value: (block_node
+                              (block_mapping
+                                (block_mapping_pair
+                                  key: (flow_node
+                                    (plain_scalar
+                                      (string_scalar)))
+                                  value: (block_node
+                                    (block_mapping
+                                      (block_mapping_pair
+                                        key: (flow_node
+                                          (plain_scalar
+                                            (string_scalar)))
+                                        value: (block_node
+                                          (block_mapping
+                                            (block_mapping_pair
+                                              key: (flow_node
+                                                (plain_scalar
+                                                  (string_scalar)))
+                                              value: (block_node
+                                                (block_mapping
+                                                  (block_mapping_pair
+                                                    key: (flow_node
+                                                      (plain_scalar
+                                                        (string_scalar)))
+                                                    value: (block_node
+                                                      (block_mapping
+                                                        (block_mapping_pair
+                                                          key: (flow_node
+                                                            (plain_scalar
+                                                              (string_scalar)))
+                                                          value: (block_node
+                                                            (block_mapping
+                                                              (block_mapping_pair
+                                                                key: (flow_node
+                                                                  (plain_scalar
+                                                                    (string_scalar)))
+                                                                value: (block_node
+                                                                  (block_mapping
+                                                                    (block_mapping_pair
+                                                                      key: (flow_node
+                                                                        (plain_scalar
+                                                                          (string_scalar)))
+                                                                      value: (block_node
+                                                                        (block_mapping
+                                                                          (block_mapping_pair
+                                                                            key: (flow_node
+                                                                              (plain_scalar
+                                                                                (string_scalar)))
+                                                                            value: (block_node
+                                                                              (block_mapping
+                                                                                (block_mapping_pair
+                                                                                  key: (flow_node
+                                                                                    (plain_scalar
+                                                                                      (string_scalar)))
+                                                                                  value: (block_node
+                                                                                    (block_mapping
+                                                                                      (block_mapping_pair
+                                                                                        key: (flow_node
+                                                                                          (plain_scalar
+                                                                                            (string_scalar)))
+                                                                                        value: (block_node
+                                                                                          (block_mapping
+                                                                                            (block_mapping_pair
+                                                                                              key: (flow_node
+                                                                                                (plain_scalar
+                                                                                                  (string_scalar)))
+                                                                                              value: (block_node
+                                                                                                (block_mapping
+                                                                                                  (block_mapping_pair
+                                                                                                    key: (flow_node
+                                                                                                      (plain_scalar
+                                                                                                        (string_scalar)))
+                                                                                                    value: (block_node
+                                                                                                      (block_mapping
+                                                                                                        (block_mapping_pair
+                                                                                                          key: (flow_node
+                                                                                                            (plain_scalar
+                                                                                                              (string_scalar)))
+                                                                                                          value: (block_node
+                                                                                                            (block_mapping
+                                                                                                              (block_mapping_pair
+                                                                                                                key: (flow_node
+                                                                                                                  (plain_scalar
+                                                                                                                    (string_scalar)))
+                                                                                                                value: (block_node
+                                                                                                                  (block_mapping
+                                                                                                                    (block_mapping_pair
+                                                                                                                      key: (flow_node
+                                                                                                                        (plain_scalar
+                                                                                                                          (string_scalar)))
+                                                                                                                      value: (flow_node
+                                                                                                                        (plain_scalar
+                                                                                                                          (integer_scalar))))
+                                                                                                                    (block_mapping_pair
+                                                                                                                      key: (flow_node
+                                                                                                                        (plain_scalar
+                                                                                                                          (string_scalar)))
+                                                                                                                      value: (flow_node
+                                                                                                                        (plain_scalar
+                                                                                                                          (integer_scalar))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))))))

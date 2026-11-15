@@ -1,0 +1,51 @@
+================================================================================|||
+CRLF line endings
+================================================================================|||
+a: 1
+b:
+  - c
+  - d: |
+      text
+# comment
+e: "x
+  y"
+
+--------------------------------------------------------------------------------|||
+
+(stream
+  (document
+    (block_node
+      (block_mapping
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (plain_scalar
+              (integer_scalar))))
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (block_node
+            (block_sequence
+              (block_sequence_item
+                (flow_node
+                  (plain_scalar
+                    (string_scalar))))
+              (block_sequence_item
+                (block_node
+                  (block_mapping
+                    (block_mapping_pair
+                      key: (flow_node
+                        (plain_scalar
+                          (string_scalar)))
+                      value: (block_node
+                        (block_scalar)))))))))
+        (comment)
+        (block_mapping_pair
+          key: (flow_node
+            (plain_scalar
+              (string_scalar)))
+          value: (flow_node
+            (double_quote_scalar)))))))

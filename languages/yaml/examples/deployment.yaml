@@ -1,0 +1,43 @@
+# A Kubernetes deployment and its service, as two documents.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels: &labels
+    app: web
+    tier: frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels: *labels
+  template:
+    metadata:
+      labels: *labels
+    spec:
+      containers:
+        - name: web
+          image: "nginx:1.27"
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          env:
+            - { name: LOG_LEVEL, value: info }
+            - name: GREETING
+              value: >-
+                Hello from a folded
+                block scalar.
+          resources:
+            limits: {cpu: 500m, memory: 128Mi}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+spec:
+  type: ClusterIP
+  selector:
+    app: web
+  ports:
+  - port: 80
+    targetPort: 80
+...

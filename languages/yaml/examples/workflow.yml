@@ -1,0 +1,35 @@
+# A GitHub Actions workflow
+name: CI
+on:
+  push:
+    branches: [main, "release/*"]
+  pull_request:
+
+env:
+  RUST_BACKTRACE: 1
+  DEBUG: false
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+        - ubuntu-latest
+        - macos-latest
+        version: [1.0, 2.5e3, ~]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: |
+          cargo build --release
+          # not a comment
+          echo done
+      - name: A long
+          plain scalar
+        with: { key: value, other: 'it''s' }
+      - &step
+        name: anchored
+      - *step
+      - ? complex key
+        : complex value

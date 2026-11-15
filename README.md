@@ -27,6 +27,7 @@ A bundle of tree-sitter grammars.
 | TypeScript (and TSX) | [languages/typescript](languages/typescript) | none |
 | Verilog (IEEE 1364-2005) | [languages/verilog](languages/verilog) | none |
 | XML (and DTD) | [languages/xml](languages/xml) | none |
+| YAML (1.2) | [languages/yaml](languages/yaml) | none |
 | Zig | [languages/zig](languages/zig) | none |
 
 ## On the web
