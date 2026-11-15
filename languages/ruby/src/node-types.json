@@ -498,16 +498,6 @@
     ]
   },
   {
-    "type": "#",
-    "named": false,
-    "fields": {}
-  },
-  {
-    "type": "/",
-    "named": false,
-    "fields": {}
-  },
-  {
     "type": "alias",
     "named": true,
     "fields": {
@@ -2931,11 +2921,6 @@
         }
       ]
     }
-  },
-  {
-    "type": "escape_sequence",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "exception_variable",
@@ -7427,6 +7412,10 @@
     "named": false
   },
   {
+    "type": "#",
+    "named": false
+  },
+  {
     "type": "#{",
     "named": false
   },
@@ -7451,147 +7440,15 @@
     "named": false
   },
   {
-    "type": "%I!",
+    "type": "%I",
     "named": false
   },
   {
-    "type": "%I\"",
+    "type": "%Q",
     "named": false
   },
   {
-    "type": "%I'",
-    "named": false
-  },
-  {
-    "type": "%I(",
-    "named": false
-  },
-  {
-    "type": "%I-",
-    "named": false
-  },
-  {
-    "type": "%I/",
-    "named": false
-  },
-  {
-    "type": "%I:",
-    "named": false
-  },
-  {
-    "type": "%I<",
-    "named": false
-  },
-  {
-    "type": "%I[",
-    "named": false
-  },
-  {
-    "type": "%I^",
-    "named": false
-  },
-  {
-    "type": "%I{",
-    "named": false
-  },
-  {
-    "type": "%I|",
-    "named": false
-  },
-  {
-    "type": "%Q!",
-    "named": false
-  },
-  {
-    "type": "%Q\"",
-    "named": false
-  },
-  {
-    "type": "%Q'",
-    "named": false
-  },
-  {
-    "type": "%Q(",
-    "named": false
-  },
-  {
-    "type": "%Q-",
-    "named": false
-  },
-  {
-    "type": "%Q/",
-    "named": false
-  },
-  {
-    "type": "%Q:",
-    "named": false
-  },
-  {
-    "type": "%Q<",
-    "named": false
-  },
-  {
-    "type": "%Q[",
-    "named": false
-  },
-  {
-    "type": "%Q^",
-    "named": false
-  },
-  {
-    "type": "%Q{",
-    "named": false
-  },
-  {
-    "type": "%Q|",
-    "named": false
-  },
-  {
-    "type": "%W!",
-    "named": false
-  },
-  {
-    "type": "%W\"",
-    "named": false
-  },
-  {
-    "type": "%W'",
-    "named": false
-  },
-  {
-    "type": "%W(",
-    "named": false
-  },
-  {
-    "type": "%W-",
-    "named": false
-  },
-  {
-    "type": "%W/",
-    "named": false
-  },
-  {
-    "type": "%W:",
-    "named": false
-  },
-  {
-    "type": "%W<",
-    "named": false
-  },
-  {
-    "type": "%W[",
-    "named": false
-  },
-  {
-    "type": "%W^",
-    "named": false
-  },
-  {
-    "type": "%W{",
-    "named": false
-  },
-  {
-    "type": "%W|",
+    "type": "%W",
     "named": false
   },
   {
@@ -7599,291 +7456,27 @@
     "named": false
   },
   {
-    "type": "%i!",
+    "type": "%i",
     "named": false
   },
   {
-    "type": "%i\"",
+    "type": "%q",
     "named": false
   },
   {
-    "type": "%i'",
+    "type": "%r",
     "named": false
   },
   {
-    "type": "%i(",
+    "type": "%s",
     "named": false
   },
   {
-    "type": "%i-",
+    "type": "%w",
     "named": false
   },
   {
-    "type": "%i/",
-    "named": false
-  },
-  {
-    "type": "%i:",
-    "named": false
-  },
-  {
-    "type": "%i<",
-    "named": false
-  },
-  {
-    "type": "%i[",
-    "named": false
-  },
-  {
-    "type": "%i^",
-    "named": false
-  },
-  {
-    "type": "%i{",
-    "named": false
-  },
-  {
-    "type": "%i|",
-    "named": false
-  },
-  {
-    "type": "%q!",
-    "named": false
-  },
-  {
-    "type": "%q\"",
-    "named": false
-  },
-  {
-    "type": "%q'",
-    "named": false
-  },
-  {
-    "type": "%q(",
-    "named": false
-  },
-  {
-    "type": "%q-",
-    "named": false
-  },
-  {
-    "type": "%q/",
-    "named": false
-  },
-  {
-    "type": "%q:",
-    "named": false
-  },
-  {
-    "type": "%q<",
-    "named": false
-  },
-  {
-    "type": "%q[",
-    "named": false
-  },
-  {
-    "type": "%q^",
-    "named": false
-  },
-  {
-    "type": "%q{",
-    "named": false
-  },
-  {
-    "type": "%q|",
-    "named": false
-  },
-  {
-    "type": "%r!",
-    "named": false
-  },
-  {
-    "type": "%r\"",
-    "named": false
-  },
-  {
-    "type": "%r'",
-    "named": false
-  },
-  {
-    "type": "%r(",
-    "named": false
-  },
-  {
-    "type": "%r-",
-    "named": false
-  },
-  {
-    "type": "%r/",
-    "named": false
-  },
-  {
-    "type": "%r:",
-    "named": false
-  },
-  {
-    "type": "%r<",
-    "named": false
-  },
-  {
-    "type": "%r[",
-    "named": false
-  },
-  {
-    "type": "%r^",
-    "named": false
-  },
-  {
-    "type": "%r{",
-    "named": false
-  },
-  {
-    "type": "%r|",
-    "named": false
-  },
-  {
-    "type": "%s!",
-    "named": false
-  },
-  {
-    "type": "%s\"",
-    "named": false
-  },
-  {
-    "type": "%s'",
-    "named": false
-  },
-  {
-    "type": "%s(",
-    "named": false
-  },
-  {
-    "type": "%s-",
-    "named": false
-  },
-  {
-    "type": "%s/",
-    "named": false
-  },
-  {
-    "type": "%s:",
-    "named": false
-  },
-  {
-    "type": "%s<",
-    "named": false
-  },
-  {
-    "type": "%s[",
-    "named": false
-  },
-  {
-    "type": "%s^",
-    "named": false
-  },
-  {
-    "type": "%s{",
-    "named": false
-  },
-  {
-    "type": "%s|",
-    "named": false
-  },
-  {
-    "type": "%w!",
-    "named": false
-  },
-  {
-    "type": "%w\"",
-    "named": false
-  },
-  {
-    "type": "%w'",
-    "named": false
-  },
-  {
-    "type": "%w(",
-    "named": false
-  },
-  {
-    "type": "%w-",
-    "named": false
-  },
-  {
-    "type": "%w/",
-    "named": false
-  },
-  {
-    "type": "%w:",
-    "named": false
-  },
-  {
-    "type": "%w<",
-    "named": false
-  },
-  {
-    "type": "%w[",
-    "named": false
-  },
-  {
-    "type": "%w^",
-    "named": false
-  },
-  {
-    "type": "%w{",
-    "named": false
-  },
-  {
-    "type": "%w|",
-    "named": false
-  },
-  {
-    "type": "%x!",
-    "named": false
-  },
-  {
-    "type": "%x\"",
-    "named": false
-  },
-  {
-    "type": "%x'",
-    "named": false
-  },
-  {
-    "type": "%x(",
-    "named": false
-  },
-  {
-    "type": "%x-",
-    "named": false
-  },
-  {
-    "type": "%x/",
-    "named": false
-  },
-  {
-    "type": "%x:",
-    "named": false
-  },
-  {
-    "type": "%x<",
-    "named": false
-  },
-  {
-    "type": "%x[",
-    "named": false
-  },
-  {
-    "type": "%x^",
-    "named": false
-  },
-  {
-    "type": "%x{",
-    "named": false
-  },
-  {
-    "type": "%x|",
+    "type": "%x",
     "named": false
   },
   {
@@ -7984,6 +7577,10 @@
   },
   {
     "type": "...",
+    "named": false
+  },
+  {
+    "type": "/",
     "named": false
   },
   {
@@ -8190,6 +7787,10 @@
   {
     "type": "ensure",
     "named": false
+  },
+  {
+    "type": "escape_sequence",
+    "named": true
   },
   {
     "type": "false",

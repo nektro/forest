@@ -79,17 +79,44 @@ const GLOBAL = String.raw`\$(${ANY_IDENT}|-[a-zA-Z0-9_]|[0-9]+|[!@&\x60'+~=\/\\,
 const ESCAPE = String.raw`\\(u\{[0-9a-fA-F \t]*\}|u[0-9a-fA-F]{4}|x[0-9a-fA-F]{1,2}|[0-7]{1,3}|[CM]-(\\[CM]-)*(\\.|.)|c(\\.|.)|\r?\n|.)`;
 
 // Percent literals: `%w[...]`, `%q{...}`, `%r|...|`. Brackets nest; other
-// delimiters end at the first unescaped copy.
+// delimiters end at the first unescaped copy. See `percentLiteralRules`.
 const BRACKETS = { '(': ')', '[': ']', '{': '}', '<': '>' };
 const DELIMITERS = ['(', '[', '{', '<', '|', '!', '"', "'", '/', '-', '^', ':'];
-const DELIMITER_NAMES = {
-  '(': 'paren', '[': 'bracket', '{': 'brace', '<': 'angle', '|': 'pipe',
-  '!': 'bang', '"': 'dquote', "'": 'squote', '/': 'slash', '-': 'dash',
-  '^': 'caret', ':': 'colon',
-};
 // `%(...)` without a letter only takes these, so that `x %-1` and the like
 // stay operators.
 const PLAIN_PERCENT_DELIMITERS = ['(', '[', '{', '<', '|', '!'];
+// Every character that can be a delimiter, and its name in rule names.
+const PERCENT_CHARS = {
+  '(': 'lparen', ')': 'rparen', '[': 'lbrack', ']': 'rbrack', '{': 'lbrace',
+  '}': 'rbrace', '<': 'langle', '>': 'rangle', '|': 'pipe', '!': 'bang',
+  '"': 'dquote', "'": 'squote', '/': 'slash', '-': 'dash', '^': 'caret',
+  ':': 'colon',
+};
+// Literals with the same nesting share their rules: one family per bracket
+// pair, and one for all the delimiters that do not nest.
+const PERCENT_FAMILIES = { '(': 'paren', '[': 'bracket', '{': 'brace', '<': 'angle' };
+const percentFamily = d => PERCENT_FAMILIES[d] ?? 'plain';
+// Whether a kind of literal has interpolations and the full set of escapes.
+const INTERPOLATING = { '': true, Q: true, q: false, s: false, r: true, x: true, w: false, W: true, i: false, I: true };
+
+const percentChar = ($, c) => $[`_pct_${PERCENT_CHARS[c]}`];
+// The closing delimiter. A bracket's is the token that closes a nested pair.
+const percentClose = ($, d) => d in BRACKETS ? percentChar($, BRACKETS[d]) : $[`_pct_end_${PERCENT_CHARS[d]}`];
+
+// The start of a percent literal. Below the immediate `%`, so that `a%w` is
+// the operator, and above the plain one, so that `foo %w[a]` is a literal.
+const percentOpen = s => alias(token(prec(1, s)), s);
+
+// Operators that can also start an argument. Directly after the left side
+// (`a-1`) or with space on both sides (`a - 1`) they are binary. With space
+// before and none after (`a -1`) they are the plain token, which after a
+// method name starts an argument: `foo -1`, `foo *args`, `foo &blk`,
+// `foo /re/`.
+const spacedOp = s => choice(
+  immOp(s),
+  alias(token(prec(OP, new RegExp(escapeRegExp(s) + '[ \\t\\r\\n]'))), s),
+  s,
+);
 
 // A method call without parentheses: the method, then `args`. After the
 // method, an operator with space before and none after (`foo -1`, `foo *a`,
@@ -370,7 +397,8 @@ module.exports = grammar({
   extras: $ => [
     $.comment,
     /\s/,
-    $._line_continuation,
+    // A backslash before a newline joins the lines.
+    /\\\r?\n/,
     $.uninterpreted,
   ],
 
@@ -415,8 +443,6 @@ module.exports = grammar({
     // looking for a `_leading_dot` the lexer always has a newline to fall
     // back on, rather than reading the whitespace as part of a later token.
     _newline: _ => token(prec(NL, /\r?\n[ \t]*/)),
-
-    _line_continuation: _ => /\\\r?\n/,
 
     _statement: $ => choice(
       $.undef,
@@ -636,7 +662,7 @@ module.exports = grammar({
         [prec.left, PREC.BIT_AND, $._binary_amp],
         [prec.left, PREC.SHIFT, choice(op('<<'), op('>>'))],
         [prec.left, PREC.ADD, choice($._binary_plus, $._binary_minus)],
-        [prec.left, PREC.MULTIPLY, choice($._binary_star, $._binary_slash, '%')],
+        [prec.left, PREC.MULTIPLY, choice($._binary_star, $._binary_slash, $._binary_percent)],
         [prec.right, PREC.POWER, $._binary_star_star],
       ];
       // The right side may be an `if`: `message << if x then a else b end`.
@@ -647,17 +673,15 @@ module.exports = grammar({
       ))));
     },
 
-    // Operators that can also start an argument. Directly after the left
-    // side (`a-1`) or with space on both sides (`a - 1`) they are binary.
-    // With space before and none after (`a -1`) they are the plain token,
-    // which after a method name starts an argument: `foo -1`, `foo *args`,
-    // `foo &blk`, `foo /re/`.
-    _binary_minus: _ => choice(immOp('-'), alias(token(prec(OP, /-[ \t\r\n]/)), '-'), '-'),
-    _binary_plus: _ => choice(immOp('+'), alias(token(prec(OP, /\+[ \t\r\n]/)), '+'), '+'),
-    _binary_star: _ => choice(immOp('*'), alias(token(prec(OP, /\*[ \t\r\n]/)), '*'), '*'),
-    _binary_star_star: _ => choice(immOp('**'), alias(token(prec(OP, /\*\*[ \t\r\n]/)), '**'), '**'),
-    _binary_amp: _ => choice(immOp('&'), alias(token(prec(OP, /&[ \t\r\n]/)), '&'), '&'),
-    _binary_slash: _ => choice(immOp('/'), alias(token(prec(OP, /\/[ \t\r\n]/)), '/'), '/'),
+    // Rules, so that what follows the operator is one state for all three.
+    _binary_minus: _ => spacedOp('-'),
+    _binary_plus: _ => spacedOp('+'),
+    _binary_star: _ => spacedOp('*'),
+    _binary_star_star: _ => spacedOp('**'),
+    _binary_amp: _ => spacedOp('&'),
+    _binary_slash: _ => spacedOp('/'),
+    // `a%w` is the operator; `foo %w[a]` is a literal.
+    _binary_percent: _ => choice(immOp('%'), '%'),
 
     unary: $ => choice(
       prec(PREC.DEFINED, seq(field('operator', 'defined?'), field('operand', $._arg))),
@@ -1358,9 +1382,9 @@ module.exports = grammar({
     string: $ => choice(
       seq('"', repeat($._dq_piece), alias(imm('"'), '"')),
       seq("'", repeat($._sq_piece), alias(imm("'"), "'")),
-      ...['Q', ''].flatMap(kind => (kind ? DELIMITERS : PLAIN_PERCENT_DELIMITERS).map(d =>
-        $[`_percent_${kind}_string_${DELIMITER_NAMES[d]}`])),
-      ...DELIMITERS.map(d => $[`_percent_q_string_${DELIMITER_NAMES[d]}`]),
+      ...percentStrings($, 'Q'),
+      ...percentStrings($, ''),
+      ...percentStrings($, 'q'),
     ),
 
     _dq_piece: $ => choice(
@@ -1383,7 +1407,7 @@ module.exports = grammar({
     _sq_escape: _ => token.immediate(prec(STR, /\\['\\]/)),
 
     // A `#` that does not start an interpolation.
-    _hash_content: _ => token.immediate(prec(STR, '#')),
+    _hash_content: _ => token.immediate(prec(STR, /#/)),
 
     escape_sequence: _ => token.immediate(prec(STR, new RegExp(ESCAPE))),
 
@@ -1391,10 +1415,6 @@ module.exports = grammar({
       seq(alias(token.immediate(prec(STR, '#{')), '#{'), optional($._statements), '}'),
       seq(alias($._hash_content, '#'), $._short_interpolation_variable),
     ),
-
-    // An interpolation that starts a word in `%W[...]` or `%I[...]`.
-    // Below the immediate `#{`, so that `%W[a#{b}]` is one word.
-    _word_interpolation: $ => seq(alias(token(prec(1, '#{')), '#{'), optional($._statements), '}'),
 
     // `#@a`, `#@@a`, `#$a`
     _short_interpolation_variable: $ => choice(
@@ -1410,7 +1430,7 @@ module.exports = grammar({
         $.interpolation,
         alias($._hash_content, $.string_content),
       )), alias(imm('`'), '`')),
-      ...DELIMITERS.map(d => $[`_percent_x_string_${DELIMITER_NAMES[d]}`]),
+      ...percentStrings($, 'x'),
     ),
 
     _backtick_content: _ => token.immediate(prec(STR, /[^`\\#]+/)),
@@ -1427,12 +1447,12 @@ module.exports = grammar({
     delimited_symbol: $ => choice(
       seq(':"', repeat($._dq_piece), alias(imm('"'), '"')),
       seq(":'", repeat($._sq_piece), alias(imm("'"), "'")),
-      ...DELIMITERS.map(d => $[`_percent_s_string_${DELIMITER_NAMES[d]}`]),
+      ...percentStrings($, 's'),
     ),
 
     regex: $ => choice(
       seq('/', repeat($._regex_piece), alias($._regex_end, '/')),
-      ...DELIMITERS.map(d => $[`_percent_r_string_${DELIMITER_NAMES[d]}`]),
+      ...percentStrings($, 'r'),
     ),
 
     _regex_piece: $ => choice(
@@ -1445,11 +1465,13 @@ module.exports = grammar({
     _regex_end: _ => token.immediate(prec(STR, /\/[a-z]*/)),
 
     string_array: $ => choice(
-      ...['w', 'W'].flatMap(kind => DELIMITERS.map(d => $[`_percent_${kind}_array_${DELIMITER_NAMES[d]}`])),
+      ...percentArrays($, 'w', $.bare_string),
+      ...percentArrays($, 'W', $.bare_string),
     ),
 
     symbol_array: $ => choice(
-      ...['i', 'I'].flatMap(kind => DELIMITERS.map(d => $[`_percent_${kind}_array_${DELIMITER_NAMES[d]}`])),
+      ...percentArrays($, 'i', $.bare_symbol),
+      ...percentArrays($, 'I', $.bare_symbol),
     ),
 
     ...percentLiteralRules(),
@@ -1474,117 +1496,115 @@ module.exports = grammar({
   }),
 });
 
-// Rules for percent literals. Each kind and delimiter is a rule of its own,
-// since the contents end at a different character. For a bracket delimiter,
-// a nested pair (`%w[a [b] c]`) is part of the contents.
+// Percent literals
+// ----------------
+//
+// A literal is a prefix (`%w`, or `%(` with its delimiter), the delimiter,
+// the contents and the closing delimiter. The parser's state after the
+// prefix and the delimiter says how the literal ends, so the tokens for the
+// contents are the same for every literal: text that stops at every
+// character that can be a delimiter, and each of those characters. The
+// contents' rules are shared by the literals that nest the same way (a
+// family, see PERCENT_FAMILIES) and interpolate or not: `n` or `i` in the
+// rule names. Inside a literal everything is an immediate token, whitespace
+// included.
+//
+// A run of content tokens is one `string_content` node. A delimiter that
+// does not nest is a content character in the other literals of its family,
+// and its closing token outranks it where it can close.
+
+// The pieces of a literal's contents, or of a word's in a word list: runs of
+// content, escapes, interpolations and nested pairs.
+function percentPieces($, family, interp, word) {
+  const tag = `${word ? 'word_' : ''}${family}_${interp ? 'i' : 'n'}`;
+  return choice(
+    alias($[`_pct_content_${tag}`], $.string_content),
+    ...(interp
+      ? [$.escape_sequence, $.interpolation, alias($._hash_content, $.string_content)]
+      : [alias(choice($._pct_bs_backslash, $[`_pct_bs_${family}`], ...(word ? [$._pct_bs_space] : [])), $.escape_sequence)]),
+    ...(family === 'plain' ? [] : [$[`_pct_nested_${tag}`]]),
+  );
+}
+
+// The alternatives for a string-like literal of one kind: one per delimiter.
+function percentStrings($, kind) {
+  return (kind ? DELIMITERS : PLAIN_PERCENT_DELIMITERS).map(d => seq(
+    ...(kind ? [percentOpen(`%${kind}`), percentChar($, d)] : [percentOpen(`%${d}`)]),
+    repeat(percentPieces($, percentFamily(d), INTERPOLATING[kind], false)),
+    // `%r{...}i`: the flags are part of the closing token.
+    kind === 'r' ? $[`_pct_regex_end_${PERCENT_CHARS[d]}`] : percentClose($, d),
+  ));
+}
+
+// The alternatives for a word list of one kind, whose words are `node`s.
+function percentArrays($, kind, node) {
+  const tag = INTERPOLATING[kind] ? 'i' : 'n';
+  return DELIMITERS.map(d => seq(
+    percentOpen(`%${kind}`),
+    percentChar($, d),
+    repeat(choice($._pct_space, alias($[`_pct_word_${percentFamily(d)}_${tag}`], node))),
+    percentClose($, d),
+  ));
+}
+
 function percentLiteralRules() {
-  const rules = {};
-  const kinds = {
-    // kind: [interpolates, words, node for words]
-    '': [true, false],
-    Q: [true, false],
-    q: [false, false],
-    s: [false, false],
-    r: [true, false],
-    x: [true, false],
-    w: [false, true, 'bare_string'],
-    W: [true, true, 'bare_string'],
-    i: [false, true, 'bare_symbol'],
-    I: [true, true, 'bare_symbol'],
+  const chars = Object.keys(PERCENT_CHARS);
+  const special = chars.map(c => escapeRegExp(c)).join('');
+  // Patterns rather than strings, so that each rule is the token itself.
+  const char = (c, p = STR) => token.immediate(prec(p, new RegExp(escapeRegExp(c))));
+  const rules = {
+    _pct_text: _ => token.immediate(prec(STR, new RegExp(`[^\\\\#\\s${special}]+`))),
+    _pct_space: _ => token.immediate(prec(STR, /\s+/)),
+    // In a literal that does not interpolate, a backslash before a backslash
+    // or a delimiter is an escape; before anything else it is text.
+    _pct_bs_backslash: _ => token.immediate(prec(STR, /\\\\/)),
+    _pct_bs_space: _ => token.immediate(prec(STR, /\\\s/)),
+    _pct_bs_other: _ => token.immediate(prec(STR, new RegExp(`\\\\[^\\\\\\s${special}]`))),
   };
+  for (const c of chars) {
+    rules[`_pct_${PERCENT_CHARS[c]}`] = _ => char(c);
+  }
   for (const d of DELIMITERS) {
-    const close = BRACKETS[d] ?? d;
-    const name = DELIMITER_NAMES[d];
-    const nests = d in BRACKETS;
-    const ex = escapeRegExp(d) + (nests ? escapeRegExp(close) : '');
-    for (const interp of [false, true]) {
-      const tag = `${name}_${interp ? 'i' : 'n'}`;
-      // Contents of a string-like literal.
-      const special = interp ? `\\\\#${ex}` : `\\\\${ex}`;
-      // As in double-quoted strings, interpolating contents stop at `#`.
-      const text = interp ? `[^${special}]+` : `([^${special}]|\\\\[^\\\\${ex}])+`;
-      rules[`_pct_text_${tag}`] = _ => token.immediate(prec(STR, new RegExp(text)));
-      // Contents of a word in a word list: no whitespace.
-      const wspecial = special + '\\s';
-      const wtext = interp ? `[^${wspecial}]+` : `([^${wspecial}]|\\\\[^\\\\${ex}\\s])+`;
-      rules[`_pct_word_text_${tag}`] = _ => token.immediate(prec(STR, new RegExp(wtext)));
-      rules[`_pct_word_start_${tag}`] = _ => token(prec(STR, new RegExp(wtext)));
-      const esc = interp ? ESCAPE : `\\\\[\\\\${ex}\\s]`;
-      if (!interp) {
-        rules[`_pct_escape_${tag}`] = _ => token.immediate(prec(STR, new RegExp(esc)));
-      }
-      rules[`_pct_word_escape_start_${tag}`] = _ => token(prec(STR, new RegExp(esc)));
-      // Pieces of a string-like literal, and a nested bracket pair.
-      rules[`_pct_piece_${tag}`] = $ => choice(
-        alias($[`_pct_text_${tag}`], $.string_content),
-        interp ? $.escape_sequence : alias($[`_pct_escape_${tag}`], $.escape_sequence),
-        ...(interp ? [$.interpolation, alias($._hash_content, $.string_content)] : []),
-        ...(nests ? [$[`_pct_nested_${tag}`]] : []),
-      );
-      if (nests) {
-        rules[`_pct_nested_${tag}`] = $ => seq(
-          alias(token.immediate(prec(STR, d)), $.string_content),
-          repeat($[`_pct_piece_${tag}`]),
-          alias(token.immediate(prec(STR, close)), $.string_content),
-        );
-      }
-      // A word: pieces with nothing between them. The first piece follows
-      // whitespace or the opening delimiter.
-      rules[`_pct_word_${tag}`] = $ => prec.right(seq(
-        choice(
-          alias($[`_pct_word_start_${tag}`], $.string_content),
-          alias($[`_pct_word_escape_start_${tag}`], $.escape_sequence),
-          ...(interp ? [alias($._word_interpolation, $.interpolation)] : []),
-          ...(nests ? [$[`_pct_word_nested_start_${tag}`]] : []),
-        ),
-        repeat($[`_pct_word_piece_${tag}`]),
-      ));
-      // Pieces of a word.
-      rules[`_pct_word_piece_${tag}`] = $ => choice(
-        alias($[`_pct_word_text_${tag}`], $.string_content),
-        interp ? $.escape_sequence : alias($[`_pct_escape_${tag}`], $.escape_sequence),
-        ...(interp ? [$.interpolation, alias($._hash_content, $.string_content)] : []),
-        ...(nests ? [$[`_pct_word_nested_${tag}`]] : []),
-      );
-      if (nests) {
-        // `%w[[a] b]`: a word that starts with a nested pair.
-        rules[`_pct_word_nested_start_${tag}`] = $ => seq(
-          alias(token(prec(STR, d)), $.string_content),
-          repeat($[`_pct_word_piece_${tag}`]),
-          alias(token.immediate(prec(STR, close)), $.string_content),
-        );
-        rules[`_pct_word_nested_${tag}`] = $ => seq(
-          alias(token.immediate(prec(STR, d)), $.string_content),
-          repeat($[`_pct_word_piece_${tag}`]),
-          alias(token.immediate(prec(STR, close)), $.string_content),
-        );
+    const close = escapeRegExp(BRACKETS[d] ?? d);
+    rules[`_pct_regex_end_${PERCENT_CHARS[d]}`] = _ => token.immediate(prec(STR + 1, new RegExp(`${close}[a-z]*`)));
+  }
+  const families = [...Object.entries(BRACKETS), [null, null]];
+  for (const [open, close] of families) {
+    const family = percentFamily(open);
+    const own = open ? [open, close] : DELIMITERS.filter(d => !(d in BRACKETS));
+    rules[`_pct_bs_${family}`] = _ => token.immediate(prec(STR, new RegExp(`\\\\[${own.map(escapeRegExp).join('')}]`)));
+    if (!open) {
+      for (const d of own) {
+        rules[`_pct_end_${PERCENT_CHARS[d]}`] = _ => char(d, STR + 1);
       }
     }
-  }
-  for (const [kind, [interp, words, wordNode]] of Object.entries(kinds)) {
-    for (const d of DELIMITERS) {
-      if (kind === '' && !PLAIN_PERCENT_DELIMITERS.includes(d)) continue;
-      const close = BRACKETS[d] ?? d;
-      const name = DELIMITER_NAMES[d];
-      const tag = `${name}_${interp ? 'i' : 'n'}`;
-      const open = `%${kind}${d}`;
-      const mk = words ? (r => token(prec(STR, r))) : (r => token.immediate(prec(STR, r)));
-      const end = kind === 'r'
-        ? alias(mk(new RegExp(escapeRegExp(close) + '[a-z]*')), close)
-        : alias(mk(close), close);
-      const ruleName = `_percent_${kind}_${words ? 'array' : 'string'}_${name}`;
-      if (words) {
-        rules[ruleName] = $ => seq(
-          open,
-          repeat(alias($[`_pct_word_${tag}`], $[wordNode])),
-          end,
-        );
-      } else {
-        rules[ruleName] = $ => seq(
-          open,
-          repeat($[`_pct_piece_${tag}`]),
-          end,
-        );
+    for (const interp of [false, true]) {
+      const tag = `${family}_${interp ? 'i' : 'n'}`;
+      // What a run of content is made of, in a word (no whitespace, and an
+      // escaped space is part of the word) or not.
+      const content = ($, word) => prec.right(repeat1(choice(
+        $._pct_text,
+        ...(word ? [] : [$._pct_space]),
+        ...chars.filter(c => c !== open && c !== close).map(c => percentChar($, c)),
+        ...(interp ? [] : [
+          $._hash_content,
+          $._pct_bs_other,
+          ...(word ? [] : [$._pct_bs_space]),
+          ...families.map(([o]) => percentFamily(o)).filter(f => f !== family).map(f => $[`_pct_bs_${f}`]),
+        ]),
+      )));
+      // A nested pair: `%q(a (b) c)`. In a word, `%w[a[b]c]`.
+      const nested = ($, inner) => seq(
+        alias(percentChar($, open), $.string_content),
+        repeat(inner),
+        alias(percentChar($, close), $.string_content),
+      );
+      rules[`_pct_content_${tag}`] = $ => content($, false);
+      rules[`_pct_content_word_${tag}`] = $ => content($, true);
+      rules[`_pct_word_${tag}`] = $ => prec.right(repeat1(percentPieces($, family, interp, true)));
+      if (open) {
+        rules[`_pct_nested_${tag}`] = $ => nested($, percentPieces($, family, interp, false));
+        rules[`_pct_nested_word_${tag}`] = $ => nested($, choice(percentPieces($, family, interp, true), $._pct_space));
       }
     }
   }

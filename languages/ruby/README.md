@@ -28,7 +28,8 @@ described by the [Ruby syntax documentation](https://docs.ruby-lang.org/en/maste
     `#@ivar`, `#@@cvar` and `#$gvar` interpolations.
   - Percent literals `%w %W %i %I %q %Q %s %r %x` and `%( )` with the
     delimiters `( [ { < | ! " ' / - ^ :` (plain `%` with the first six).
-    Brackets nest.
+    Brackets nest. Directly after its left side, `%` is the operator:
+    `n%width`, and `puts %w[a b]` passes a list.
   - Heredocs; see below.
 - **Covers the language.** Classes, modules, `class << self`, methods with
   every kind of parameter (`(a, b = 1, *c, d:, e: 2, **f, &g)`, `(...)`,
@@ -85,18 +86,18 @@ directories and lists the ones with syntax errors. On ruby/ruby
 
 | Files | Parse without errors |
 | --- | --- |
-| 7,554 | 7,452 (98.6%) |
+| 7,554 | 7,456 (98.7%) |
 
-The 102 with errors:
+The 98 with errors:
 
 | Count | Why |
 | --- | --- |
 | 47 | Heredocs that end elsewhere (see below), or whose line continues after the body |
-| 11 | TRICK contest entries in `sample/trick*`, obfuscated on purpose |
+| 10 | TRICK contest entries in `sample/trick*`, obfuscated on purpose |
 | 6 | `if ... end.foo` and `if ... end + x`: an `if`, `unless`, `while` or `until` used as a receiver or left operand (see Limits) |
 | 4 | Percent literals with delimiters outside the list above (`%@...@`, `%%...%`, `%r+...+`) |
 | 4 | Two encoding fixtures in UTF-16 and two files that are invalid on purpose |
-| 30 | Rare forms, each in a file or two: a `do` block on a command chained with `.foo`, `-> x: { }`, `foo (:a) { }`, `nil [ ]`, `x!=y` without spaces, `{:a==>1}`, `x ?a :b`, a heredoc inside a block parameter's default, ... |
+| 27 | Rare forms, each in a file or two: a `do` block on a command chained with `.foo`, `-> x: { }`, `foo (:a) { }`, `nil [ ]`, `x!=y` without spaces, `{:a==>1}`, `x ?a :b`, a heredoc inside a block parameter's default, ... |
 
 `script/check-heredocs.py <file>...` compares the end of every heredoc body
 with its delimiter. Of the 6,993 bodies in ruby/ruby, 6,804 (97.3%) end at
@@ -169,12 +170,30 @@ Parsing runs at about 10 MB/s.
 
 ## Size
 
-The heredoc variants roughly double the parse table: about 15,000 states.
-The wasm build is about 16 MB, 700 KB gzipped, and `tree-sitter generate`
-takes a minute or two. Chrome will not instantiate a module over 8 MB
-synchronously on the main thread, so `forest.js` fetches each grammar's
-bytes and hands them to web-tree-sitter, which then instantiates them
-asynchronously.
+The wasm build is about 10 MB, 550 KB gzipped, and `tree-sitter generate`
+takes about a minute. Nearly all of it is the parse table: 14,000 states,
+of which the 6,300 with more than 64 entries are stored as a full row of
+two bytes per symbol (630 symbols). Those are the states where an expression
+can start or continue, once for each context an expression can be in. So the
+size is the product of two numbers, and both are worth watching:
+
+- **Symbols.** Each token and each rule costs 13 KB. This is why percent
+  literals share their content tokens and rules across delimiters (a rule
+  per kind and delimiter would add 400 symbols and 5 MB), and why a rule
+  that is only a string is written as a pattern.
+- **Contexts.** The heredoc variants make a second copy of each expression
+  state, for a line with a heredoc whose body is still to come. Without
+  heredocs as operands of binary, conditional and unary operators the table
+  would be a third smaller.
+
+A token that matches what identifiers or keywords match (`[a-z]+` for a
+regex's flags, say) and is valid after an expression keeps tree-sitter from
+merging states, and multiplies the table several times over; the flags are
+part of the closing token instead.
+
+Chrome will not instantiate a module over 8 MB synchronously on the main
+thread, so `forest.js` fetches each grammar's bytes and hands them to
+web-tree-sitter, which then instantiates them asynchronously.
 
 ## Development
 

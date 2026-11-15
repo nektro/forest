@@ -156,6 +156,150 @@ Percent literals
     (string_content)))
 
 ================================================================================
+Percent literals: delimiters, nesting and escapes
+================================================================================
+
+%w|x-y a:b !z|
+%q!it's "q" (x) \! \\ \n # {!
+%r|a/b\|c|ix
+%i[a [b] c
+  d\ e]
+%W(#{x}y #@z \n (n #{1}))
+%(a (b) #{c} "d")
+%s-a\-b-
+%x<ls <a> -l>
+%w[] + %w( ) + %i||
+%r{^/(\d+)-(\w+)$}o =~ s
+%q<a # b #{c}>
+
+--------------------------------------------------------------------------------
+
+(program
+  (string_array
+    (bare_string
+      (string_content))
+    (bare_string
+      (string_content))
+    (bare_string
+      (string_content)))
+  (string
+    (string_content)
+    (escape_sequence)
+    (string_content)
+    (escape_sequence)
+    (string_content))
+  (regex
+    (string_content)
+    (escape_sequence)
+    (string_content))
+  (symbol_array
+    (bare_symbol
+      (string_content))
+    (bare_symbol
+      (string_content)
+      (string_content)
+      (string_content))
+    (bare_symbol
+      (string_content))
+    (bare_symbol
+      (string_content)
+      (escape_sequence)
+      (string_content)))
+  (string_array
+    (bare_string
+      (interpolation
+        (identifier))
+      (string_content))
+    (bare_string
+      (interpolation
+        (instance_variable)))
+    (bare_string
+      (escape_sequence))
+    (bare_string
+      (string_content)
+      (string_content)
+      (interpolation
+        (integer))
+      (string_content)))
+  (string
+    (string_content)
+    (string_content)
+    (string_content)
+    (string_content)
+    (string_content)
+    (interpolation
+      (identifier))
+    (string_content))
+  (delimited_symbol
+    (string_content)
+    (escape_sequence)
+    (string_content))
+  (subshell
+    (string_content)
+    (string_content)
+    (string_content)
+    (string_content)
+    (string_content))
+  (binary
+    left: (binary
+      left: (string_array)
+      right: (string_array))
+    right: (symbol_array))
+  (binary
+    left: (regex
+      (string_content)
+      (escape_sequence)
+      (string_content)
+      (escape_sequence)
+      (string_content))
+    right: (identifier))
+  (string
+    (string_content)))
+
+================================================================================
+Percent literals and the modulo operator
+================================================================================
+
+n%width
+i%w
+n % w
+puts %w[a b]
+puts %(a)
+x = 10%(3)
+
+--------------------------------------------------------------------------------
+
+(program
+  (binary
+    left: (identifier)
+    right: (identifier))
+  (binary
+    left: (identifier)
+    right: (identifier))
+  (binary
+    left: (identifier)
+    right: (identifier))
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (string_array
+        (bare_string
+          (string_content))
+        (bare_string
+          (string_content)))))
+  (call
+    method: (identifier)
+    arguments: (argument_list
+      (string
+        (string_content))))
+  (assignment
+    left: (identifier)
+    right: (binary
+      left: (integer)
+      right: (parenthesized_statements
+        (integer)))))
+
+================================================================================
 Regular expressions
 ================================================================================
 
