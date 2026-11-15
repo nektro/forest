@@ -40,6 +40,76 @@ function captureClass(name) {
   return cls;
 }
 
+function tagForCapture() {
+  switch (capture) {
+    case "comment":
+    case "comment.documentation":
+        return "c";
+    case "punctuation.bracket":
+    case "punctuation.special":
+    case "punctuation.delimiter":
+        return "p";
+    case "string":
+    case "string.special":
+    case "string.special.path":
+    case "string.special.symbol":
+    case "character":
+    case "string.escape":
+    case "string.regexp":
+        return "s";
+    case "variable":
+    case "variable.parameter":
+    case "variable.builtin":
+    case "variable.member":
+        return "v";
+    case "operator":
+    case "tag.delimiter":
+        return "o";
+    case "function":
+    case "function.builtin":
+    case "function.call":
+    case "function.method.call":
+    case "function.method":
+        return "f";
+    case "keyword":
+    case "keyword.conditional":
+    case "keyword.repeat":
+    case "keyword.directive":
+    case "keyword.modifier":
+    case "keyword.return":
+    case "keyword.operator":
+    case "keyword.type":
+    case "keyword.function":
+    case "keyword.import":
+    case "keyword.conditional.ternary":
+    case "keyword.coroutine":
+    case "keyword.exception":
+        return "k";
+    case "label":
+        return "l";
+    case "type":
+    case "type.builtin":
+        return "t";
+    case "constant":
+    case "constant.builtin":
+    case "boolean":
+        return "co";
+    case "property":
+        return "pr";
+    case "number":
+        return "n";
+    case "attribute":
+    case "tag.attribute":
+        return "at";
+    case "tag":
+        return "tg";
+    case "module":
+        return "ns";
+    case "constructor":
+        return "cr";
+  }
+}
+
 /**
  * Sort ranges by start, outer first, and make them nest: a range that starts
  * inside another but ends after it is cut off at the other's end. (Ranges
@@ -399,6 +469,7 @@ const Forest = {
   highlightElement,
   highlightAll,
   captureClass,
+  tagForCapture,
   // The underlying web-tree-sitter classes, for anything not covered above.
   Parser,
   Language,
