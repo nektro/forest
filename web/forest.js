@@ -71,6 +71,7 @@ function tagForCapture(capture) {
     case "function.call":
     case "function.method.call":
     case "function.method":
+    case "function.macro":
       return "f";
     case "keyword":
     case "keyword.conditional":
@@ -93,6 +94,7 @@ function tagForCapture(capture) {
       return "t";
     case "constant":
     case "constant.builtin":
+    case "constant.macro":
     case "boolean":
       return "co";
     case "property":
