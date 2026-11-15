@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Parse every .sql file under the given directories and list the ones with
+# syntax errors.
+#
+#   script/check-sql-files.sh ~/src/postgres/src/test/regress/sql ~/src/sqlite
+set -euo pipefail
+
+[ $# -gt 0 ] || { echo "usage: $0 <dir>..." >&2; exit 2; }
+here=$(cd "$(dirname "$0")/.." && pwd)
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
+
+cd "$here"
+quiet() { grep -v -i -e 'warning' -e 'init-config' -e 'configuration' -e 'language grammars' -e '^$' || true; }
+
+find "$@" -name '*.sql' > "$work/all.txt"
+echo "== $(wc -l < "$work/all.txt" | tr -d ' ') files"
+{ tree-sitter parse -q --paths "$work/all.txt" 2>&1 || true; } | quiet | awk '{print "  error: " $0}'

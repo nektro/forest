@@ -28,6 +28,7 @@ A bundle of tree-sitter grammars.
 | Ruby | [languages/ruby](languages/ruby) | none |
 | Rust | [languages/rust](languages/rust) | none |
 | SCSS | [languages/scss](languages/scss) | none |
+| SQL | [languages/sql](languages/sql) | none |
 | Swift | [languages/swift](languages/swift) | none |
 | TypeScript (and TSX) | [languages/typescript](languages/typescript) | none |
 | Verilog (IEEE 1364-2005) | [languages/verilog](languages/verilog) | none |

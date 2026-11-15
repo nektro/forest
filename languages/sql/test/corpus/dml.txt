@@ -1,0 +1,377 @@
+================================================================================
+INSERT
+================================================================================
+
+INSERT INTO s.t (a, b) VALUES (1, 'x'), (2, DEFAULT) RETURNING id;
+INSERT INTO t SELECT * FROM u;
+INSERT INTO t DEFAULT VALUES;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (insert_statement
+    table: (object_reference
+      schema: (identifier)
+      name: (identifier))
+    (column_list
+      (identifier)
+      (identifier))
+    (select_statement
+      (values
+        (tuple
+          (number)
+          (string))
+        (tuple
+          (number)
+          (default))))
+    (returning_clause
+      (select_list
+        (identifier))))
+  (insert_statement
+    table: (object_reference
+      name: (identifier))
+    (select_statement
+      (select
+        (select_list
+          (all_columns))
+        (from_clause
+          (table_reference
+            name: (object_reference
+              name: (identifier)))))))
+  (insert_statement
+    table: (object_reference
+      name: (identifier))))
+
+================================================================================
+INSERT with conflicts
+================================================================================
+
+INSERT INTO t (a) VALUES (1) ON CONFLICT (a) WHERE a > 0 DO UPDATE SET b = excluded.b WHERE t.b IS NULL;
+INSERT INTO t VALUES (1) ON CONFLICT ON CONSTRAINT t_pkey DO NOTHING;
+INSERT INTO t VALUES (1) ON CONFLICT (a) DO SELECT FOR UPDATE RETURNING *;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (insert_statement
+    table: (object_reference
+      name: (identifier))
+    (column_list
+      (identifier))
+    (select_statement
+      (values
+        (tuple
+          (number))))
+    (on_conflict_clause
+      (index_column
+        (identifier))
+      (where_clause
+        (binary_expression
+          left: (identifier)
+          right: (number)))
+      (assignment
+        left: (identifier)
+        right: (column_reference
+          table: (identifier)
+          name: (identifier)))
+      (where_clause
+        (is_expression
+          left: (column_reference
+            table: (identifier)
+            name: (identifier))
+          right: (null)))))
+  (insert_statement
+    table: (object_reference
+      name: (identifier))
+    (select_statement
+      (values
+        (tuple
+          (number))))
+    (on_conflict_clause
+      (identifier)))
+  (insert_statement
+    table: (object_reference
+      name: (identifier))
+    (select_statement
+      (values
+        (tuple
+          (number))))
+    (on_conflict_clause
+      (index_column
+        (identifier))
+      (locking_clause))
+    (returning_clause
+      (select_list
+        (all_columns)))))
+
+================================================================================
+INSERT, SQLite and MySQL forms
+================================================================================
+
+INSERT OR REPLACE INTO t VALUES (1);
+REPLACE INTO t VALUES (1);
+INSERT IGNORE INTO t SET a = 1, b = 2;
+INSERT INTO t VALUES (1) ON DUPLICATE KEY UPDATE a = VALUES(a);
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (insert_statement
+    (conflict_resolution)
+    table: (object_reference
+      name: (identifier))
+    (select_statement
+      (values
+        (tuple
+          (number)))))
+  (insert_statement
+    table: (object_reference
+      name: (identifier))
+    (select_statement
+      (values
+        (tuple
+          (number)))))
+  (insert_statement
+    table: (object_reference
+      name: (identifier))
+    (assignment
+      left: (identifier)
+      right: (number))
+    (assignment
+      left: (identifier)
+      right: (number)))
+  (insert_statement
+    table: (object_reference
+      name: (identifier))
+    (select_statement
+      (values
+        (tuple
+          (number))))
+    (on_duplicate_key_clause
+      (assignment
+        left: (identifier)
+        right: (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list
+            (identifier)))))))
+
+================================================================================
+INSERT into subscripts and fields
+================================================================================
+
+INSERT INTO t (a[1], b.c, d[1].e) VALUES (1, 2, 3);
+UPDATE t SET a[1:2] = '{1,2}', (b, c) = (1, 2);
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (insert_statement
+    table: (object_reference
+      name: (identifier))
+    (column_list
+      (subscript_expression
+        value: (identifier)
+        index: (number))
+      (column_reference
+        table: (identifier)
+        name: (identifier))
+      (subscript_expression
+        value: (identifier)
+        index: (number)
+        (identifier)))
+    (select_statement
+      (values
+        (tuple
+          (number)
+          (number)
+          (number)))))
+  (update_statement
+    table: (table_reference
+      name: (object_reference
+        name: (identifier)))
+    (assignment
+      left: (subscript_expression
+        value: (identifier)
+        lower: (number)
+        upper: (number))
+      right: (string))
+    (assignment
+      left: (column_list
+        (identifier)
+        (identifier))
+      right: (tuple
+        (number)
+        (number)))))
+
+================================================================================
+UPDATE
+================================================================================
+
+WITH x AS (SELECT 1) UPDATE ONLY t AS u SET a = 1, b = DEFAULT FROM v WHERE u.id = v.id RETURNING WITH (OLD AS o, NEW AS n) o.a, n.a;
+UPDATE t SET a = 1 WHERE CURRENT OF c;
+UPDATE OR IGNORE t SET a = 1 ORDER BY b LIMIT 5 OFFSET 2;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (update_statement
+    (with_clause
+      (cte
+        name: (identifier)
+        query: (select_statement
+          (select
+            (select_list
+              (number))))))
+    table: (table_reference
+      name: (object_reference
+        name: (identifier))
+      (alias
+        name: (identifier)))
+    (assignment
+      left: (identifier)
+      right: (number))
+    (assignment
+      left: (identifier)
+      right: (default))
+    (from_clause
+      (table_reference
+        name: (object_reference
+          name: (identifier))))
+    (where_clause
+      (binary_expression
+        left: (column_reference
+          table: (identifier)
+          name: (identifier))
+        right: (column_reference
+          table: (identifier)
+          name: (identifier))))
+    (returning_clause
+      (identifier)
+      (identifier)
+      (select_list
+        (column_reference
+          table: (identifier)
+          name: (identifier))
+        (column_reference
+          table: (identifier)
+          name: (identifier)))))
+  (update_statement
+    table: (table_reference
+      name: (object_reference
+        name: (identifier)))
+    (assignment
+      left: (identifier)
+      right: (number))
+    (where_clause
+      (identifier)))
+  (update_statement
+    (conflict_resolution)
+    table: (table_reference
+      name: (object_reference
+        name: (identifier)))
+    (assignment
+      left: (identifier)
+      right: (number))
+    (order_by_clause
+      (order_by_item
+        (identifier)))
+    (limit_clause
+      (number))
+    (offset_clause
+      (number))))
+
+================================================================================
+DELETE
+================================================================================
+
+DELETE FROM t USING u WHERE t.id = u.id RETURNING *;
+DELETE FROM t WHERE a = 1 ORDER BY b LIMIT 10;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (delete_statement
+    table: (table_reference
+      name: (object_reference
+        name: (identifier)))
+    (table_reference
+      name: (object_reference
+        name: (identifier)))
+    (where_clause
+      (binary_expression
+        left: (column_reference
+          table: (identifier)
+          name: (identifier))
+        right: (column_reference
+          table: (identifier)
+          name: (identifier))))
+    (returning_clause
+      (select_list
+        (all_columns))))
+  (delete_statement
+    table: (table_reference
+      name: (object_reference
+        name: (identifier)))
+    (where_clause
+      (binary_expression
+        left: (identifier)
+        right: (number)))
+    (order_by_clause
+      (order_by_item
+        (identifier)))
+    (limit_clause
+      (number))))
+
+================================================================================
+MERGE
+================================================================================
+
+MERGE INTO t USING s ON t.id = s.id WHEN MATCHED AND s.del THEN DELETE WHEN MATCHED THEN UPDATE SET v = s.v WHEN NOT MATCHED BY SOURCE THEN DO NOTHING WHEN NOT MATCHED THEN INSERT (id, v) VALUES (s.id, s.v) RETURNING merge_action();
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (merge_statement
+    target: (table_reference
+      name: (object_reference
+        name: (identifier)))
+    source: (table_reference
+      name: (object_reference
+        name: (identifier)))
+    condition: (binary_expression
+      left: (column_reference
+        table: (identifier)
+        name: (identifier))
+      right: (column_reference
+        table: (identifier)
+        name: (identifier)))
+    (merge_when_clause
+      condition: (column_reference
+        table: (identifier)
+        name: (identifier)))
+    (merge_when_clause
+      (assignment
+        left: (identifier)
+        right: (column_reference
+          table: (identifier)
+          name: (identifier))))
+    (merge_when_clause)
+    (merge_when_clause
+      (column_list
+        (identifier)
+        (identifier))
+      (values
+        (tuple
+          (column_reference
+            table: (identifier)
+            name: (identifier))
+          (column_reference
+            table: (identifier)
+            name: (identifier)))))
+    (returning_clause
+      (select_list
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list))))))

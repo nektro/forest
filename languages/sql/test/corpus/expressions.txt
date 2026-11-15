@@ -1,0 +1,665 @@
+================================================================================
+Arithmetic precedence
+================================================================================
+
+SELECT 1 + 2 * 3 - 4 / 5 % 6 ^ 2;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (binary_expression
+          left: (binary_expression
+            left: (number)
+            right: (binary_expression
+              left: (number)
+              right: (number)))
+          right: (binary_expression
+            left: (binary_expression
+              left: (number)
+              right: (number))
+            right: (binary_expression
+              left: (number)
+              right: (number))))))))
+
+================================================================================
+Boolean precedence
+================================================================================
+
+SELECT a OR b AND NOT c = d IS NULL;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (binary_expression
+          left: (identifier)
+          right: (binary_expression
+            left: (identifier)
+            right: (unary_expression
+              operand: (is_expression
+                left: (binary_expression
+                  left: (identifier)
+                  right: (identifier))
+                right: (null)))))))))
+
+================================================================================
+Comparison and pattern operators
+================================================================================
+
+SELECT a <> b, a != b, a <=> b, a LIKE 'x%' ESCAPE '!', a NOT ILIKE 'y', a SIMILAR TO 'z', a GLOB '*', a REGEXP '^x';
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (binary_expression
+          left: (identifier)
+          right: (identifier))
+        (binary_expression
+          left: (identifier)
+          right: (identifier))
+        (binary_expression
+          left: (identifier)
+          right: (identifier))
+        (binary_expression
+          left: (identifier)
+          right: (string)
+          escape: (string))
+        (binary_expression
+          left: (identifier)
+          right: (string))
+        (binary_expression
+          left: (identifier)
+          right: (string))
+        (binary_expression
+          left: (identifier)
+          right: (string))
+        (binary_expression
+          left: (identifier)
+          right: (string))))))
+
+================================================================================
+BETWEEN and IN
+================================================================================
+
+SELECT x BETWEEN 1 AND 10 AND y NOT BETWEEN SYMMETRIC 2 AND 3, z IN (1, 2), w NOT IN (SELECT 1), v IN t;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (binary_expression
+          left: (between_expression
+            value: (identifier)
+            low: (number)
+            high: (number))
+          right: (between_expression
+            value: (identifier)
+            low: (number)
+            high: (number)))
+        (in_expression
+          value: (identifier)
+          list: (tuple
+            (number)
+            (number)))
+        (in_expression
+          value: (identifier)
+          list: (subquery
+            (select_statement
+              (select
+                (select_list
+                  (number))))))
+        (in_expression
+          value: (identifier)
+          list: (identifier))))))
+
+================================================================================
+IS forms
+================================================================================
+
+SELECT a IS NOT NULL, b IS DISTINCT FROM c, d ISNULL, e NOTNULL, f NOT NULL, g IS NFC NORMALIZED, h IS JSON OBJECT WITH UNIQUE KEYS;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (is_expression
+          left: (identifier)
+          right: (null))
+        (is_expression
+          left: (identifier)
+          right: (identifier))
+        (is_expression
+          left: (identifier))
+        (is_expression
+          left: (identifier))
+        (is_expression
+          left: (identifier))
+        (aliased_expression
+          value: (is_expression
+            left: (identifier)
+            right: (identifier))
+          alias: (identifier))
+        (is_expression
+          left: (identifier))))))
+
+================================================================================
+Casts
+================================================================================
+
+SELECT x::int, y::numeric(10, 2)[], CAST(z AS varchar(20)), TRY_CAST(w AS int), '1'::double precision, now()::timestamp(3) without time zone;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (cast_expression
+          value: (identifier)
+          type: (type
+            name: (identifier)))
+        (cast_expression
+          value: (identifier)
+          type: (type
+            name: (identifier)
+            (type_arguments
+              (number)
+              (number))
+            (array_size)))
+        (cast_call
+          value: (identifier)
+          type: (type
+            name: (identifier)
+            (type_arguments
+              (number))))
+        (cast_call
+          value: (identifier)
+          type: (type
+            name: (identifier)))
+        (cast_expression
+          value: (string)
+          type: (type
+            name: (identifier)))
+        (cast_expression
+          value: (function_call
+            name: (object_reference
+              name: (identifier))
+            arguments: (argument_list))
+          type: (type
+            name: (identifier)
+            (type_arguments
+              (number))
+            (time_zone)))))))
+
+================================================================================
+PostgreSQL operators
+================================================================================
+
+SELECT j -> 'a' ->> 'b', j #> '{a}', j @> '{}', j ? 'k', j ?| array['a'], a || b, a OPERATOR(pg_catalog.+) b, |/ 25, a=?;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (binary_expression
+          left: (binary_expression
+            left: (identifier)
+            operator: (operator)
+            right: (string))
+          operator: (operator)
+          right: (string))
+        (binary_expression
+          left: (identifier)
+          operator: (operator)
+          right: (string))
+        (binary_expression
+          left: (identifier)
+          operator: (operator)
+          right: (string))
+        (binary_expression
+          left: (identifier)
+          operator: (operator)
+          right: (string))
+        (binary_expression
+          left: (identifier)
+          operator: (operator)
+          right: (array_expression
+            (array_elements
+              (string))))
+        (binary_expression
+          left: (identifier)
+          right: (identifier))
+        (binary_expression
+          left: (identifier)
+          operator: (operator_call
+            (identifier)
+            (operator))
+          right: (identifier))
+        (unary_expression
+          operator: (operator)
+          operand: (number))
+        (binary_expression
+          left: (identifier)
+          right: (parameter))))))
+
+================================================================================
+Subscripts and field selection
+================================================================================
+
+SELECT a[1], a[1:2], a[:3], (row).field, (row).*, c2[2].f3, t.*, s.t.c;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (subscript_expression
+          value: (identifier)
+          index: (number))
+        (subscript_expression
+          value: (identifier)
+          lower: (number)
+          upper: (number))
+        (subscript_expression
+          value: (identifier)
+          upper: (number))
+        (field_selection
+          value: (parenthesized_expression
+            (identifier))
+          field: (identifier))
+        (field_selection
+          value: (parenthesized_expression
+            (identifier))
+          field: (all_columns))
+        (field_selection
+          value: (subscript_expression
+            value: (identifier)
+            index: (number))
+          field: (identifier))
+        (column_reference
+          table: (identifier)
+          name: (all_columns))
+        (column_reference
+          schema: (identifier)
+          table: (identifier)
+          name: (identifier))))))
+
+================================================================================
+CASE
+================================================================================
+
+SELECT CASE WHEN a > 0 THEN 'pos' WHEN a < 0 THEN 'neg' ELSE 'zero' END, CASE x WHEN 1 THEN 'one' END;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (case_expression
+          (when_clause
+            condition: (binary_expression
+              left: (identifier)
+              right: (number))
+            result: (string))
+          (when_clause
+            condition: (binary_expression
+              left: (identifier)
+              right: (number))
+            result: (string))
+          else: (string))
+        (case_expression
+          value: (identifier)
+          (when_clause
+            condition: (number)
+            result: (string)))))))
+
+================================================================================
+Subqueries, EXISTS and quantified comparisons
+================================================================================
+
+SELECT EXISTS (SELECT 1), x = ANY (SELECT y FROM t), x > ALL (ARRAY[1, 2]), (SELECT max(a) FROM t);
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (exists_expression
+          (subquery
+            (select_statement
+              (select
+                (select_list
+                  (number))))))
+        (binary_expression
+          left: (identifier)
+          right: (quantified_expression
+            (subquery
+              (select_statement
+                (select
+                  (select_list
+                    (identifier))
+                  (from_clause
+                    (table_reference
+                      name: (object_reference
+                        name: (identifier)))))))))
+        (binary_expression
+          left: (identifier)
+          right: (quantified_expression
+            (array_expression
+              (array_elements
+                (number)
+                (number)))))
+        (subquery
+          (select_statement
+            (select
+              (select_list
+                (function_call
+                  name: (object_reference
+                    name: (identifier))
+                  arguments: (argument_list
+                    (identifier))))
+              (from_clause
+                (table_reference
+                  name: (object_reference
+                    name: (identifier)))))))))))
+
+================================================================================
+Arrays and rows
+================================================================================
+
+SELECT ARRAY[1, 2], ARRAY[[1, 2], [3, 4]], ARRAY(SELECT 1), ROW(1, 'a'), (1, 2);
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (array_expression
+          (array_elements
+            (number)
+            (number)))
+        (array_expression
+          (array_elements
+            (array_elements
+              (number)
+              (number))
+            (array_elements
+              (number)
+              (number))))
+        (array_expression
+          (subquery
+            (select_statement
+              (select
+                (select_list
+                  (number))))))
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list
+            (number)
+            (string)))
+        (tuple
+          (number)
+          (number))))))
+
+================================================================================
+Function calls
+================================================================================
+
+SELECT count(*), count(DISTINCT a), string_agg(x, ',' ORDER BY x), f(a => 1, b := 2), f(VARIADIC arr), percentile_cont(0.5) WITHIN GROUP (ORDER BY x), sum(x) FILTER (WHERE x > 0), lag(x) IGNORE NULLS OVER w;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list
+            (all_columns)))
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list
+            (identifier)))
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list
+            (identifier)
+            (string)
+            (order_by_clause
+              (order_by_item
+                (identifier)))))
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list
+            (named_argument
+              name: (identifier)
+              value: (number))
+            (named_argument
+              name: (identifier)
+              value: (number))))
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list
+            (identifier)))
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list
+            (number))
+          (within_group_clause
+            (order_by_clause
+              (order_by_item
+                (identifier)))))
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list
+            (identifier))
+          (filter_clause
+            (where_clause
+              (binary_expression
+                left: (identifier)
+                right: (number)))))
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list
+            (identifier))
+          (over_clause
+            (identifier)))))))
+
+================================================================================
+Special function syntax
+================================================================================
+
+SELECT extract(year FROM d), substring(s FROM 2 FOR 3), position('a' IN s), trim(BOTH 'x' FROM s), trim(LEADING FROM s), overlay(s PLACING 'ab' FROM 2), collation for (x);
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list
+            (identifier)
+            (identifier)))
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list
+            (identifier)
+            (number)
+            (number)))
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list
+            (in_expression
+              value: (string)
+              list: (identifier))))
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list
+            (string)
+            (identifier)))
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list
+            (identifier)))
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list
+            (identifier)
+            (string)
+            (number)))
+        (collation_for_expression
+          (identifier))))))
+
+================================================================================
+Window functions
+================================================================================
+
+SELECT row_number() OVER (PARTITION BY a ORDER BY b DESC NULLS LAST ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW EXCLUDE TIES), sum(x) OVER w FROM t WINDOW w AS (ORDER BY y RANGE 5 PRECEDING);
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list)
+          (over_clause
+            (window_definition
+              (identifier)
+              (order_by_clause
+                (order_by_item
+                  (identifier)))
+              (frame_clause
+                (frame_bound)
+                (frame_bound)))))
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list
+            (identifier))
+          (over_clause
+            (identifier))))
+      (from_clause
+        (table_reference
+          name: (object_reference
+            name: (identifier))))
+      (window_clause
+        name: (identifier)
+        (window_definition
+          (order_by_clause
+            (order_by_item
+              (identifier)))
+          (frame_clause
+            (frame_bound
+              (number))))))))
+
+================================================================================
+SQL/JSON functions
+================================================================================
+
+SELECT JSON_OBJECT('a': 1, KEY 'b' VALUE 2 ABSENT ON NULL RETURNING jsonb), JSON_VALUE(j, '$.a' RETURNING int DEFAULT 0 ON EMPTY), JSON_ARRAY(SELECT 1);
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list
+            (json_key_value
+              key: (string)
+              value: (number))
+            (json_key_value
+              key: (string)
+              value: (number))
+            (json_clauses
+              clause: (identifier)
+              (identifier))))
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list
+            (identifier)
+            (string)
+            (json_clauses
+              clause: (identifier)
+              (identifier)
+              (number)
+              (identifier))))
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list
+            (select_statement
+              (select
+                (select_list
+                  (number))))))))))
+
+================================================================================
+AT TIME ZONE and COLLATE
+================================================================================
+
+SELECT ts AT TIME ZONE 'UTC', ts AT LOCAL, name COLLATE "C", x COLLATE pg_catalog."default";
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (at_time_zone_expression
+          value: (identifier)
+          zone: (string))
+        (at_time_zone_expression
+          value: (identifier))
+        (collate_expression
+          value: (identifier)
+          collation: (object_reference
+            name: (identifier)))
+        (collate_expression
+          value: (identifier)
+          collation: (object_reference
+            schema: (identifier)
+            name: (identifier)))))))

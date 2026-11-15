@@ -1,0 +1,41 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "sql",
+      "camelcase": "Sql",
+      "title": "SQL",
+      "scope": "source.sql",
+      "file-types": [
+        "sql",
+        "pgsql",
+        "psql",
+        "mysql",
+        "sqlite"
+      ],
+      "highlights": "queries/highlights.scm",
+      "injections": "queries/injections.scm",
+      "tags": "queries/tags.scm",
+      "injection-regex": "^(sql|pgsql|postgres(ql)?|psql|mysql|sqlite3?|plpgsql)$",
+      "class-name": "TreeSitterSql"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "SQL grammar for tree-sitter (PostgreSQL, SQLite and MySQL), without an external scanner",
+    "links": {
+      "repository": "https://github.com/nektro/forest"
+    }
+  },
+  "bindings": {
+    "c": false,
+    "go": false,
+    "lua": false,
+    "node": false,
+    "python": false,
+    "rust": false,
+    "swift": false,
+    "zig": false
+  }
+}

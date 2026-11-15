@@ -1,0 +1,172 @@
+================================================================================
+Numbers
+================================================================================
+
+SELECT 1, 1.5, .5, 1e10, 1.5E-3, 0x1F, 0b101, 0o17, 1_000_000;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (number)
+        (number)
+        (number)
+        (number)
+        (number)
+        (number)
+        (number)
+        (number)
+        (number)))))
+
+================================================================================
+Strings
+================================================================================
+
+SELECT 'it''s', E'tab\t', N'national', X'DEADBEEF', B'1010', U&'d\0061t', 'con' 'cat';
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (string)
+        (string)
+        (string)
+        (string)
+        (string)
+        (string)
+        (string)))))
+
+================================================================================
+Dollar-quoted strings
+================================================================================
+
+SELECT $$plain$$, $body$ has $$ inside $body$, $f$ x$$f$, $$$$, $custom$ lenient $custom$;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (dollar_quoted_string
+          (string_content))
+        (dollar_quoted_string
+          (string_content))
+        (dollar_quoted_string
+          (string_content))
+        (dollar_quoted_string)
+        (dollar_quoted_string
+          (string_content))))))
+
+================================================================================
+Booleans and null
+================================================================================
+
+SELECT TRUE, false, NULL, DEFAULT;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (boolean)
+        (boolean)
+        (null)
+        (default)))))
+
+================================================================================
+Typed literals
+================================================================================
+
+SELECT date '2024-01-01', interval '1 day', pg_catalog.int4 '1', bigint :'var';
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (typed_literal
+          type: (type
+            name: (identifier))
+          value: (string))
+        (typed_literal
+          type: (type
+            name: (identifier))
+          value: (string))
+        (typed_literal
+          type: (type
+            schema: (identifier)
+            name: (identifier))
+          value: (string))
+        (typed_literal
+          type: (type
+            name: (identifier))
+          value: (parameter))))))
+
+================================================================================
+Comments
+================================================================================
+
+-- line comment
+/* block /* nested */ still comment */
+SELECT 1 /* sqlite style /* not nested */;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (comment)
+  (comment)
+  (select_statement
+    (select
+      (select_list
+        (number))))
+  (comment))
+
+================================================================================
+Parameters
+================================================================================
+
+SELECT $1, ?, ?2, :name, :'quoted', :"ident", @var, @@global.sql_mode, $tclvar;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (parameter)
+        (parameter)
+        (parameter)
+        (parameter)
+        (parameter)
+        (parameter)
+        (parameter)
+        (parameter)
+        (parameter)))))
+
+================================================================================
+Quoted identifiers
+================================================================================
+
+SELECT "Mixed Case", `back``tick`, [bracket name], U&"d\0061t" FROM t;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (identifier)
+        (identifier)
+        (identifier)
+        (identifier))
+      (from_clause
+        (table_reference
+          name: (object_reference
+            name: (identifier)))))))

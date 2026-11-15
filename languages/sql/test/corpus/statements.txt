@@ -1,0 +1,328 @@
+================================================================================
+Transactions
+================================================================================
+
+BEGIN;
+BEGIN ISOLATION LEVEL SERIALIZABLE, READ ONLY;
+BEGIN IMMEDIATE TRANSACTION;
+START TRANSACTION;
+SAVEPOINT s;
+RELEASE SAVEPOINT s;
+ROLLBACK TO s;
+COMMIT AND NO CHAIN;
+END;
+PREPARE TRANSACTION 'x';
+COMMIT PREPARED 'x';
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (transaction_statement)
+  (transaction_statement
+    (transaction_mode)
+    (transaction_mode))
+  (transaction_statement)
+  (transaction_statement)
+  (transaction_statement
+    (identifier))
+  (transaction_statement
+    (identifier))
+  (transaction_statement
+    (identifier))
+  (transaction_statement)
+  (transaction_statement)
+  (transaction_statement
+    (string))
+  (transaction_statement
+    (string)))
+
+================================================================================
+SET, RESET and SHOW
+================================================================================
+
+SET search_path TO s, public;
+SET LOCAL statement_timeout = '5s';
+SET TIME ZONE 'UTC';
+SET SESSION AUTHORIZATION joe;
+SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+SET @a = 1, @b := 2;
+SET x FROM CURRENT;
+RESET ALL;
+SHOW search_path;
+SHOW TABLES;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (set_statement
+    name: (identifier)
+    (identifier)
+    (identifier))
+  (set_statement
+    name: (identifier)
+    (string))
+  (set_statement
+    (string))
+  (set_statement
+    (identifier))
+  (set_statement
+    (transaction_mode))
+  (set_statement
+    name: (parameter)
+    (number)
+    left: (assignment)
+    (assignment)
+    right: (assignment
+      (number)))
+  (set_statement
+    name: (identifier))
+  (reset_statement)
+  (show_statement
+    (identifier))
+  (show_statement
+    (identifier)))
+
+================================================================================
+EXPLAIN and COPY
+================================================================================
+
+EXPLAIN (ANALYZE, COSTS OFF) SELECT 1;
+EXPLAIN ANALYZE VERBOSE DELETE FROM t;
+EXPLAIN QUERY PLAN SELECT 1;
+COPY t (a, b) TO STDOUT WITH (FORMAT csv, HEADER);
+COPY (SELECT 1) TO '/tmp/x' CSV HEADER;
+COPY t FROM :'file';
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (explain_statement
+    (storage_parameters
+      name: (identifier)
+      name: (identifier))
+    (select_statement
+      (select
+        (select_list
+          (number)))))
+  (explain_statement
+    (delete_statement
+      table: (table_reference
+        name: (object_reference
+          name: (identifier)))))
+  (explain_statement
+    (select_statement
+      (select
+        (select_list
+          (number)))))
+  (copy_statement
+    table: (object_reference
+      name: (identifier))
+    (column_list
+      (identifier)
+      (identifier))
+    (token_group
+      (identifier)
+      (identifier)))
+  (copy_statement
+    (subquery
+      (select_statement
+        (select
+          (select_list
+            (number)))))
+    (string)
+    (identifier)
+    (identifier))
+  (copy_statement
+    table: (object_reference
+      name: (identifier))
+    (parameter)))
+
+================================================================================
+COPY FROM stdin with data
+================================================================================
+
+COPY t (a, b) FROM stdin;
+1	one
+\.not the end
+2	two
+\.
+SELECT 1;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (copy_statement
+    table: (object_reference
+      name: (identifier))
+    (column_list
+      (identifier)
+      (identifier)))
+  (copy_data)
+  (select_statement
+    (select
+      (select_list
+        (number)))))
+
+================================================================================
+SQLite statements
+================================================================================
+
+PRAGMA main.cache_size = -2000;
+PRAGMA table_info(t);
+ATTACH DATABASE 'x.db' AS x;
+DETACH x;
+VACUUM;
+ANALYZE t;
+REINDEX i;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (pragma_statement
+    name: (identifier)
+    name: (identifier)
+    value: (unary_expression
+      operand: (number)))
+  (pragma_statement
+    name: (identifier)
+    value: (identifier))
+  (attach_statement
+    (string)
+    name: (identifier))
+  (detach_statement
+    name: (identifier))
+  (maintenance_statement)
+  (maintenance_statement
+    (identifier))
+  (maintenance_statement
+    (identifier)))
+
+================================================================================
+Other statements
+================================================================================
+
+USE db;
+DO $$ BEGIN NULL; END $$;
+CALL p(1, 2);
+PREPARE q (int) AS SELECT $1;
+EXECUTE q (1);
+DEALLOCATE ALL;
+DECLARE c SCROLL CURSOR WITH HOLD FOR SELECT 1;
+FETCH NEXT FROM c;
+CLOSE c;
+LISTEN ch;
+NOTIFY ch, 'payload';
+LOCK TABLE t IN SHARE MODE;
+REFRESH MATERIALIZED VIEW CONCURRENTLY mv WITH DATA;
+DESCRIBE t;
+CHECKPOINT;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (use_statement
+    name: (identifier))
+  (do_statement
+    body: (dollar_quoted_string
+      (string_content)))
+  (call_statement
+    (function_call
+      name: (object_reference
+        name: (identifier))
+      arguments: (argument_list
+        (number)
+        (number))))
+  (prepare_statement
+    name: (identifier)
+    (type
+      name: (identifier))
+    (select_statement
+      (select
+        (select_list
+          (parameter)))))
+  (execute_statement
+    name: (identifier)
+    (argument_list
+      (number)))
+  (deallocate_statement)
+  (declare_statement
+    name: (identifier)
+    (select_statement
+      (select
+        (select_list
+          (number)))))
+  (cursor_statement
+    (identifier))
+  (cursor_statement
+    (identifier))
+  (listen_statement
+    (identifier))
+  (notify_statement
+    channel: (identifier)
+    (string))
+  (lock_statement
+    (identifier)
+    (identifier))
+  (refresh_statement
+    name: (object_reference
+      name: (identifier))
+    (with_data))
+  (describe_statement
+    name: (object_reference
+      name: (identifier)))
+  (maintenance_statement))
+
+================================================================================
+Shell commands
+================================================================================
+
+\set x 1
+SELECT :x AS y \gset
+\copy t FROM stdin
+1
+\.
+.mode csv
+.headers on
+SELECT 1;
+:query;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (meta_command)
+  (select_statement
+    (select
+      (select_list
+        (aliased_expression
+          value: (parameter)
+          alias: (identifier)))))
+  (meta_command)
+  (meta_command)
+  (copy_data)
+  (dot_command)
+  (dot_command)
+  (select_statement
+    (select
+      (select_list
+        (number))))
+  (parameter))
+
+================================================================================
+Statements without a final semicolon
+================================================================================
+
+SELECT 1;
+;
+SELECT 2
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (select_statement
+    (select
+      (select_list
+        (number))))
+  (select_statement
+    (select
+      (select_list
+        (number)))))
