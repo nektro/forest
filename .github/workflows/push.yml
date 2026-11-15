@@ -17,7 +17,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
 
       - run: bun install
-      - run: bun run build
+      - run: bun run build:debug
 
       - uses: peaceiris/actions-gh-pages@v4
         with:
