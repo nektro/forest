@@ -40,7 +40,7 @@ function captureClass(name) {
   return cls;
 }
 
-function tagForCapture() {
+function tagForCapture(capture) {
   switch (capture) {
     case "comment":
     case "comment.documentation":
