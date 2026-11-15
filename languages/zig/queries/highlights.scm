@@ -61,9 +61,6 @@
 (test_declaration
   name: (identifier) @function)
 
-(test_declaration
-  name: (string) @string.special)
-
 (parameter
   name: (identifier) @variable.parameter)
 

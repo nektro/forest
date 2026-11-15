@@ -39,7 +39,7 @@ const Mode = enum { fast, slow };
 
 test "point" {
 // <- keyword
-//   ^ string.special
+//   ^ string
     var p: Point = .{ .x = 1, .y = 2 };
 //  ^ keyword
 //                     ^ property
