@@ -1,5 +1,10 @@
 # forest
 
+![loc](https://sloc.xyz/github/nektro/forest)
+[![license](https://img.shields.io/github/license/nektro/forest.svg)](https://github.com/nektro/forest/blob/master/LICENSE)
+[![nektro @ github sponsors](https://img.shields.io/badge/sponsors-nektro-purple?logo=github)](https://github.com/sponsors/nektro)
+[![AI:W WRITE](https://img.shields.io/badge/AI-WRITE-grey?style=flat&logoSize=auto&labelColor=13171f)](https://0rwx.com)
+
 A bundle of tree-sitter grammars.
 
 | Language | Directory | External scanner |
