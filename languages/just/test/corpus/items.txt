@@ -1,0 +1,241 @@
+================================================================================
+Assignments
+================================================================================
+
+foo := "bar"
+eager x := foo
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (assignment
+    name: (identifier)
+    value: (string))
+  (assignment
+    name: (identifier)
+    value: (identifier)))
+
+================================================================================
+Exports
+================================================================================
+
+export PATH := "bin:" + env("PATH")
+unexport HOME
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (export
+    name: (identifier)
+    value: (binary_expression
+      left: (string)
+      right: (call_expression
+        function: (identifier)
+        arguments: (arguments
+          (string)))))
+  (unexport
+    name: (identifier)))
+
+================================================================================
+Aliases
+================================================================================
+
+alias b := build
+alias t := tests::all
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (alias
+    name: (identifier)
+    target: (identifier))
+  (alias
+    name: (identifier)
+    target: (module_path
+      (identifier)
+      (identifier))))
+
+================================================================================
+Settings
+================================================================================
+
+set shell := ["bash", "-uc"]
+set export
+set dotenv-load := false
+set positional-arguments := true
+set working-directory := "src"
+set windows-shell := ["pwsh.exe", "-NoLogo", "-Command"]
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (setting
+    name: (identifier)
+    value: (list
+      (string)
+      (string)))
+  (setting
+    name: (identifier))
+  (setting
+    name: (identifier)
+    value: (boolean))
+  (setting
+    name: (identifier)
+    value: (boolean))
+  (setting
+    name: (identifier)
+    value: (string))
+  (setting
+    name: (identifier)
+    value: (list
+      (string)
+      (string)
+      (string))))
+
+================================================================================
+Imports and modules
+================================================================================
+
+import 'other.just'
+import? "optional.just"
+mod foo
+mod? bar 'bar/mod.just'
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (import
+    path: (string))
+  (import
+    path: (string))
+  (module
+    name: (identifier))
+  (module
+    name: (identifier)
+    path: (string)))
+
+================================================================================
+Function definitions
+================================================================================
+
+greet(name, greeting) := greeting + ", " + name
+nothing() := ""
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_definition
+    name: (identifier)
+    parameters: (function_parameters
+      (identifier)
+      (identifier))
+    body: (binary_expression
+      left: (identifier)
+      right: (binary_expression
+        left: (string)
+        right: (identifier))))
+  (function_definition
+    name: (identifier)
+    parameters: (function_parameters)
+    body: (string)))
+
+================================================================================
+Attributes on items
+================================================================================
+
+[private]
+alias b := build
+
+[doc("A module")]
+[group('modules')]
+mod foo
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (alias
+    (attributes
+      (attribute
+        name: (identifier)))
+    name: (identifier)
+    target: (identifier))
+  (module
+    (attributes
+      (attribute
+        name: (identifier)
+        argument: (string)))
+    (attributes
+      (attribute
+        name: (identifier)
+        argument: (string)))
+    name: (identifier)))
+
+================================================================================
+Comments
+================================================================================
+
+# A comment
+x := "a" # trailing
+# last
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (comment)
+  (assignment
+    name: (identifier)
+    value: (string))
+  (comment)
+  (comment))
+
+================================================================================
+Keywords as names
+================================================================================
+
+export foo='bar':
+  echo {{foo}}
+
+mod := "m"
+alias set:
+  echo {{ mod }}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (recipe
+    (recipe_header
+      name: (identifier)
+      parameters: (parameters
+        (parameter
+          name: (identifier)
+          default: (string))))
+    body: (recipe_body
+      (recipe_line
+        (interpolation
+          (identifier)))))
+  (assignment
+    name: (identifier)
+    value: (string))
+  (recipe
+    (recipe_header
+      name: (identifier)
+      parameters: (parameters
+        (parameter
+          name: (identifier))))
+    body: (recipe_body
+      (recipe_line
+        (interpolation
+          (identifier))))))
+
+================================================================================
+Byte order mark
+================================================================================
+
+﻿x := "y"
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (assignment
+    name: (identifier)
+    value: (string)))

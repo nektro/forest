@@ -1,0 +1,48 @@
+# Build and release tasks for a small Rust project.
+
+set dotenv-load
+set shell := ["bash", "-euo", "pipefail", "-c"]
+
+version := `cargo pkgid | cut -d'#' -f2`
+target := env("TARGET", "x86_64-unknown-linux-gnu")
+dist := justfile_directory() / "dist" / target
+profile := if env("CI", "") != "" { "release" } else { "dev" }
+
+export RUST_LOG := "info"
+
+alias b := build
+alias t := test
+
+# List the recipes
+default:
+    @just --list
+
+# Build the crate
+build *flags:
+    cargo build --profile {{ profile }} --target {{ target }} {{ flags }}
+
+# Run the tests, then lint
+test filter="": build && lint
+    cargo test {{ filter }}
+
+[private]
+lint:
+    -cargo clippy --all-targets -- -D warnings
+    cargo fmt --check
+
+# Package a release archive
+[confirm("Publish version " + version + "?")]
+[group('release')]
+release: (build "--locked") changelog
+    mkdir -p {{ dist }}
+    tar -czf {{ dist }}/app-{{ version }}.tar.gz -C target/{{ target }}/release app
+    @echo {{ GREEN }}Packaged {{ version }}{{ NORMAL }}
+
+# Write the changelog section for this version
+changelog:
+    #!/usr/bin/env python3
+    import subprocess
+
+    log = subprocess.check_output(["git", "log", "--oneline", "v{{ version }}..HEAD"], text=True)
+    with open("CHANGELOG.md", "a") as f:
+        f.write(f"## {{ version }}\n\n{log}")

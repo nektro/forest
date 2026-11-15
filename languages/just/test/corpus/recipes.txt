@@ -1,0 +1,193 @@
+================================================================================
+Recipe without body
+================================================================================
+
+default: build test
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (recipe
+    (recipe_header
+      name: (identifier)
+      dependencies: (dependencies
+        (dependency
+          recipe: (identifier))
+        (dependency
+          recipe: (identifier))))))
+
+================================================================================
+Parameters
+================================================================================
+
+build target="debug" $mode='x' *flags:
+  cargo build
+quiet +args=(a + b):
+  echo
+@silent:
+  echo
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (recipe
+    (recipe_header
+      name: (identifier)
+      parameters: (parameters
+        (parameter
+          name: (identifier)
+          default: (string))
+        (parameter
+          name: (identifier)
+          default: (string))
+        (variadic_parameter
+          (parameter
+            name: (identifier)))))
+    body: (recipe_body
+      (recipe_line)))
+  (recipe
+    (recipe_header
+      name: (identifier)
+      parameters: (parameters
+        (variadic_parameter
+          (parameter
+            name: (identifier)
+            default: (parenthesized_expression
+              (binary_expression
+                left: (identifier)
+                right: (identifier)))))))
+    body: (recipe_body
+      (recipe_line)))
+  (recipe
+    (recipe_header
+      name: (identifier))
+    body: (recipe_body
+      (recipe_line))))
+
+================================================================================
+Dependencies
+================================================================================
+
+a: b (c "x" d) && e f
+b: mod::sub (mod::other "y")
+c: *(each *items) (d x (y) / z)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (recipe
+    (recipe_header
+      name: (identifier)
+      dependencies: (dependencies
+        (dependency
+          recipe: (identifier))
+        (dependency
+          recipe: (identifier)
+          argument: (string)
+          argument: (identifier))
+        (dependency
+          recipe: (identifier))
+        (dependency
+          recipe: (identifier)))))
+  (recipe
+    (recipe_header
+      name: (identifier)
+      dependencies: (dependencies
+        (dependency
+          recipe: (module_path
+            (identifier)
+            (identifier)))
+        (dependency
+          recipe: (module_path
+            (identifier)
+            (identifier))
+          argument: (string)))))
+  (recipe
+    (recipe_header
+      name: (identifier)
+      dependencies: (dependencies
+        (dependency
+          recipe: (identifier)
+          argument: (starred_argument
+            (identifier)))
+        (dependency
+          recipe: (identifier)
+          argument: (binary_expression
+            left: (call_expression
+              function: (identifier)
+              arguments: (arguments
+                (identifier)))
+            right: (identifier)))))))
+
+================================================================================
+Attributes
+================================================================================
+
+[private]
+[confirm("Are you sure?"), no-cd]
+[arg("x", long="xx", short="x")]
+[script('python3')]
+[working-directory: 'src']
+deploy x:
+  echo {{x}}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (recipe
+    (attributes
+      (attribute
+        name: (identifier)))
+    (attributes
+      (attribute
+        name: (identifier)
+        argument: (string))
+      (attribute
+        name: (identifier)))
+    (attributes
+      (attribute
+        name: (identifier)
+        argument: (string)
+        argument: (keyword_argument
+          name: (identifier)
+          value: (string))
+        argument: (keyword_argument
+          name: (identifier)
+          value: (string))))
+    (attributes
+      (attribute
+        name: (identifier)
+        argument: (string)))
+    (attributes
+      (attribute
+        name: (identifier)
+        argument: (string)))
+    (recipe_header
+      name: (identifier)
+      parameters: (parameters
+        (parameter
+          name: (identifier))))
+    body: (recipe_body
+      (recipe_line
+        (interpolation
+          (identifier))))))
+
+================================================================================
+Trailing comment on header
+================================================================================
+
+a: b # comment
+  echo a
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (recipe
+    (recipe_header
+      name: (identifier)
+      dependencies: (dependencies
+        (dependency
+          recipe: (identifier))))
+    (comment)
+    body: (recipe_body
+      (recipe_line))))

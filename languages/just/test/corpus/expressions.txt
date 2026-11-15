@@ -1,0 +1,191 @@
+================================================================================
+Operators
+================================================================================
+
+a := b + c / d ++ e
+b := / "usr" / "bin"
+c := x == y || x != z && p =~ "re" || q !~ "re"
+d := !e + f
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (assignment
+    name: (identifier)
+    value: (binary_expression
+      left: (identifier)
+      right: (binary_expression
+        left: (identifier)
+        right: (binary_expression
+          left: (identifier)
+          right: (identifier)))))
+  (assignment
+    name: (identifier)
+    value: (unary_expression
+      operand: (binary_expression
+        left: (string)
+        right: (string))))
+  (assignment
+    name: (identifier)
+    value: (binary_expression
+      left: (binary_expression
+        left: (identifier)
+        right: (identifier))
+      right: (binary_expression
+        left: (binary_expression
+          left: (binary_expression
+            left: (identifier)
+            right: (identifier))
+          right: (binary_expression
+            left: (identifier)
+            right: (string)))
+        right: (binary_expression
+          left: (identifier)
+          right: (string)))))
+  (assignment
+    name: (identifier)
+    value: (binary_expression
+      left: (unary_expression
+        operand: (identifier))
+      right: (identifier))))
+
+================================================================================
+Conditionals
+================================================================================
+
+a := if os() == "linux" { "l" } else if os() == "macos" { "m" } else { "w" }
+b := if x { "y" }
+c := if a == "b" {
+  "c"
+} else {
+  "d"
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (assignment
+    name: (identifier)
+    value: (if_expression
+      condition: (binary_expression
+        left: (call_expression
+          function: (identifier)
+          arguments: (arguments))
+        right: (string))
+      consequence: (block
+        (string))
+      alternative: (if_expression
+        condition: (binary_expression
+          left: (call_expression
+            function: (identifier)
+            arguments: (arguments))
+          right: (string))
+        consequence: (block
+          (string))
+        alternative: (block
+          (string)))))
+  (assignment
+    name: (identifier)
+    value: (if_expression
+      condition: (identifier)
+      consequence: (block
+        (string))))
+  (assignment
+    name: (identifier)
+    value: (if_expression
+      condition: (binary_expression
+        left: (identifier)
+        right: (string))
+      consequence: (block
+        (string))
+      alternative: (block
+        (string)))))
+
+================================================================================
+Calls and lists
+================================================================================
+
+a := join("a", "b", )
+b := [a, "b", [c]]
+c := assert(a == "b", "message")
+d := (a + b)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (assignment
+    name: (identifier)
+    value: (call_expression
+      function: (identifier)
+      arguments: (arguments
+        (string)
+        (string))))
+  (assignment
+    name: (identifier)
+    value: (list
+      (identifier)
+      (string)
+      (list
+        (identifier))))
+  (assignment
+    name: (identifier)
+    value: (assert_expression
+      condition: (binary_expression
+        left: (identifier)
+        right: (string))
+      message: (string)))
+  (assignment
+    name: (identifier)
+    value: (parenthesized_expression
+      (binary_expression
+        left: (identifier)
+        right: (identifier)))))
+
+================================================================================
+Line continuations and breaks inside delimiters
+================================================================================
+
+a := "x" + \
+  "y"
+b := concat(
+  "a", # first
+  "b",
+)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (assignment
+    name: (identifier)
+    value: (binary_expression
+      left: (string)
+      right: (string)))
+  (assignment
+    name: (identifier)
+    value: (call_expression
+      function: (identifier)
+      arguments: (arguments
+        (string)
+        (comment)
+        (string)))))
+
+================================================================================
+Constants
+================================================================================
+
+a := RED + "text" + NORMAL
+b := HEX
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (assignment
+    name: (identifier)
+    value: (binary_expression
+      left: (identifier)
+      right: (binary_expression
+        left: (string)
+        right: (identifier))))
+  (assignment
+    name: (identifier)
+    value: (identifier)))

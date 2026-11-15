@@ -1,0 +1,161 @@
+================================================================================
+Cooked strings
+================================================================================
+
+a := "tab\t newline\n quote\" backslash\\ unicode\u{1F600}"
+b := "line \
+continued"
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (assignment
+    name: (identifier)
+    value: (string
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)
+      (escape_sequence)))
+  (assignment
+    name: (identifier)
+    value: (string
+      (escape_sequence))))
+
+================================================================================
+Raw strings
+================================================================================
+
+a := 'no \escapes'
+b := '''
+  indented 'quoted' ''twice''
+'''
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (assignment
+    name: (identifier)
+    value: (string))
+  (assignment
+    name: (identifier)
+    value: (string)))
+
+================================================================================
+Indented strings
+================================================================================
+
+a := """
+  one "quote" and ""two""
+  \t
+"""
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (assignment
+    name: (identifier)
+    value: (string
+      (escape_sequence))))
+
+================================================================================
+Shell-expanded strings
+================================================================================
+
+a := x"~/bin"
+b := x'$HOME'
+c := x"""
+  ${FOO}
+"""
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (assignment
+    name: (identifier)
+    value: (string))
+  (assignment
+    name: (identifier)
+    value: (string))
+  (assignment
+    name: (identifier)
+    value: (string)))
+
+================================================================================
+Format strings
+================================================================================
+
+a := f"v{{ version }}-{{ os() }}"
+b := f'raw {{ x }} {{{{literal}}'
+c := f"""
+  {{ a }}
+"""
+d := f"{ not interpolated }"
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (assignment
+    name: (identifier)
+    value: (format_string
+      (interpolation
+        (identifier))
+      (interpolation
+        (call_expression
+          function: (identifier)
+          arguments: (arguments)))))
+  (assignment
+    name: (identifier)
+    value: (format_string
+      (interpolation
+        (identifier))))
+  (assignment
+    name: (identifier)
+    value: (format_string
+      (interpolation
+        (identifier))))
+  (assignment
+    name: (identifier)
+    value: (format_string)))
+
+================================================================================
+Backticks
+================================================================================
+
+a := `git rev-parse HEAD`
+b := ```
+  echo one
+  echo two
+```
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (assignment
+    name: (identifier)
+    value: (backtick
+      (command)))
+  (assignment
+    name: (identifier)
+    value: (backtick
+      (command))))
+
+================================================================================
+A name before a string is not a prefix
+================================================================================
+
+a := x + f
+b := (x)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (assignment
+    name: (identifier)
+    value: (binary_expression
+      left: (identifier)
+      right: (identifier)))
+  (assignment
+    name: (identifier)
+    value: (parenthesized_expression
+      (identifier))))

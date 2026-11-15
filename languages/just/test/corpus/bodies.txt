@@ -1,0 +1,213 @@
+================================================================================
+Lines and interpolations
+================================================================================
+
+test:
+  cargo test {{ flags }}
+  echo "{{ if x == "y" { "a" } else { "b" } }}" done
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (recipe
+    (recipe_header
+      name: (identifier))
+    body: (recipe_body
+      (recipe_line
+        (interpolation
+          (identifier)))
+      (recipe_line
+        (interpolation
+          (if_expression
+            condition: (binary_expression
+              left: (identifier)
+              right: (string))
+            consequence: (block
+              (string))
+            alternative: (block
+              (string))))))))
+
+================================================================================
+Prefixes
+================================================================================
+
+a:
+  @echo quiet
+  -false
+  @-false
+  -@false
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (recipe
+    (recipe_header
+      name: (identifier))
+    body: (recipe_body
+      (recipe_line
+        (prefix))
+      (recipe_line
+        (prefix))
+      (recipe_line
+        (prefix))
+      (recipe_line
+        (prefix)))))
+
+================================================================================
+Blank lines inside a body
+================================================================================
+
+a:
+  echo one
+
+  echo two
+    
+  echo three
+
+b:
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (recipe
+    (recipe_header
+      name: (identifier))
+    body: (recipe_body
+      (recipe_line)
+      (recipe_line)
+      (recipe_line)))
+  (recipe
+    (recipe_header
+      name: (identifier))))
+
+================================================================================
+Body text that looks like syntax
+================================================================================
+
+a:
+  # a shell comment
+  echo { brace } {{{{escaped}} 'quote' "double" `tick`
+  echo x := y [z] \
+    continued
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (recipe
+    (recipe_header
+      name: (identifier))
+    body: (recipe_body
+      (recipe_line)
+      (recipe_line)
+      (recipe_line)
+      (recipe_line))))
+
+================================================================================
+Interpolation across lines
+================================================================================
+
+a:
+  echo {{ a +
+    b }}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (recipe
+    (recipe_header
+      name: (identifier))
+    body: (recipe_body
+      (recipe_line
+        (interpolation
+          (binary_expression
+            left: (identifier)
+            right: (identifier)))))))
+
+================================================================================
+Shebang recipe
+================================================================================
+
+python:
+  #!/usr/bin/env python3
+  import sys
+  print("{{ arg }}")
+
+  # still python
+  if True:
+      print(1)
+next:
+  echo
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (recipe
+    (recipe_header
+      name: (identifier))
+    body: (recipe_body
+      (shebang)
+      (interpolation
+        (identifier))))
+  (recipe
+    (recipe_header
+      name: (identifier))
+    body: (recipe_body
+      (recipe_line))))
+
+================================================================================
+Tab indentation
+================================================================================
+
+a:
+	echo one
+		echo two
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (recipe
+    (recipe_header
+      name: (identifier))
+    body: (recipe_body
+      (recipe_line)
+      (recipe_line))))
+
+================================================================================
+Body at end of file
+================================================================================
+
+a:
+  echo x
+--------------------------------------------------------------------------------
+
+(source_file
+  (recipe
+    (recipe_header
+      name: (identifier))
+    body: (recipe_body
+      (recipe_line))))
+
+================================================================================
+Comment at column zero ends a body
+================================================================================
+
+a:
+  echo a
+# about b
+b:
+  echo b
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (recipe
+    (recipe_header
+      name: (identifier))
+    body: (recipe_body
+      (recipe_line)))
+  (comment)
+  (recipe
+    (recipe_header
+      name: (identifier))
+    body: (recipe_body
+      (recipe_line))))

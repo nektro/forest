@@ -15,6 +15,7 @@ A bundle of tree-sitter grammars.
 | HTML | [languages/html](languages/html) | none |
 | Java | [languages/java](languages/java) | none |
 | JSON (and JSONC, JSON Lines) | [languages/json](languages/json) | none |
+| Justfile | [languages/just](languages/just) | none |
 | Lua (5.1 to 5.5) | [languages/lua](languages/lua) | none |
 | Nix | [languages/nix](languages/nix) | none |
 | Python (3.14) | [languages/python](languages/python) | none |

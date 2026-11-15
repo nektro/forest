@@ -1,0 +1,42 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "just",
+      "camelcase": "Just",
+      "title": "Justfile",
+      "scope": "source.just",
+      "file-types": [
+        "just",
+        "justfile",
+        "Justfile",
+        ".justfile",
+        ".Justfile",
+        "JUSTFILE"
+      ],
+      "highlights": "queries/highlights.scm",
+      "tags": "queries/tags.scm",
+      "injections": "queries/injections.scm",
+      "injection-regex": "^(just|justfile)$",
+      "class-name": "TreeSitterJust"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "Justfile grammar for tree-sitter",
+    "links": {
+      "repository": "https://github.com/nektro/forest"
+    }
+  },
+  "bindings": {
+    "c": false,
+    "go": false,
+    "java": false,
+    "node": false,
+    "python": false,
+    "rust": false,
+    "swift": false,
+    "zig": false
+  }
+}

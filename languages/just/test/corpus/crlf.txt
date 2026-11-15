@@ -1,0 +1,29 @@
+================================================================================
+CRLF line endings
+================================================================================
+
+a := "b"
+
+c:
+  echo {{a}}
+
+  echo d
+e:
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (assignment
+    name: (identifier)
+    value: (string))
+  (recipe
+    (recipe_header
+      name: (identifier))
+    body: (recipe_body
+      (recipe_line
+        (interpolation
+          (identifier)))
+      (recipe_line)))
+  (recipe
+    (recipe_header
+      name: (identifier))))
