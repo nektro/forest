@@ -398,6 +398,7 @@ const Forest = {
   },
   highlightElement,
   highlightAll,
+  captureClass,
   // The underlying web-tree-sitter classes, for anything not covered above.
   Parser,
   Language,
