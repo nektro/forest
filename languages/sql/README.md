@@ -8,7 +8,7 @@ SQLite and MySQL write it, including the psql and sqlite3 shell commands that
   regular are handled in `grammar.js`:
   - **Dollar-quoted strings** (`$tag$ ... $tag$`) end at the first copy of
     the opening tag. For `$$` and every tag in `DOLLAR_TAGS` (`$body$`,
-    `$func$`, `$q$`, single letters, ...), the body is one token whose regex
+    `$func$`, `$q$`, `$outer$`, a few letters, ...), the body is one token whose regex
     is "text in which `$tag$` does not occur", built by `dollarBody`. Because
     the lexer takes the longest match, the body may not end partway through
     the tag (` x $bod` before `$body$`); pieces that really end it that way
@@ -24,20 +24,26 @@ SQLite and MySQL write it, including the psql and sqlite3 shell commands that
 - **Keywords are case-insensitive** and appear in the tree as anonymous nodes
   spelled in upper case (`"SELECT"`). Tree-sitter only lexes a word as a
   keyword where the keyword is valid, so most keywords still work as names
-  (`SELECT type, key, value FROM t`).
+  (`SELECT type, key, value FROM t`). Keywords that only appear in one
+  rarely used place (`IMMUTABLE`, `BEFORE`, `MATCHED`, `STORED`, `VACUUM`)
+  are lexed as names instead, and appear as `keyword`, `command` or
+  `object_kind` nodes, or as `identifier`s in a run of plain tokens; see
+  [Size](#size).
 - **Statements are parsed in detail where it pays**: queries (`WITH`,
   `SELECT`, set operations, joins, window functions, `VALUES`, `TABLE`),
   `INSERT` (with `ON CONFLICT`, `ON DUPLICATE KEY UPDATE`, `OR REPLACE`),
   `UPDATE`, `DELETE`, `MERGE`, `CREATE TABLE` / `VIEW` / `INDEX` / `FUNCTION`
   / `PROCEDURE` / `TRIGGER` / `SCHEMA` / `TYPE`, `ALTER TABLE`, `DROP`,
-  `TRUNCATE`, transactions, `SET`, `EXPLAIN`, `COPY`, `COMMENT ON`, `PRAGMA`,
-  `ATTACH`, `DO`, `CALL`, `PREPARE`, `EXECUTE`, cursors, `LISTEN`/`NOTIFY`.
+  `TRUNCATE`, `SET`, `EXPLAIN`, `COPY`, `COMMENT ON`, `PRAGMA`, `ATTACH`,
+  `DO`, `CALL`, `PREPARE`, `EXECUTE`, `DECLARE ... CURSOR`.
 - **Everything else is read as a run of tokens** with parentheses matched:
-  the long tail of `CREATE`/`ALTER`/`DROP` objects (aggregates, operators,
-  publications, policies, roles, ...), `GRANT`/`REVOKE`, `SHOW`, `LOCK`,
-  `VACUUM`-style maintenance commands, `ALTER TABLE` actions other than adding,
-  dropping, altering and renaming, and the clauses of SQL/JSON and SQL/XML
-  calls. Keywords inside such a run are still keyword nodes.
+  the long tail of `CREATE`/`ALTER`/`DROP` objects (sequences, roles,
+  aggregates, operators, publications, policies, ...), the options of
+  transactions (`BEGIN ISOLATION LEVEL ...`), `ALTER TABLE` actions other
+  than adding, dropping, altering and renaming, the clauses of SQL/JSON and
+  SQL/XML calls, and every statement that starts with a word the grammar
+  does not know (`GRANT`, `SHOW`, `VACUUM`, `FETCH`, `LISTEN`, `START
+  TRANSACTION`, `SAVEPOINT`, ...), which is an `other_statement`.
 
 ## Validation
 
@@ -46,13 +52,13 @@ given directories and lists those with errors.
 
 | Input | Files | With errors |
 | --- | --- | --- |
-| PostgreSQL regression tests (`src/test/regress/sql`, postgres `81b2179`) | 245 | 29 |
+| PostgreSQL regression tests (`src/test/regress/sql`, postgres `81b2179`) | 245 | 27 |
 | PostgreSQL `contrib` tests and extension scripts | 400 | 6 |
-| SQL from SQLite's Tcl tests (`do_execsql_test` and `execsql` blocks, sqlite `test/`) | 1,018 | 72 |
+| SQL from SQLite's Tcl tests (`do_execsql_test` and `execsql` blocks, sqlite `test/`) | 1,018 | 68 |
 
 Most of the PostgreSQL errors are in forms left out to keep the parser
 small (see [Size](#size)): typed literals of more than one word
-(`timestamp with time zone '...'`, 182 lines of `horology.sql`,
+(`timestamp with time zone '...'`, most of the errors in `horology.sql`,
 `timestamp.sql`, `timestamptz.sql` and `timetz.sql`), interval fields
 (`interval.sql`), `IS NFC NORMALIZED` and SQL/JSON clauses after a query
 argument or starting with `NULL`. Most of the rest test syntax errors
@@ -72,7 +78,7 @@ longest-match lexer:
   that starts with `/*` (88,573 strings) ends where PostgreSQL's nested
   reading closes, or failing that at the first `*/`.
 
-Parsing runs at about 11 MB/s on the 5 MB of PostgreSQL regression tests.
+Parsing runs at about 12 MB/s on the 5 MB of PostgreSQL regression tests.
 
 ## Dialects
 
@@ -99,9 +105,9 @@ another one is unambiguous:
 - MySQL's `DELIMITER` changes the statement terminator, which a grammar
   cannot follow; procedure bodies written between `DELIMITER` lines are
   errors.
-- Dollar-quote tags outside `DOLLAR_TAGS` are lenient: `$outer$ ... $$ ...
-  $$ ... $outer$` ends at the first `$$`. Adding a tag makes its strings
-  exact, at the cost of lexer states.
+- Dollar-quote tags outside `DOLLAR_TAGS` are lenient: `$tag$ ... $$ ...
+  $$ ... $tag$` ends at the first `$$`. Adding a tag makes its strings exact,
+  at the cost of three tokens.
 - Block comments nested deeper than five levels fall back to the flat
   reading.
 - Typed literals take a one-word type (`date '...'`, `pg_catalog.int4 '1'`):
@@ -125,27 +131,39 @@ another one is unambiguous:
 
 ## Size
 
-The wasm file is 16.5 MB (32,000 parse states, 6,800 of them in the dense
-table). Generating takes about two minutes and building the wasm about six.
+The wasm file is 10.9 MB (28,000 parse states, 6,300 of them in the dense
+table, 599 symbols). Generating takes about a minute and building the wasm
+about a minute and a half.
 
-SQL has a large expression grammar and many contexts that end an expression
-with different keywords (`FROM`, `THEN`, `PRECEDING`, `ON`, ...).
-Tree-sitter does not merge parse states where a keyword valid in one would
-change how a word is lexed in the other, so each set of keywords that can
-follow an expression gets its own copy of the expression states, and most of
-those states are dense rows as wide as the symbol table. That shaped a few
-choices, measured by generating with and without each feature:
+Most of the file is the dense part of the parse table: one row for each
+state with more than 64 valid symbols, and a column for every symbol in the
+grammar. Two things keep it in check, both measured by generating with and
+without each feature:
 
-- SQL/JSON and SQL/XML clauses (`RETURNING`, `PASSING`, `COLUMNS`, ...) are
-  a token run whose first word is lexed as a name. Spelling them out took
-  2,000 more dense states, about 4 MB.
-- Typed literals take a one-word type and no interval fields: the longer
-  forms put `WITH`, `PRECISION` and `DAY`-style keywords after the first name
-  of every expression (730 dense states), and interval fields after a cast's
-  type cost 1,300 more.
-- Runs of plain tokens accept every keyword, so keywords in them are still
-  keyword nodes for highlighting. That costs almost nothing, as their states
-  are shared across contexts.
+- **Few symbols.** Every keyword is a token, and every token is a column in
+  every dense row. Keywords that only matter in one rarely used place are
+  lexed as names: option words in parsed statements are `keyword` nodes
+  (`IMMUTABLE`, `BEFORE`, `MATCHED`, `STORED`, `RESTART IDENTITY`), the
+  first word of an unknown statement is a `command`, the kind of a generic
+  `CREATE`/`ALTER`/`DROP` is an `object_kind`, and in runs of plain tokens
+  they are `identifier`s. `highlights.scm` marks all of these as keywords.
+  This took the grammar from 607 tokens to 323. `DOLLAR_TAGS` is short for
+  the same reason: each tag is three tokens.
+- **Few contexts that end an expression.** SQL has a large expression
+  grammar, ended by different keywords in different places (`FROM`, `THEN`,
+  `PRECEDING`, ...). Tree-sitter does not merge parse states where a keyword
+  valid in one would change how a word is lexed in the other, so each set of
+  words that can follow an expression gets its own copy of the expression
+  states, and most of those states are dense. So:
+  - SQL/JSON and SQL/XML clauses (`RETURNING`, `PASSING`, `COLUMNS`, ...)
+    are a token run whose first word is lexed as a name, which merges with
+    the states for an alias. Spelling them out took 2,000 more dense states.
+  - Typed literals take a one-word type and no interval fields; the longer
+    forms cost 730 dense states, and interval fields after a cast's type
+    1,300 more.
+  - A name never follows an expression where it could not before: an
+    optional word after `x IS JSON` cost 5,000 dense states, and the
+    condition of a trigger comes after its other options for this reason.
 
 ## Tree shape
 
@@ -155,7 +173,11 @@ choices, measured by generating with and without each feature:
 - Each statement kind is its own node (`select_statement`,
   `create_table_statement`, ...); the generic ones are `create_statement`,
   `alter_statement` and `drop_statement` with a `kind` field
-  (`object_kind`), and `alter_table_action`.
+  (`object_kind`), `other_statement` with a `command` field, and
+  `alter_table_action`. `transaction_statement` is `BEGIN`, `COMMIT`, `END`,
+  `ROLLBACK` or `ABORT` and plain tokens.
+- `keyword` is a word in a place that only takes certain words, lexed as a
+  name (see [Size](#size)).
 - A query is `select_statement`: an optional `with_clause`, a body (`select`,
   `set_operation`, `parenthesized_query`, `values` or `table_statement`), then
   `order_by_clause`, `limit_clause`, `offset_clause`, `fetch_clause` and
@@ -173,8 +195,16 @@ choices, measured by generating with and without each feature:
 
 `queries/` contains `highlights.scm`, `injections.scm`, `tags.scm` and
 `folds.scm`. In `highlights.scm` the last matching pattern wins, so general
-patterns come first. Its list of keywords is generated from the grammar by
-`script/update-keywords.py`; run it after `tree-sitter generate`.
+patterns come first. `script/update-keywords.py` generates two lists in it;
+run it after `tree-sitter generate`:
+
+- every keyword token in the grammar, which is checked against
+  `src/grammar.json` because a query that names a missing node fails to
+  load;
+- SQL keywords that are lexed as names, as `#any-of?` for the `identifier`
+  children of runs of plain tokens (`GRANT SELECT ON t TO r`,
+  `CREATE SEQUENCE s START 1`). Patterns later in the file override it, so
+  `ALTER COLUMN level` is still a column.
 
 The highlight tests are in `test/highlight-web/` rather than
 `test/highlight/`, and `script/check-highlights.ts` runs them the way

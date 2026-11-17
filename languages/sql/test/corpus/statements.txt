@@ -19,21 +19,33 @@ COMMIT PREPARED 'x';
 (source_file
   (transaction_statement)
   (transaction_statement
-    (transaction_mode)
-    (transaction_mode))
-  (transaction_statement)
-  (transaction_statement)
+    (identifier)
+    (identifier)
+    (identifier)
+    (identifier))
   (transaction_statement
+    (identifier)
+    (identifier))
+  (other_statement
+    command: (command)
+    (identifier))
+  (other_statement
+    command: (command)
+    (identifier))
+  (other_statement
+    command: (command)
+    (identifier)
     (identifier))
   (transaction_statement
     (identifier))
   (transaction_statement
     (identifier))
   (transaction_statement)
-  (transaction_statement)
-  (transaction_statement
+  (prepare_statement
+    (keyword)
     (string))
   (transaction_statement
+    (identifier)
     (string)))
 
 ================================================================================
@@ -64,22 +76,29 @@ SHOW TABLES;
   (set_statement
     (string))
   (set_statement
+    (identifier)
     (identifier))
   (set_statement
-    (transaction_mode))
+    (identifier)
+    (identifier)
+    (identifier)
+    (identifier)
+    (identifier))
   (set_statement
     name: (parameter)
     (number)
-    left: (assignment)
-    (assignment)
-    right: (assignment
-      (number)))
+    (assignment
+      left: (parameter)
+      right: (number)))
   (set_statement
-    name: (identifier))
-  (reset_statement)
-  (show_statement
     (identifier))
-  (show_statement
+  (other_statement
+    command: (command))
+  (other_statement
+    command: (command)
+    (identifier))
+  (other_statement
+    command: (command)
     (identifier)))
 
 ================================================================================
@@ -105,11 +124,15 @@ COPY t FROM :'file';
         (select_list
           (number)))))
   (explain_statement
+    (keyword)
+    (keyword)
     (delete_statement
       table: (table_reference
         name: (object_reference
           name: (identifier)))))
   (explain_statement
+    (keyword)
+    (keyword)
     (select_statement
       (select
         (select_list
@@ -120,7 +143,9 @@ COPY t FROM :'file';
     (column_list
       (identifier)
       (identifier))
+    (keyword)
     (token_group
+      (identifier)
       (identifier)
       (identifier)))
   (copy_statement
@@ -189,12 +214,16 @@ REINDEX i;
   (attach_statement
     (string)
     name: (identifier))
-  (detach_statement
-    name: (identifier))
-  (maintenance_statement)
-  (maintenance_statement
+  (other_statement
+    command: (command)
     (identifier))
-  (maintenance_statement
+  (other_statement
+    command: (command))
+  (other_statement
+    command: (command)
+    (identifier))
+  (other_statement
+    command: (command)
     (identifier)))
 
 ================================================================================
@@ -244,33 +273,42 @@ CHECKPOINT;
     name: (identifier)
     (argument_list
       (number)))
-  (deallocate_statement)
+  (other_statement
+    command: (command))
   (declare_statement
     name: (identifier)
+    (keyword)
+    (keyword)
+    (keyword)
     (select_statement
       (select
         (select_list
           (number)))))
-  (cursor_statement
+  (other_statement
+    command: (command)
     (identifier))
-  (cursor_statement
+  (other_statement
+    command: (command)
     (identifier))
-  (listen_statement
+  (other_statement
+    command: (command)
     (identifier))
-  (notify_statement
-    channel: (identifier)
+  (other_statement
+    command: (command)
+    (identifier)
     (string))
-  (lock_statement
+  (other_statement
+    command: (command)
     (identifier)
     (identifier))
-  (refresh_statement
-    name: (object_reference
-      name: (identifier))
-    (with_data))
-  (describe_statement
-    name: (object_reference
-      name: (identifier)))
-  (maintenance_statement))
+  (other_statement
+    command: (command)
+    (identifier))
+  (other_statement
+    command: (command)
+    (identifier))
+  (other_statement
+    command: (command)))
 
 ================================================================================
 Shell commands

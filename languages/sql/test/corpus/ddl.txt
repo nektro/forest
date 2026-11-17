@@ -29,7 +29,9 @@ CREATE TABLE IF NOT EXISTS s.t (
         type: (type
           name: (identifier))
         (column_constraint
+          (keyword)
           (token_group
+            (identifier)
             (number)))
         (column_constraint))
       (column_definition
@@ -55,15 +57,18 @@ CREATE TABLE IF NOT EXISTS s.t (
             (column_list
               (identifier))
             (referential_action)
-            (referential_action))))
+            (referential_action)
+            (keyword))))
       (column_definition
         name: (identifier)
         type: (type
           name: (identifier))
         (column_constraint
+          (keyword)
           (binary_expression
             left: (identifier)
-            right: (identifier))))
+            right: (identifier))
+          (keyword)))
       (column_definition
         type: (type
           name: (identifier)))
@@ -96,7 +101,8 @@ CREATE TABLE IF NOT EXISTS s.t (
       (like_clause
         (object_reference
           name: (identifier))
-        (identifier)))))
+        (keyword)
+        (keyword)))))
 
 ================================================================================
 CREATE TABLE options
@@ -121,7 +127,8 @@ CREATE TABLE t AS SELECT 1 WITH NO DATA;
         name: (identifier)
         type: (type
           name: (identifier))))
-    (table_option))
+    (table_option
+      (keyword)))
   (create_table_statement
     name: (object_reference
       name: (identifier))
@@ -201,13 +208,14 @@ CREATE TABLE m (id int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id', KEY id
         name: (identifier)
         type: (type
           name: (identifier))
-        (column_constraint))
+        (column_constraint)
+        (keyword))
       (column_definition
         name: (identifier)
         type: (type
           name: (identifier)
-          (identifier)
-          (identifier)))
+          (keyword)
+          (keyword)))
       (column_definition
         name: (identifier))
       (column_definition
@@ -239,11 +247,11 @@ CREATE TABLE m (id int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id', KEY id
           name: (identifier)
           (type_arguments
             (number))
-          (identifier))
+          (keyword))
         (column_constraint)
-        (column_constraint)
-        (column_constraint
-          (string)))
+        (keyword)
+        (keyword)
+        (string))
       (table_constraint
         index: (identifier)
         (index_column
@@ -275,7 +283,8 @@ CREATE INDEX ON t (a);
     (select_statement
       (select
         (select_list
-          (number)))))
+          (number))))
+    (keyword))
   (create_view_statement
     name: (object_reference
       name: (identifier))
@@ -346,10 +355,15 @@ CREATE FUNCTION h(t.col%TYPE) RETURNS int AS 'obj', 'sym' LANGUAGE c;
     return_type: (type
       name: (identifier))
     language: (identifier)
-    (identifier)
+    (keyword)
+    (keyword)
+    (keyword)
+    (keyword)
+    (keyword)
     (number)
-    (identifier)
-    (identifier)
+    (keyword)
+    (keyword)
+    (keyword)
     body: (dollar_quoted_string
       (string_content)))
   (create_function_statement
@@ -401,13 +415,17 @@ CREATE TRIGGER tr BEFORE INSERT ON t FOR EACH ROW SET new.a = 1;
   (create_trigger_statement
     name: (object_reference
       name: (identifier))
+    (keyword)
     (trigger_event)
     (trigger_event
       (identifier)
       (identifier))
     table: (object_reference
       name: (identifier))
+    (keyword)
     (identifier)
+    (keyword)
+    (keyword)
     condition: (parenthesized_expression
       (binary_expression
         left: (function_call
@@ -422,6 +440,7 @@ CREATE TRIGGER tr BEFORE INSERT ON t FOR EACH ROW SET new.a = 1;
   (create_trigger_statement
     name: (object_reference
       name: (identifier))
+    (keyword)
     (trigger_event)
     table: (object_reference
       name: (identifier))
@@ -439,9 +458,11 @@ CREATE TRIGGER tr BEFORE INSERT ON t FOR EACH ROW SET new.a = 1;
   (create_trigger_statement
     name: (object_reference
       name: (identifier))
+    (keyword)
     (trigger_event)
     table: (object_reference
       name: (identifier))
+    (keyword)
     (set_statement
       name: (identifier)
       name: (identifier)
@@ -482,8 +503,10 @@ CREATE TYPE shell;
   (create_type_statement
     name: (object_reference
       name: (identifier))
-    (string)
-    (string))
+    (keyword)
+    (token_group
+      (string)
+      (string)))
   (create_type_statement
     name: (object_reference
       name: (identifier))
@@ -498,13 +521,14 @@ CREATE TYPE shell;
   (create_type_statement
     name: (object_reference
       name: (identifier))
+    (keyword)
     (token_group
       (identifier)
       (operator)
       (identifier)))
-  (create_statement
-    kind: (object_kind)
-    (identifier)))
+  (create_type_statement
+    name: (object_reference
+      name: (identifier))))
 
 ================================================================================
 Other CREATE statements
@@ -527,6 +551,7 @@ CREATE AGGREGATE a (int) (sfunc = int4pl, stype = int);
   (create_statement
     kind: (object_kind)
     (identifier)
+    (identifier)
     (number)
     (identifier)
     (number))
@@ -541,10 +566,13 @@ CREATE AGGREGATE a (int) (sfunc = int4pl, stype = int);
     (identifier)
     (identifier)
     (token_group
+      (identifier)
       (operator)
       (identifier)))
   (create_statement
     kind: (object_kind)
+    (identifier)
+    (identifier)
     (identifier)
     (identifier)
     (number)
@@ -609,15 +637,23 @@ ALTER TABLE t ADD c int AFTER b;
     (alter_column
       name: (identifier)
       (identifier)
-      (operator))
+      (identifier)
+      (operator)
+      (identifier))
     (alter_column
-      name: (identifier))
+      name: (identifier)
+      (identifier)
+      (identifier))
     (rename
       old: (identifier)
       new: (identifier))
     (alter_table_action
+      (keyword)
       (identifier))
-    (alter_table_action))
+    (alter_table_action
+      (keyword)
+      (identifier)
+      (identifier)))
   (alter_table_statement
     name: (object_reference
       name: (identifier))
@@ -645,10 +681,12 @@ ALTER TYPE mood ADD VALUE 'happy' AFTER 'ok';
 
 (source_file
   (alter_statement
+    kind: (object_kind)
     (identifier)
     (identifier))
   (alter_statement
     kind: (object_kind)
+    (identifier)
     (identifier)
     (identifier)
     (identifier)
@@ -705,6 +743,7 @@ TRUNCATE TABLE ONLY a, b RESTART IDENTITY CASCADE;
   (drop_statement
     kind: (object_kind)
     (token_group
+      (identifier)
       (identifier)))
   (drop_statement
     kind: (object_kind)
@@ -713,7 +752,9 @@ TRUNCATE TABLE ONLY a, b RESTART IDENTITY CASCADE;
     (object_reference
       name: (identifier))
     (object_reference
-      name: (identifier))))
+      name: (identifier))
+    (keyword)
+    (keyword)))
 
 ================================================================================
 GRANT and COMMENT
@@ -728,13 +769,15 @@ COMMENT ON FUNCTION f(int) IS $$doc$$;
 --------------------------------------------------------------------------------
 
 (source_file
-  (grant_statement
+  (other_statement
+    command: (command)
     (token_group
       (identifier))
     (identifier)
     (identifier)
     (identifier))
-  (grant_statement
+  (other_statement
+    command: (command)
     (identifier)
     (identifier))
   (comment_statement

@@ -184,10 +184,13 @@ SELECT x::int, y::numeric(10, 2)[], CAST(z AS varchar(20)), TRY_CAST(w AS int), 
             name: (identifier)
             (type_arguments
               (number))))
-        (cast_call
-          value: (identifier)
-          type: (type
-            name: (identifier)))
+        (function_call
+          name: (object_reference
+            name: (identifier))
+          arguments: (argument_list
+            (identifier)
+            (type
+              name: (identifier))))
         (cast_expression
           value: (string)
           type: (type

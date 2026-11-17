@@ -59,3 +59,23 @@ SELECT current_timestamp, a -> 'k' FROM t;
 
 \set ON_ERROR_STOP on
 -- <- keyword.directive
+
+GRANT SELECT ON accounts TO reporting;
+-- <- keyword
+--    ^ keyword
+--           ^ keyword
+--              ^ variable
+--                       ^ keyword
+CREATE SEQUENCE ids START 100;
+--     ^ keyword
+--              ^ variable
+--                  ^ keyword
+--                        ^ number
+CREATE FUNCTION one() RETURNS int IMMUTABLE RETURN 1;
+--                                ^ keyword
+ALTER TABLE t ALTER COLUMN level SET STORAGE plain;
+--                         ^ property
+--                                   ^ keyword
+VACUUM FULL t;
+-- <- keyword
+--     ^ keyword

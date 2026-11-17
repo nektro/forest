@@ -31,14 +31,12 @@
 // The deepest nesting of block comments read exactly: `/* /* /* */ */ */`.
 const COMMENT_DEPTH = 5;
 
-// Dollar-quote tags read exactly. `$$` is always included.
+// Dollar-quote tags read exactly. `$$` is always included. Each tag costs
+// three tokens, and every token widens the parse table, so only common tags
+// are listed; others are read leniently.
 const DOLLAR_TAGS = [
-  'body', 'BODY', 'func', 'FUNC', 'function', 'FUNCTION', 'fn', 'proc',
-  'procedure', 'sql', 'SQL', 'plpgsql', 'code', 'do', 'DO', 'doblock',
-  'block', 'outer', 'inner', 'q', 'Q', 'x', 'y', 'z', 'a', 'b', 'c', 'd',
-  'e', 'f', 'p', 's', 't', 're', 'pl', 'ex', 'cmd', 'query', 'trigger',
-  'tag', 'EOF', 'eof', 'js', 'json', 'python', 'py', 'perl', 'tcl', 'main',
-  'test', 'str', 'string', 'text', 'def', 'migration', '_',
+  'body', 'BODY', 'func', 'function', 'fn', 'proc', 'sql', 'plpgsql', 'code',
+  'do', 'q', 'x', 'y', 'a', 'f', '_', 'outer', 'inner', 'ex',
 ];
 
 const PREC = {
@@ -166,9 +164,10 @@ module.exports = grammar({
     [$._token_before_is, $.object_reference],
     [$._column_name, $.table_constraint],
     [$.group_by_clause],
+    [$._dotted_name, $._symbol],
+    [$._dotted_name, $.set_statement],
     [$.object_reference, $.parameter],
     [$._argument, $._expression],
-    [$.create_type_statement, $._create_kind],
     [$.drop_statement, $._keyword],
     [$._if_exists, $._keyword],
   ],
@@ -221,29 +220,18 @@ module.exports = grammar({
       $.truncate_statement,
       $.transaction_statement,
       $.set_statement,
-      $.reset_statement,
-      $.show_statement,
       $.explain_statement,
       $.copy_statement,
       $.comment_statement,
-      $.grant_statement,
       $.pragma_statement,
       $.attach_statement,
-      $.detach_statement,
       $.use_statement,
       $.do_statement,
       $.call_statement,
       $.prepare_statement,
       $.execute_statement,
-      $.deallocate_statement,
       $.declare_statement,
-      $.cursor_statement,
-      $.listen_statement,
-      $.notify_statement,
-      $.lock_statement,
-      $.refresh_statement,
-      $.describe_statement,
-      $.maintenance_statement,
+      $.other_statement,
       // psql: a variable holding a statement (`:query;`).
       $.parameter,
     ),
@@ -438,11 +426,6 @@ module.exports = grammar({
           seq(kw('using'), field('using', $.column_list), optional(seq(kw('as'), $.identifier))),
         ),
       )),
-      prec.left(1, seq(
-        field('left', $._table_expression),
-        choice(kw('cross', 'apply'), kw('outer', 'apply')),
-        field('right', $._table_expression),
-      )),
     ),
 
     _join_keyword: $ => choice(
@@ -576,7 +559,7 @@ module.exports = grammar({
 
     search_clause: $ => seq(
       kw('search'),
-      choice(kw('depth'), kw('breadth')),
+      $.keyword,
       kw('first', 'by'),
       commaSep1($.identifier),
       kw('set'),
@@ -600,7 +583,8 @@ module.exports = grammar({
       optional($.with_clause),
       choice(kw('insert'), kw('replace')),
       optional($.conflict_resolution),
-      optional(choice(kw('ignore'), kw('low_priority'), kw('delayed'), kw('high_priority'))),
+      // MySQL: `INSERT IGNORE`, `INSERT LOW_PRIORITY INTO`
+      optional(choice(kw('ignore'), seq($.keyword, kw('into')))),
       optional(kw('into')),
       field('table', $.object_reference),
       optional(seq(kw('as'), field('alias', $.identifier))),
@@ -643,7 +627,7 @@ module.exports = grammar({
 
     returning_clause: $ => seq(
       kw('returning'),
-      optional(seq(kw('with'), parens(commaSep1(seq(choice(kw('old'), kw('new')), kw('as'), $.identifier))))),
+      optional(seq(kw('with'), parens(commaSep1(seq($.keyword, kw('as'), $.identifier))))),
       $.select_list,
       optional($.into_clause),
     ),
@@ -683,7 +667,6 @@ module.exports = grammar({
       optional($.with_clause),
       kw('update'),
       optional($.conflict_resolution),
-      optional(kw('low_priority')),
       optional(kw('ignore')),
       field('table', $._table_expression),
       kw('set'),
@@ -698,9 +681,7 @@ module.exports = grammar({
     delete_statement: $ => seq(
       optional($.with_clause),
       kw('delete'),
-      optional(kw('low_priority')),
-      optional(kw('quick')),
-      optional(kw('ignore')),
+      repeat(choice($.keyword, kw('ignore'))),
       kw('from'),
       field('table', $.table_reference),
       optional(seq(kw('using'), commaSep1($._table_expression))),
@@ -726,8 +707,8 @@ module.exports = grammar({
     merge_when_clause: $ => seq(
       kw('when'),
       optional(kw('not')),
-      kw('matched'),
-      optional(seq(kw('by'), choice(kw('source'), kw('target')))),
+      $.keyword,
+      optional(seq(kw('by'), $.keyword)),
       optional(seq(kw('and'), field('condition', $._expression))),
       kw('then'),
       choice(
@@ -791,7 +772,7 @@ module.exports = grammar({
     like_clause: $ => seq(
       kw('like'),
       $.object_reference,
-      repeat(seq(choice(kw('including'), kw('excluding')), $.identifier)),
+      repeat($.keyword),
     ),
 
     partition_bound: $ => choice(
@@ -811,7 +792,7 @@ module.exports = grammar({
       seq(kw('using'), field('module', $.identifier), optional($.token_group)),
       seq(kw('with'), choice($.storage_parameters, $.identifier)),
       seq(kw('without'), $.identifier),
-      seq(kw('on', 'commit'), choice(kw('preserve', 'rows'), kw('delete', 'rows'), kw('drop'))),
+      seq(kw('on', 'commit'), $.keyword, optional(kw('rows'))),
       seq(kw('tablespace'), $.identifier),
       seq(kw('server'), $.identifier),
       seq(kw('options'), $.storage_parameters),
@@ -824,9 +805,7 @@ module.exports = grammar({
         optional('='),
         choice($.identifier, $.string, $.number, kw('default')),
       ),
-      seq(kw('comment'), optional('='), $.string),
       seq(kw('collate'), optional('='), $.identifier),
-      seq(kw('auto_increment'), optional('='), $.number),
     ),
 
     storage_parameters: $ => parens(commaSep1(seq(
@@ -849,10 +828,13 @@ module.exports = grammar({
       kw('off'),
     ),
 
+    // Words in a column definition that are not a constraint keyword
+    // (`AUTOINCREMENT`, `COMMENT 'x'`, `STORAGE plain`) are `keyword`s, with
+    // any string or number after them.
     column_definition: $ => seq(
       field('name', $._column_name),
       optional(field('type', alias($._column_type, $.type))),
-      repeat($.column_constraint),
+      repeat(choice($.column_constraint, seq($.keyword, optional(choice($.string, $.number))))),
     ),
 
     // Words that are keywords somewhere a column can be named.
@@ -872,7 +854,7 @@ module.exports = grammar({
     _column_type: $ => prec.right(seq(
       $._type_name,
       repeat(choice(
-        $.identifier,
+        $.keyword,
         kw('precision'),
         kw('varying'),
         $.type_arguments,
@@ -886,28 +868,22 @@ module.exports = grammar({
       choice(
         seq(optional(kw('not')), kw('null'), optional($.on_conflict_resolution)),
         prec(PREC.default_value, seq(kw('default'), field('default', $._expression))),
-        seq(kw('primary', 'key'), optional(choice(kw('asc'), kw('desc'))), repeat($._index_parameter), optional($.on_conflict_resolution), optional(kw('autoincrement'))),
+        seq(kw('primary', 'key'), optional(choice(kw('asc'), kw('desc'))), repeat($._index_parameter), optional($.on_conflict_resolution)),
         seq(kw('unique'), optional(kw('key')), optional($.nulls_distinct), repeat($._index_parameter), optional($.on_conflict_resolution)),
         seq(kw('check'), parens($._expression)),
         $.references_clause,
+        // `GENERATED ALWAYS AS (a + b) STORED`, `AS IDENTITY (START 1)`
         seq(
-          optional(seq(kw('generated'), choice(kw('always'), kw('by', 'default')))),
+          optional(seq(kw('generated'), optional(choice($.keyword, kw('by', 'default'))))),
           kw('as'),
           choice(
-            seq(parens($._expression), optional(choice(kw('stored'), kw('virtual')))),
-            seq(kw('identity'), optional($.token_group)),
+            seq(parens($._expression), optional($.keyword)),
+            seq($.keyword, optional($.token_group)),
           ),
         ),
-        kw('auto_increment'),
-        kw('autoincrement'),
-        seq(kw('comment'), $.string),
         seq(kw('on', 'update'), $._expression),
         seq(kw('collate'), $.object_reference),
         $._deferrable,
-        seq(kw('compression'), $.identifier),
-        seq(kw('storage'), $.identifier),
-        kw('invisible'),
-        kw('visible'),
       ),
     )),
 
@@ -918,13 +894,13 @@ module.exports = grammar({
       choice(kw('rollback'), kw('abort'), kw('fail'), kw('ignore'), kw('replace')),
     ),
 
-    _deferrable: _ => choice(
+    // `DEFERRABLE`, `INITIALLY DEFERRED`, `NOT VALID`, `NOT ENFORCED`,
+    // `NO INHERIT`
+    _deferrable: $ => choice(
       seq(optional(kw('not')), kw('deferrable')),
-      seq(kw('initially'), choice(kw('deferred'), kw('immediate'))),
-      seq(kw('not'), kw('enforced')),
-      kw('enforced'),
-      kw('not', 'valid'),
-      kw('no', 'inherit'),
+      seq(kw('initially'), $.keyword),
+      seq(kw('not'), $.keyword),
+      seq(kw('no'), $.keyword),
     ),
 
     references_clause: $ => prec.right(seq(
@@ -932,7 +908,7 @@ module.exports = grammar({
       field('table', $.object_reference),
       optional($.column_list),
       repeat(choice(
-        seq(kw('match'), choice(kw('full'), kw('partial'), kw('simple'))),
+        seq(kw('match'), $.keyword),
         seq(kw('on'), choice(kw('delete'), kw('update')), $.referential_action),
         $._deferrable,
       )),
@@ -941,7 +917,7 @@ module.exports = grammar({
     referential_action: $ => choice(
       kw('cascade'),
       kw('restrict'),
-      kw('no', 'action'),
+      seq(kw('no'), $.keyword),
       seq(kw('set'), choice(kw('null'), kw('default')), optional($.column_list)),
     ),
 
@@ -986,14 +962,15 @@ module.exports = grammar({
           parens(commaSep1($.index_column)),
         ),
       ),
-      repeat($._deferrable),
+      // `NOT VALID`, `ENFORCED`
+      repeat(choice($._deferrable, $.keyword)),
     )),
 
     _index_parameter: $ => choice(
       seq(kw('include'), parens(commaSep1($._expression))),
       seq(kw('with'), $.storage_parameters),
       seq(kw('using', 'index', 'tablespace'), $.identifier),
-      seq(kw('using'), choice(kw('btree'), kw('hash'))),
+      seq(kw('using'), $.keyword),
     ),
 
     index_column: $ => prec.right(seq(
@@ -1021,7 +998,7 @@ module.exports = grammar({
       kw('as'),
       $.select_statement,
       optional(choice(
-        seq(kw('with'), optional(choice(kw('cascaded'), kw('local'))), kw('check', 'option')),
+        seq(kw('with'), optional($.keyword), kw('check', 'option')),
         $.with_data,
       )),
     ),
@@ -1047,12 +1024,12 @@ module.exports = grammar({
     create_function_statement: $ => seq(
       kw('create'),
       optional($._or_replace),
-      optional(seq(kw('definer'), '=', $._expression)),
       choice(kw('function'), kw('procedure')),
       optional($._if_not_exists),
       field('name', $.object_reference),
       field('parameters', $.function_parameters),
       repeat($._function_option),
+      optional(seq(kw('return'), field('body', $._expression))),
     ),
 
     _parameter_mode: _ => choice(kw('in'), kw('out'), kw('inout'), kw('variadic')),
@@ -1067,33 +1044,28 @@ module.exports = grammar({
       optional(seq(choice(kw('default'), '='), field('default', $._expression))),
     ),
 
+    // RETURNS, LANGUAGE and the body are parsed; the other options
+    // (`IMMUTABLE`, `SECURITY DEFINER`, `COST 10`, `SET x TO y`) are words.
     _function_option: $ => choice(
       seq(kw('returns'), field('return_type', choice(
         $.type,
         seq(kw('setof'), $.type),
         seq(kw('table'), parens(commaSep1(seq($.identifier, $.type)))),
-        kw('trigger'),
       ))),
       seq(kw('language'), field('language', choice($.identifier, $.string))),
       seq(kw('as'), field('body', choice($._string_literal, $.parameter)), optional(seq(',', $._string_literal))),
-      kw('immutable'),
-      kw('stable'),
-      kw('volatile'),
-      seq(optional(kw('not')), kw('leakproof')),
-      kw('called', 'on', 'null', 'input'),
-      kw('returns', 'null', 'on', 'null', 'input'),
-      kw('strict'),
-      seq(optional(kw('external')), kw('security'), choice(kw('definer'), kw('invoker'))),
-      seq(kw('parallel'), $.identifier),
-      seq(kw('cost'), $.number),
-      seq(kw('rows'), $.number),
-      seq(kw('support'), $.object_reference),
-      seq(kw('set'), $.identifier, choice(seq(choice(kw('to'), '='), commaSep1($._option_value)), kw('from', 'current'))),
-      kw('window'),
-      seq(kw('transform'), commaSep1(seq(kw('for', 'type'), $.type))),
-      seq(optional(kw('not')), kw('deterministic')),
-      seq(kw('return'), field('body', $._expression)),
       field('body', $.atomic_block),
+      $.keyword,
+      $.number,
+      $.string,
+      kw('not'),
+      kw('on'),
+      kw('null'),
+      kw('to'),
+      kw('for'),
+      kw('from'),
+      kw('rows'),
+      '=',
     ),
 
     // `BEGIN ATOMIC ... END` (PostgreSQL) and the statement list of a SQLite
@@ -1113,7 +1085,8 @@ module.exports = grammar({
       kw('trigger'),
       optional($._if_not_exists),
       field('name', $.object_reference),
-      optional(choice(kw('before'), kw('after'), kw('instead', 'of'))),
+      // `BEFORE`, `AFTER`, `INSTEAD OF`
+      optional(seq($.keyword, optional(kw('of')))),
       $.trigger_event,
       repeat(seq(kw('or'), $.trigger_event)),
       kw('on'),
@@ -1121,15 +1094,14 @@ module.exports = grammar({
       repeat(choice(
         seq(kw('from'), $.object_reference),
         $._deferrable,
-        seq(kw('referencing'), repeat1(seq(
-          choice(kw('old'), kw('new')),
-          choice(kw('table'), kw('row')),
-          optional(kw('as')),
-          $.identifier,
-        ))),
-        seq(kw('for'), optional(kw('each')), choice(kw('row'), kw('statement'))),
-        seq(kw('when'), field('condition', $._expression)),
+        // `REFERENCING NEW TABLE AS n`
+        seq(kw('referencing'), repeat1(seq($.keyword, choice(kw('table'), kw('row')), optional(kw('as')), $.identifier))),
+        // `FOR EACH ROW`, `FOR STATEMENT`
+        seq(kw('for'), optional($.keyword), choice(kw('row'), $.keyword)),
       )),
+      // Last among the options: a word after the condition would give every
+      // expression context its own parser states.
+      optional(seq(kw('when'), field('condition', $._expression))),
       choice(
         seq(kw('execute'), choice(kw('function'), kw('procedure')), $.function_call),
         $.atomic_block,
@@ -1158,7 +1130,7 @@ module.exports = grammar({
       ),
       repeat(choice(
         seq(kw('authorization'), $.identifier),
-        seq(optional(kw('default')), choice(kw('character', 'set'), kw('charset'), kw('collate')), optional('='), choice($.identifier, $.string)),
+        seq(optional(kw('default')), choice(kw('character', 'set'), kw('collate')), optional('='), choice($.identifier, $.string)),
         kw('with'),
         seq($.identifier, optional('='), $._option_value),
       )),
@@ -1168,85 +1140,43 @@ module.exports = grammar({
         $.create_index_statement,
         $.create_trigger_statement,
         $.create_statement,
-        $.grant_statement,
       )),
     )),
 
+    // `CREATE TYPE t AS (a int)`, `AS ENUM ('a')`, `AS RANGE (...)`, and
+    // `CREATE TYPE t (INPUT = ...)` or just `CREATE TYPE t`.
     create_type_statement: $ => seq(
       kw('create'),
       kw('type'),
       field('name', $.object_reference),
-      kw('as'),
-      choice(
-        seq(kw('enum'), parens(commaSep($.string))),
-        parens(commaSep(seq(
-          field('attribute', $.identifier),
-          $.type,
-          optional(seq(kw('collate'), $.object_reference)),
-        ))),
-        seq(kw('range'), $.token_group),
-      ),
+      optional(choice(
+        seq(kw('as'), choice(
+          parens(commaSep(seq(
+            field('attribute', $.identifier),
+            $.type,
+            optional(seq(kw('collate'), $.object_reference)),
+          ))),
+          seq($.keyword, $.token_group),
+        )),
+        $.token_group,
+      )),
     ),
 
     // Every other CREATE: the object kind, then the rest as plain tokens.
+    // Every other CREATE (`CREATE SEQUENCE`, `CREATE ROLE`, `CREATE TEXT
+    // SEARCH CONFIGURATION`, ...): the first word of the object kind, then
+    // the rest as plain tokens.
     create_statement: $ => seq(
       kw('create'),
       optional($._or_replace),
-      repeat(choice(kw('trusted'), kw('procedural'), kw('default'), kw('unique'))),
-      field('kind', alias($._create_kind, $.object_kind)),
+      optional(choice($._temporary, kw('default'), kw('unique'), kw('foreign'))),
+      field('kind', $.object_kind),
       repeat($._token),
     ),
 
-    object_kind: $ => choice(
-      $._create_kind,
-      kw('database'),
-      kw('schema'),
-      seq(kw('materialized'), kw('view')),
-      kw('view'),
-      kw('table'),
-      seq(kw('foreign'), kw('table')),
-      kw('index'),
-      kw('trigger'),
-      kw('function'),
-      kw('procedure'),
-    ),
-
-    _create_kind: _ => choice(
-      kw('aggregate'),
-      kw('operator'),
-      prec(1, seq(kw('operator'), choice(kw('class'), kw('family')))),
-      kw('collation'),
-      kw('conversion'),
-      seq(kw('text', 'search'), choice(kw('configuration'), kw('dictionary'), kw('parser'), kw('template'))),
-      kw('foreign', 'data', 'wrapper'),
-      kw('server'),
-      prec(1, kw('user', 'mapping')),
-      kw('publication'),
-      kw('subscription'),
-      kw('policy'),
-      kw('rule'),
-      kw('statistics'),
-      kw('access', 'method'),
-      prec(1, kw('event', 'trigger')),
-      kw('event'),
-      kw('transform'),
-      kw('cast'),
-      kw('language'),
-      kw('tablespace'),
-      kw('role'),
-      kw('user'),
-      kw('group'),
-      kw('sequence'),
-      seq(choice(kw('temp'), kw('temporary'), kw('unlogged')), kw('sequence')),
-      kw('type'),
-      kw('domain'),
-      kw('extension'),
-      kw('routine'),
-      kw('owned'),
-      kw('large', 'object'),
-      kw('system'),
-      prec(1, kw('default', 'privileges')),
-    ),
+    // The first word of the kind of object a generic CREATE, ALTER, DROP or
+    // COMMENT ON is about (`SEQUENCE`, `MATERIALIZED`, `ROLE`).
+    object_kind: $ => $._identifier_token,
 
     alter_table_statement: $ => seq(
       kw('alter'),
@@ -1312,28 +1242,18 @@ module.exports = grammar({
     // Any other action, as plain tokens.
     alter_table_action: $ => seq(
       choice(
-        kw('set'), kw('owner'),
-        kw('enable'), kw('disable'), kw('reset'), kw('cluster'), kw('inherit'),
-        kw('no'), kw('replica'), kw('force'), kw('attach'), kw('detach'),
-        kw('validate'), kw('of'), kw('not'), kw('modify'), kw('change'),
-        kw('engine'), kw('options'),
+        $.keyword,
+        kw('set'),
+        kw('no'),
+        kw('not'),
       ),
       repeat($._token_no_comma),
     ),
 
     alter_statement: $ => seq(
       kw('alter'),
-      field('kind', alias(choice(
-        $._create_kind,
-        kw('database'),
-        kw('schema'),
-        seq(kw('materialized'), kw('view')),
-        kw('view'),
-        kw('index'),
-        kw('trigger'),
-        kw('function'),
-        kw('procedure'),
-      ), $.object_kind)),
+      optional(kw('foreign')),
+      field('kind', $.object_kind),
       repeat($._token),
     ),
 
@@ -1356,48 +1276,27 @@ module.exports = grammar({
       kw('truncate'),
       optional(kw('table')),
       commaSep1(seq(optional(kw('only')), $.object_reference, optional('*'))),
-      optional(seq(choice(kw('restart'), kw('continue')), kw('identity'))),
+      // `RESTART IDENTITY`, `CONTINUE IDENTITY`
+      repeat($.keyword),
       optional(choice(kw('cascade'), kw('restrict'))),
     ),
 
     // Other statements
     // ----------------
 
-    transaction_statement: $ => prec.right(choice(
-      seq(
-        choice(kw('begin'), kw('start')),
-        optional(choice(kw('deferred'), kw('immediate'), kw('exclusive'))),
-        optional(choice(kw('work'), kw('transaction'))),
-        commaSep($.transaction_mode),
-      ),
-      seq(
-        choice(kw('commit'), kw('end'), kw('abort'), kw('rollback')),
-        optional(choice(kw('work'), kw('transaction'))),
-        optional(seq(kw('and'), optional(kw('no')), kw('chain'))),
-        optional(seq(kw('to'), optional(kw('savepoint')), $.identifier)),
-      ),
-      seq(choice(kw('commit'), kw('rollback')), kw('prepared'), $.string),
-      seq(kw('prepare', 'transaction'), $.string),
-      seq(kw('savepoint'), $.identifier),
-      seq(kw('release'), optional(kw('savepoint')), $.identifier),
+    // BEGIN, COMMIT, END, ROLLBACK and ABORT, then plain tokens (`BEGIN
+    // ISOLATION LEVEL SERIALIZABLE`, `ROLLBACK TO SAVEPOINT s`). START,
+    // SAVEPOINT and RELEASE are `other_statement`s.
+    transaction_statement: $ => prec.right(seq(
+      choice(kw('begin'), kw('commit'), kw('end'), kw('rollback'), kw('abort')),
+      repeat($._token),
     )),
 
-    transaction_mode: $ => choice(
-      seq(kw('isolation', 'level'), choice(
-        kw('serializable'),
-        kw('repeatable', 'read'),
-        kw('read', 'committed'),
-        kw('read', 'uncommitted'),
-      )),
-      kw('read', 'write'),
-      kw('read', 'only'),
-      seq(kw('snapshot'), $.string),
-      seq(optional(kw('not')), kw('deferrable')),
-    ),
+    _variable_assignment: $ => seq(field('left', $.parameter), ':=', field('right', $._expression)),
 
     set_statement: $ => seq(
       kw('set'),
-      repeat(choice(kw('session'), kw('local'), kw('global'), kw('persist'))),
+      repeat(choice(kw('session'), kw('local'), kw('global'))),
       choice(
         seq(
           field('name', choice($._dotted_name, $.parameter)),
@@ -1407,32 +1306,22 @@ module.exports = grammar({
             kw('on'),
             kw('off'),
             // MySQL: `SET @a = 1, @b := 2`
-            alias(seq(field('left', $.parameter), ':=', field('right', $._expression)), $.assignment),
+            alias($._variable_assignment, $.assignment),
           )),
         ),
-        seq(field('name', $._dotted_name), kw('from', 'current')),
         seq(kw('time', 'zone'), choice($._expression, kw('local'))),
-        seq(kw('transaction'), commaSep1($.transaction_mode)),
-        seq(kw('session', 'characteristics', 'as', 'transaction'), commaSep1($.transaction_mode)),
-        seq(kw('constraints'), choice(kw('all'), commaSep1($.object_reference)), choice(kw('deferred'), kw('immediate'))),
-        prec.dynamic(-1, seq(
-          choice(kw('role'), kw('authorization'), kw('names'), kw('schema'), kw('character', 'set'), kw('xml', 'option')),
-          repeat1($._token),
-        )),
+        // `SET ROLE x`, `SET TRANSACTION ...`, `SET NAMES 'utf8'`,
+        // `SET x FROM CURRENT`, as plain tokens.
+        prec.dynamic(-1, seq($.identifier, repeat1($._token))),
       ),
     ),
 
-    reset_statement: $ => seq(kw('reset'), repeat1($._token)),
-
-    show_statement: $ => seq(kw('show'), repeat1($._token)),
-
+    // `EXPLAIN (ANALYZE, COSTS OFF)`, `EXPLAIN ANALYZE VERBOSE`,
+    // `EXPLAIN QUERY PLAN`
     explain_statement: $ => seq(
       kw('explain'),
-      optional(choice(
-        kw('query', 'plan'),
-        $.storage_parameters,
-        repeat1(choice(kw('analyze'), kw('analyse'), kw('verbose'))),
-      )),
+      optional($.storage_parameters),
+      repeat($.keyword),
       choice(
         $.select_statement,
         $.insert_statement,
@@ -1443,7 +1332,6 @@ module.exports = grammar({
         $.create_view_statement,
         $.execute_statement,
         $.declare_statement,
-        $.refresh_statement,
         $.pragma_statement,
       ),
     ),
@@ -1451,8 +1339,8 @@ module.exports = grammar({
     copy_statement: $ => seq(
       $._copy_head,
       choice(
-        seq(kw('to'), choice($.string, $.parameter, kw('stdout'), seq(kw('program'), $.string))),
-        seq(kw('from'), choice($.string, $.parameter, seq(kw('program'), $.string))),
+        // `TO 'file'`, `TO STDOUT`, `FROM PROGRAM 'cmd'`
+        seq(choice(kw('to'), kw('from')), choice($.string, $.parameter, $.keyword)),
       ),
       optional($._copy_options),
       optional($.where_clause),
@@ -1468,7 +1356,7 @@ module.exports = grammar({
 
     _copy_head: $ => seq(
       kw('copy'),
-      optional(kw('binary')),
+      optional($.keyword),
       choice(
         seq(field('table', $.object_reference), optional($.column_list)),
         $.subquery,
@@ -1486,10 +1374,7 @@ module.exports = grammar({
           kw('null'),
           kw('not'),
           kw('as'),
-          kw('delimiter'),
           kw('escape'),
-          kw('binary'),
-          kw('force'),
           '*',
           ',',
         )),
@@ -1510,15 +1395,9 @@ module.exports = grammar({
       choice(
         seq(kw('column'), $.column_reference),
         seq(field('kind', $.object_kind), repeat1($._token_before_is)),
-        seq(kw('constraint'), $.identifier, kw('on'), optional(kw('domain')), $.object_reference),
       ),
       kw('is'),
       choice($._string_literal, $.parameter, kw('null')),
-    ),
-
-    grant_statement: $ => seq(
-      choice(kw('grant'), kw('revoke')),
-      repeat1($._token),
     ),
 
     pragma_statement: $ => seq(
@@ -1541,12 +1420,6 @@ module.exports = grammar({
       optional(seq(kw('key'), $._expression)),
     ),
 
-    detach_statement: $ => seq(
-      kw('detach'),
-      optional(kw('database')),
-      field('name', $.identifier),
-    ),
-
     use_statement: $ => seq(kw('use'), field('name', $.identifier)),
 
     do_statement: $ => seq(
@@ -1558,82 +1431,52 @@ module.exports = grammar({
 
     call_statement: $ => seq(kw('call'), $.function_call),
 
-    prepare_statement: $ => seq(
-      kw('prepare'),
-      field('name', $.identifier),
-      optional(parens(commaSep1($.type))),
-      choice(kw('as'), kw('from')),
-      choice($._statement, $.string),
+    prepare_statement: $ => choice(
+      seq(
+        kw('prepare'),
+        field('name', $.identifier),
+        optional(parens(commaSep1($.type))),
+        choice(kw('as'), kw('from')),
+        choice($._statement, $.string),
+      ),
+      // `PREPARE TRANSACTION 'x'`
+      seq(kw('prepare'), $.keyword, $.string),
     ),
 
     execute_statement: $ => seq(
-      choice(kw('execute'), kw('exec')),
+      kw('execute'),
       field('name', $.identifier),
       optional($.argument_list),
       optional(seq(kw('using'), commaSep1($._expression))),
     ),
 
-    deallocate_statement: $ => seq(
-      kw('deallocate'),
-      optional(kw('prepare')),
-      choice(kw('all'), field('name', $.identifier)),
-    ),
-
+    // `DECLARE c SCROLL CURSOR WITH HOLD FOR SELECT ...`
     declare_statement: $ => seq(
       kw('declare'),
       field('name', $.identifier),
-      repeat(choice(kw('binary'), kw('asensitive'), kw('insensitive'), kw('no'), kw('scroll'))),
-      kw('cursor'),
-      optional(seq(choice(kw('with'), kw('without')), kw('hold'))),
+      repeat(choice($.keyword, kw('no'), kw('with'), kw('without'))),
       kw('for'),
       $.select_statement,
     ),
 
-    cursor_statement: $ => seq(
-      choice(kw('fetch'), kw('move'), kw('close')),
-      repeat1($._token),
-    ),
-
-    listen_statement: $ => seq(
-      choice(kw('listen'), kw('unlisten')),
-      choice($.identifier, '*'),
-    ),
-
-    notify_statement: $ => seq(
-      kw('notify'),
-      field('channel', $.identifier),
-      optional(seq(',', $.string)),
-    ),
-
-    lock_statement: $ => seq(
-      kw('lock'),
-      repeat1($._token),
-    ),
-
-    refresh_statement: $ => seq(
-      kw('refresh', 'materialized', 'view'),
-      optional(kw('concurrently')),
-      field('name', $.object_reference),
-      optional($.with_data),
-    ),
-
-    describe_statement: $ => seq(
-      choice(kw('describe'), kw('desc')),
-      field('name', $.object_reference),
-      optional($.identifier),
-    ),
-
     // VACUUM, ANALYZE, REINDEX, CLUSTER, CHECKPOINT and the like, as plain
     // tokens.
-    maintenance_statement: $ => prec.right(seq(
-      choice(
-        kw('vacuum'), kw('analyze'), kw('analyse'), kw('reindex'), kw('cluster'),
-        kw('checkpoint'), kw('discard'), kw('load'), kw('security', 'label'),
-        kw('import', 'foreign', 'schema'), kw('reassign', 'owned'), kw('optimize'),
-        kw('flush'), kw('unlock'), kw('kill'), kw('rename'), kw('repack'),
-      ),
+    // Any other statement: a command word, then plain tokens. This covers
+    // GRANT, REVOKE, SHOW, RESET, VACUUM, ANALYZE, REINDEX, CHECKPOINT, LOCK,
+    // FETCH, MOVE, CLOSE, LISTEN, NOTIFY, START TRANSACTION, SAVEPOINT,
+    // RELEASE, DEALLOCATE, DESCRIBE, REFRESH MATERIALIZED VIEW, ...
+    other_statement: $ => prec.right(seq(
+      field('command', alias($._identifier_token, $.command)),
       repeat($._token),
     )),
+
+    // A word that is a keyword where it appears but is lexed as a name
+    // (`IMMUTABLE`, `BEFORE`, `MATCHED`, `STORED`). Every keyword token widens
+    // the parse table, so keywords that only appear in one rarely used place
+    // are read this way. Its precedence of -1 makes a name win where both
+    // could be read (`a b` in a column is a column and its type), so a rule
+    // that should go on taking words needs -1 as well.
+    keyword: $ => prec(-1, $._identifier_token),
 
     // Plain tokens
     // ------------
@@ -1793,13 +1636,12 @@ module.exports = grammar({
     )),
 
     cast_call: $ => seq(
-      choice(kw('cast'), kw('try_cast')),
+      kw('cast'),
       '(',
       field('value', $._expression),
       kw('as'),
       field('type', $.type),
       optional(seq(kw('collate'), $.object_reference)),
-      optional($.json_format),
       ')',
     ),
 
@@ -1928,7 +1770,6 @@ module.exports = grammar({
           optional(choice(kw('distinct'), kw('all'))),
           commaSep1($._argument),
           optional($.order_by_clause),
-          optional(seq(kw('separator'), $.string)),
           optional($.json_clauses),
         ),
         $.select_statement,
@@ -1957,7 +1798,6 @@ module.exports = grammar({
       $.named_argument,
       seq(kw('variadic'), $._expression),
       $.json_key_value,
-      seq($._expression, $.json_format),
       // `xmlattributes(1 AS one)`, `xmlserialize(content x AS text)`
       seq($._expression, kw('as'), $.type),
       // `xmlelement(name foo)`, `xmlserialize(content x AS text)`
@@ -1974,10 +1814,7 @@ module.exports = grammar({
       field('key', $._expression),
       choice(':', kw('value')),
       field('value', $._expression),
-      optional($.json_format),
     )),
-
-    json_format: $ => prec.right(seq(kw('format', 'json'), optional(seq(kw('encoding'), $.identifier)))),
 
     // The clauses that end an SQL/JSON or SQL/XML call (`RETURNING jsonb`,
     // `ABSENT ON NULL`, `PASSING x AS y`, `COLUMNS (...)`), read as plain

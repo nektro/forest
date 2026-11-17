@@ -365,6 +365,7 @@ WITH RECURSIVE r (n) AS NOT MATERIALIZED (SELECT 1 UNION ALL SELECT n + 1 FROM r
                   name: (object_reference
                     name: (identifier)))))))
         (search_clause
+          (keyword)
           (identifier)
           (identifier)))
       (cte

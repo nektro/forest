@@ -247,7 +247,9 @@ UPDATE OR IGNORE t SET a = 1 ORDER BY b LIMIT 5 OFFSET 2;
           table: (identifier)
           name: (identifier))))
     (returning_clause
+      (keyword)
       (identifier)
+      (keyword)
       (identifier)
       (select_list
         (column_reference
@@ -347,17 +349,22 @@ MERGE INTO t USING s ON t.id = s.id WHEN MATCHED AND s.del THEN DELETE WHEN MATC
         table: (identifier)
         name: (identifier)))
     (merge_when_clause
+      (keyword)
       condition: (column_reference
         table: (identifier)
         name: (identifier)))
     (merge_when_clause
+      (keyword)
       (assignment
         left: (identifier)
         right: (column_reference
           table: (identifier)
           name: (identifier))))
-    (merge_when_clause)
     (merge_when_clause
+      (keyword)
+      (keyword))
+    (merge_when_clause
+      (keyword)
       (column_list
         (identifier)
         (identifier))
