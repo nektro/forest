@@ -1,0 +1,64 @@
+/* Default forest highlight theme. Classes are hl-<capture>, one per prefix
+   of the capture name: @function.builtin gets .hl-function and
+   .hl-function-builtin, so a theme can be as coarse or fine as it likes. */
+
+.forest {
+  --hl-fg: #24292f;
+  --hl-comment: #6e7781;
+  --hl-keyword: #cf222e;
+  --hl-string: #0a3069;
+  --hl-escape: #116329;
+  --hl-number: #0550ae;
+  --hl-function: #8250df;
+  --hl-type: #953800;
+  --hl-constant: #0550ae;
+  --hl-property: #0550ae;
+  --hl-label: #116329;
+  --hl-tag: #1b7c83;
+  --hl-punctuation: #57606a;
+  --hl-diff-plus: #116329;
+  --hl-diff-minus: #82071e;
+  --hl-diff-delta: #953800;
+  color: var(--hl-fg);
+}
+
+@media (prefers-color-scheme: dark) {
+  .forest {
+    --hl-fg: #e6edf3;
+    --hl-comment: #8b949e;
+    --hl-keyword: #ff7b72;
+    --hl-string: #a5d6ff;
+    --hl-escape: #7ee787;
+    --hl-number: #52adff;
+    --hl-function: #d2a8ff;
+    --hl-type: #ffa657;
+    --hl-constant: #79c0ff;
+    --hl-property: #79c0ff;
+    --hl-tag: #7ee787;
+    --hl-label: #56d4dd;
+    --hl-punctuation: #8b949e;
+    --hl-diff-plus: #7ee787;
+    --hl-diff-minus: #ffa198;
+    --hl-diff-delta: #ffa657;
+  }
+}
+
+.forest .hl-comment { color: var(--hl-comment); font-style: italic; }
+.forest .hl-keyword { color: var(--hl-keyword); }
+.forest .hl-operator { color: var(--hl-keyword); }
+.forest .hl-string, .forest .hl-character { color: var(--hl-string); }
+.forest .hl-string-escape, .forest .hl-string-special { color: var(--hl-escape); }
+.forest .hl-number, .forest .hl-boolean { color: var(--hl-number); }
+.forest .hl-function { color: var(--hl-function); }
+.forest .hl-type { color: var(--hl-type); }
+.forest .hl-constant { color: var(--hl-constant); }
+.forest .hl-property { color: var(--hl-property); }
+.forest .hl-variable { color: var(--hl-fg); }
+.forest .hl-variable-parameter { font-style: italic; }
+.forest .hl-label { color: var(--hl-label); }
+.forest .hl-tag { color: var(--hl-tag); }
+.forest .hl-tag-attribute { color: var(--hl-property); }
+.forest .hl-punctuation { color: var(--hl-punctuation); }
+.forest .hl-diff-plus { color: var(--hl-diff-plus); }
+.forest .hl-diff-minus { color: var(--hl-diff-minus); }
+.forest .hl-diff-delta { color: var(--hl-diff-delta); }
