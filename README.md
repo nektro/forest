@@ -24,6 +24,7 @@ A bundle of tree-sitter grammars.
 | Justfile | [languages/just](languages/just) | none |
 | KDL (2.0, and 1.0) | [languages/kdl](languages/kdl) | none |
 | Lua (5.1 to 5.5) | [languages/lua](languages/lua) | none |
+| Makefile (GNU make) | [languages/make](languages/make) | none |
 | Nix | [languages/nix](languages/nix) | none |
 | Python (3.14) | [languages/python](languages/python) | none |
 | Ruby | [languages/ruby](languages/ruby) | none |

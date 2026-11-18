@@ -1,0 +1,259 @@
+================================================================================
+Prefixes
+================================================================================
+
+x:
+	@echo a
+	-rm b
+	+$(MAKE) c
+	@-true
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    targets: (targets
+      (word))
+    recipe: (recipe
+      (recipe_line
+        (prefix))
+      (recipe_line
+        (prefix))
+      (recipe_line
+        (prefix)
+        (variable_reference
+          name: (variable_name)))
+      (recipe_line
+        (prefix)))))
+
+================================================================================
+Hash and dollars in a recipe
+================================================================================
+
+x:
+	echo "#1" $$HOME $$(date) # shell
+	$(X) # $(Y)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    targets: (targets
+      (word))
+    recipe: (recipe
+      (recipe_line
+        (escape_sequence)
+        (escape_sequence))
+      (recipe_line
+        (variable_reference
+          name: (variable_name))
+        (variable_reference
+          name: (variable_name))))))
+
+================================================================================
+Continued recipe line
+================================================================================
+
+x:
+	for f in a b; do \
+		echo $$f; \
+	done
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    targets: (targets
+      (word))
+    recipe: (recipe
+      (recipe_line
+        (escape_sequence)))))
+
+================================================================================
+Blank and comment lines in a recipe
+================================================================================
+
+x:
+	echo a
+
+# a comment
+  # another
+	echo b
+
+# after
+y = 1
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    targets: (targets
+      (word))
+    recipe: (recipe
+      (recipe_line)
+      (comment)
+      (comment)
+      (recipe_line)))
+  (comment)
+  (variable_assignment
+    name: (word)
+    value: (text)))
+
+================================================================================
+Tab-led line after a comment that is also a rule
+================================================================================
+
+x:
+# note
+	echo a: b
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    targets: (targets
+      (word))
+    recipe: (recipe
+      (comment)
+      (recipe_line))))
+
+================================================================================
+Conditional in a recipe
+================================================================================
+
+x:
+ifeq ($(V),1)
+	echo verbose
+else ifdef Q
+	@echo quiet
+else
+	echo
+endif
+	echo done
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    targets: (targets
+      (word))
+    recipe: (recipe
+      (conditional
+        condition: (ifeq_directive
+          left: (text
+            (variable_reference
+              name: (variable_name)))
+          right: (text))
+        (recipe_line)
+        (else_directive
+          condition: (ifdef_directive
+            variable: (word)))
+        (recipe_line
+          (prefix))
+        (else_directive)
+        (recipe_line))
+      (recipe_line))))
+
+================================================================================
+Conditional after a rule
+================================================================================
+
+x:
+	echo
+ifdef X
+Y = 1
+endif
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    targets: (targets
+      (word))
+    recipe: (recipe
+      (recipe_line)))
+  (conditional
+    condition: (ifdef_directive
+      variable: (word))
+    (variable_assignment
+      name: (word)
+      value: (text))))
+
+================================================================================
+Tab-indented lines in a conditional after a rule
+================================================================================
+
+x: y
+ifdef X
+	$(call cmd,x)
+	A = 1
+endif
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    targets: (targets
+      (word))
+    prerequisites: (prerequisites
+      (word))
+    recipe: (recipe
+      (conditional
+        condition: (ifdef_directive
+          variable: (word))
+        (recipe_line
+          (function_call
+            function: (function_name)
+            argument: (text)
+            argument: (text)))
+        (recipe_line)))))
+
+================================================================================
+Recipe after endif
+================================================================================
+
+ifdef X
+a: b
+else
+a: c
+endif
+	echo $@
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (conditional
+    condition: (ifdef_directive
+      variable: (word))
+    (rule
+      targets: (targets
+        (word))
+      prerequisites: (prerequisites
+        (word)))
+    (else_directive)
+    (rule
+      targets: (targets
+        (word))
+      prerequisites: (prerequisites
+        (word))))
+  (recipe
+    (recipe_line
+      (automatic_variable))))
+
+================================================================================
+Trailing blank lines
+================================================================================
+
+x:
+	echo
+
+
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    targets: (targets
+      (word))
+    recipe: (recipe
+      (recipe_line))))

@@ -1,0 +1,203 @@
+================================================================================
+Assignment operators
+================================================================================
+
+A = 1
+B := 2
+C ::= 3
+D :::= 4
+E ?= 5
+F += 6
+G != echo 7
+H =
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_assignment
+    name: (word)
+    value: (text))
+  (variable_assignment
+    name: (word)
+    value: (text))
+  (variable_assignment
+    name: (word)
+    value: (text))
+  (variable_assignment
+    name: (word)
+    value: (text))
+  (variable_assignment
+    name: (word)
+    value: (text))
+  (variable_assignment
+    name: (word)
+    value: (text))
+  (variable_assignment
+    name: (word)
+    value: (text))
+  (variable_assignment
+    name: (word)))
+
+================================================================================
+No spaces around operators
+================================================================================
+
+A=1
+B+=2
+C?=3
+D:=4
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_assignment
+    name: (word)
+    value: (text))
+  (variable_assignment
+    name: (word)
+    value: (text))
+  (variable_assignment
+    name: (word)
+    value: (text))
+  (variable_assignment
+    name: (word)
+    value: (text)))
+
+================================================================================
+Modifiers
+================================================================================
+
+override A = 1
+export B := 2
+private C = 3
+override export D += 4
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_assignment
+    name: (word)
+    value: (text))
+  (variable_assignment
+    name: (word)
+    value: (text))
+  (variable_assignment
+    name: (word)
+    value: (text))
+  (variable_assignment
+    name: (word)
+    value: (text)))
+
+================================================================================
+Computed name
+================================================================================
+
+$(ARCH)_FLAGS := -m64
+CFLAGS_$(BUILD) = x
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_assignment
+    name: (variable_reference
+      name: (variable_name))
+    name: (word)
+    value: (text))
+  (variable_assignment
+    name: (word)
+    name: (variable_reference
+      name: (variable_name))
+    value: (text)))
+
+================================================================================
+Comments and escapes in a value
+================================================================================
+
+A = b \# c # d
+B = x\
+    y
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_assignment
+    name: (word)
+    value: (text))
+  (comment)
+  (variable_assignment
+    name: (word)
+    value: (text)))
+
+================================================================================
+Export and unexport
+================================================================================
+
+export
+export A B
+unexport C
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (export_directive)
+  (export_directive
+    variables: (word)
+    variables: (word))
+  (unexport_directive
+    variables: (word)))
+
+================================================================================
+Define
+================================================================================
+
+define two-lines
+echo a
+# b
+  $(c)
+endef
+override define E :=
+endef
+undefine two-lines
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (define_directive
+    name: (word)
+    body: (define_body
+      (variable_reference
+        name: (variable_name))))
+  (define_directive
+    name: (word))
+  (undefine_directive
+    name: (word)))
+
+================================================================================
+Indented assignments in a conditional
+================================================================================
+
+A = 1
+ifeq ($(OS),Windows_NT)
+	EXE = .exe
+else
+	EXE =
+endif
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_assignment
+    name: (word)
+    value: (text))
+  (conditional
+    condition: (ifeq_directive
+      left: (text
+        (variable_reference
+          name: (variable_name)))
+      right: (text))
+    (variable_assignment
+      name: (word)
+      value: (text))
+    (else_directive)
+    (variable_assignment
+      name: (word))))

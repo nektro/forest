@@ -1,0 +1,45 @@
+================================================================================
+CRLF line endings
+================================================================================
+
+x: y
+	$(CC) -o $@ \
+	  y.c
+# c
+	echo
+A = 1 \
+  2
+ifdef A
+B = 1
+endif
+define D
+a
+endef
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    targets: (targets
+      (word))
+    prerequisites: (prerequisites
+      (word))
+    recipe: (recipe
+      (recipe_line
+        (variable_reference
+          name: (variable_name))
+        (automatic_variable))
+      (comment)
+      (recipe_line)))
+  (variable_assignment
+    name: (word)
+    value: (text))
+  (conditional
+    condition: (ifdef_directive
+      variable: (word))
+    (variable_assignment
+      name: (word)
+      value: (text)))
+  (define_directive
+    name: (word)
+    body: (define_body)))

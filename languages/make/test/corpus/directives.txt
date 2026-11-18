@@ -1,0 +1,138 @@
+================================================================================
+Include
+================================================================================
+
+include a.mk b.mk
+-include $(DEPS)
+sinclude c.mk
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (include_directive
+    path: (word)
+    path: (word))
+  (include_directive
+    path: (variable_reference
+      name: (variable_name)))
+  (include_directive
+    path: (word)))
+
+================================================================================
+Conditionals
+================================================================================
+
+ifeq ($(A),1)
+B = 1
+else ifneq "$(A)" '2'
+B = 2
+else ifdef C
+else
+B = 3
+endif
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (conditional
+    condition: (ifeq_directive
+      left: (text
+        (variable_reference
+          name: (variable_name)))
+      right: (text))
+    (variable_assignment
+      name: (word)
+      value: (text))
+    (else_directive
+      condition: (ifeq_directive
+        left: (string
+          (variable_reference
+            name: (variable_name)))
+        right: (string)))
+    (variable_assignment
+      name: (word)
+      value: (text))
+    (else_directive
+      condition: (ifdef_directive
+        variable: (word)))
+    (else_directive)
+    (variable_assignment
+      name: (word)
+      value: (text))))
+
+================================================================================
+Nested conditionals
+================================================================================
+
+ifdef A
+  ifndef B
+    C = 1
+  endif
+endif
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (conditional
+    condition: (ifdef_directive
+      variable: (word))
+    (conditional
+      condition: (ifdef_directive
+        variable: (word))
+      (variable_assignment
+        name: (word)
+        value: (text)))))
+
+================================================================================
+Vpath
+================================================================================
+
+vpath %.c src:lib
+vpath %.h
+vpath
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (vpath_directive
+    pattern: (word)
+    directory: (word))
+  (vpath_directive
+    pattern: (word))
+  (vpath_directive))
+
+================================================================================
+Load
+================================================================================
+
+load mk_temp.so
+-load x.so
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (load_directive
+    path: (word))
+  (load_directive
+    path: (word)))
+
+================================================================================
+Comments
+================================================================================
+
+# a
+#!/usr/bin/make -f
+A = 1 # b
+# continued \
+  comment
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (comment)
+  (comment)
+  (variable_assignment
+    name: (word)
+    value: (text))
+  (comment)
+  (comment))

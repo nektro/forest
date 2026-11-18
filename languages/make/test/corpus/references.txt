@@ -1,0 +1,254 @@
+================================================================================
+Variable references
+================================================================================
+
+x = $(A) ${B} $C $(A_$(B)) $$D
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_assignment
+    name: (word)
+    value: (text
+      (variable_reference
+        name: (variable_name))
+      (variable_reference
+        name: (variable_name))
+      (variable_reference)
+      (variable_reference
+        name: (variable_name)
+        name: (variable_reference
+          name: (variable_name)))
+      (escape_sequence))))
+
+================================================================================
+Automatic variables
+================================================================================
+
+x = $@ $< $^ $+ $? $* $% $| $(@D) ${<F}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_assignment
+    name: (word)
+    value: (text
+      (automatic_variable)
+      (automatic_variable)
+      (automatic_variable)
+      (automatic_variable)
+      (automatic_variable)
+      (automatic_variable)
+      (automatic_variable)
+      (automatic_variable)
+      (automatic_variable)
+      (automatic_variable))))
+
+================================================================================
+Substitution references
+================================================================================
+
+x = $(SRCS:.c=.o) $(SRCS:%.c=obj/%.o) ${A:a=b=c}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_assignment
+    name: (word)
+    value: (text
+      (variable_reference
+        name: (variable_name)
+        pattern: (text)
+        replacement: (text))
+      (variable_reference
+        name: (variable_name)
+        pattern: (text)
+        replacement: (text))
+      (variable_reference
+        name: (variable_name)
+        pattern: (text)
+        replacement: (text)))))
+
+================================================================================
+Function calls
+================================================================================
+
+x = $(subst a,b,$(X)) $(patsubst %.c,%.o,$(wildcard *.c)) $(if $(A),,c)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_assignment
+    name: (word)
+    value: (text
+      (function_call
+        function: (function_name)
+        argument: (text)
+        argument: (text)
+        argument: (text
+          (variable_reference
+            name: (variable_name))))
+      (function_call
+        function: (function_name)
+        argument: (text)
+        argument: (text)
+        argument: (text
+          (function_call
+            function: (function_name)
+            argument: (text))))
+      (function_call
+        function: (function_name)
+        argument: (text
+          (variable_reference
+            name: (variable_name)))
+        argument: (text)))))
+
+================================================================================
+One-argument functions keep commas
+================================================================================
+
+x = $(info a, b) $(shell echo a,b)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_assignment
+    name: (word)
+    value: (text
+      (function_call
+        function: (function_name)
+        argument: (text))
+      (function_call
+        function: (function_name)
+        argument: (text)))))
+
+================================================================================
+Function names as variables
+================================================================================
+
+x = $(dir) $(dir $(y)) $(word) $(info)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_assignment
+    name: (word)
+    value: (text
+      (variable_reference
+        name: (variable_name))
+      (function_call
+        function: (function_name)
+        argument: (text
+          (variable_reference
+            name: (variable_name))))
+      (variable_reference
+        name: (variable_name))
+      (variable_reference
+        name: (variable_name)))))
+
+================================================================================
+Nested parentheses
+================================================================================
+
+x = $(shell echo (a,b)) $(if a,(b,c),d) ${info (}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_assignment
+    name: (word)
+    value: (text
+      (function_call
+        function: (function_name)
+        argument: (text))
+      (function_call
+        function: (function_name)
+        argument: (text)
+        argument: (text)
+        argument: (text))
+      (function_call
+        function: (function_name)
+        argument: (text)))))
+
+================================================================================
+Hash in a reference
+================================================================================
+
+x = $(info # not a comment (really))
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (variable_assignment
+    name: (word)
+    value: (text
+      (function_call
+        function: (function_name)
+        argument: (text)))))
+
+================================================================================
+Expansion lines
+================================================================================
+
+$(foreach d,$(DIRS),$(eval $(call rule,$(d))))
+$(call x) $(call y)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_call
+    function: (function_name)
+    argument: (text)
+    argument: (text
+      (variable_reference
+        name: (variable_name)))
+    argument: (text
+      (function_call
+        function: (function_name)
+        argument: (text
+          (function_call
+            function: (function_name)
+            argument: (text)
+            argument: (text
+              (variable_reference
+                name: (variable_name))))))))
+  (function_call
+    function: (function_name)
+    argument: (text))
+  (function_call
+    function: (function_name)
+    argument: (text)))
+
+================================================================================
+Arguments over several lines
+================================================================================
+
+define x
+$(if $(1),,
+  echo none
+)
+endef
+A = $(call f, \
+	a, \
+	b)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (define_directive
+    name: (word)
+    body: (define_body
+      (function_call
+        function: (function_name)
+        argument: (text
+          (variable_reference
+            name: (variable_name)))
+        argument: (text))))
+  (variable_assignment
+    name: (word)
+    value: (text
+      (function_call
+        function: (function_name)
+        argument: (text)
+        argument: (text)
+        argument: (text)))))

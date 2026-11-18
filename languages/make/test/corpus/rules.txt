@@ -1,0 +1,239 @@
+================================================================================
+Rule without recipe
+================================================================================
+
+all: build test
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    targets: (targets
+      (word))
+    prerequisites: (prerequisites
+      (word)
+      (word))))
+
+================================================================================
+Rule with recipe
+================================================================================
+
+hello: hello.c
+	$(CC) -o $@ $<
+	@echo built
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    targets: (targets
+      (word))
+    prerequisites: (prerequisites
+      (word))
+    recipe: (recipe
+      (recipe_line
+        (variable_reference
+          name: (variable_name))
+        (automatic_variable)
+        (automatic_variable))
+      (recipe_line
+        (prefix)))))
+
+================================================================================
+Double-colon and grouped targets
+================================================================================
+
+log::
+	date
+a.h b.h &: gen
+	./gen
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    targets: (targets
+      (word))
+    recipe: (recipe
+      (recipe_line)))
+  (rule
+    targets: (targets
+      (word)
+      (word))
+    prerequisites: (prerequisites
+      (word))
+    recipe: (recipe
+      (recipe_line))))
+
+================================================================================
+Order-only prerequisites
+================================================================================
+
+obj/x.o: x.c | obj
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    targets: (targets
+      (word))
+    prerequisites: (prerequisites
+      (word))
+    order_only: (prerequisites
+      (word))))
+
+================================================================================
+Static pattern rule
+================================================================================
+
+$(OBJS): %.o: %.c
+	$(CC) -c $<
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    targets: (targets
+      (variable_reference
+        name: (variable_name)))
+    target_pattern: (target_pattern
+      (word))
+    prerequisites: (prerequisites
+      (word))
+    recipe: (recipe
+      (recipe_line
+        (variable_reference
+          name: (variable_name))
+        (automatic_variable)))))
+
+================================================================================
+Inline recipe
+================================================================================
+
+clean: ; rm -f *.o
+bp:;	$(MAKE) x
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    targets: (targets
+      (word))
+    recipe: (recipe
+      (recipe_line)))
+  (rule
+    targets: (targets
+      (word))
+    recipe: (recipe
+      (recipe_line
+        (variable_reference
+          name: (variable_name))))))
+
+================================================================================
+Target-specific variable
+================================================================================
+
+debug: CFLAGS += -g
+release: override export LTO := 1
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (target_variable
+    targets: (targets
+      (word))
+    assignment: (variable_assignment
+      name: (word)
+      value: (text)))
+  (target_variable
+    targets: (targets
+      (word))
+    assignment: (variable_assignment
+      name: (word)
+      value: (text))))
+
+================================================================================
+Special targets
+================================================================================
+
+.PHONY: all clean
+.SUFFIXES:
+.SECONDEXPANSION:
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    targets: (targets
+      (word))
+    prerequisites: (prerequisites
+      (word)
+      (word)))
+  (rule
+    targets: (targets
+      (word)))
+  (rule
+    targets: (targets
+      (word))))
+
+================================================================================
+Second expansion
+================================================================================
+
+main: $$(addprefix obj/,$$(OBJS)) $$x
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    targets: (targets
+      (word))
+    prerequisites: (prerequisites
+      (function_call
+        function: (function_name)
+        argument: (text)
+        argument: (text
+          (escape_sequence)))
+      (escape_sequence)
+      (word))))
+
+================================================================================
+Directive keyword as a target
+================================================================================
+
+include: x.h
+all: include lib
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    targets: (targets
+      (word))
+    prerequisites: (prerequisites
+      (word)))
+  (rule
+    targets: (targets
+      (word))
+    prerequisites: (prerequisites
+      (word)
+      (word))))
+
+================================================================================
+Multi-line prerequisites
+================================================================================
+
+all: a \
+	b \
+	c
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (rule
+    targets: (targets
+      (word))
+    prerequisites: (prerequisites
+      (word)
+      (word)
+      (word))))
