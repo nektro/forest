@@ -1,0 +1,74 @@
+// A comment.
+// <- comment
+package "forest" version=(semver)"1.2.3" #true
+// <- tag
+//      ^ string
+//               ^ property
+//                      ^ operator
+//                       ^ punctuation.bracket
+//                        ^ type
+//                                ^ string
+//                                        ^ boolean
+(app)server port=8080 hosts=#null ratio=1.5e3 bits=0xff_ff weight=#inf {
+// <- punctuation.bracket
+//^ type
+//    ^ tag
+//                ^ number
+//                          ^ constant.builtin
+//                                        ^ number
+//                                                   ^ number
+//                                                                 ^ number
+//                                                                     ^ punctuation.bracket
+  path #"C:\temp"# "tab\there\u{1F600}"
+//^ tag
+//     ^ string
+//                 ^ string
+//                     ^ string.escape
+//                           ^ string.escape
+  bare-word +x .y; next
+//^ tag
+//          ^ string
+//             ^ string
+//               ^ punctuation.delimiter
+//                 ^ tag
+}
+// <- punctuation.bracket
+text """
+  multi-line \
+  text
+  """
+//^ string
+legacy r#"raw"# false null
+// <- tag
+//     ^ string
+//              ^ boolean
+//                    ^ constant.builtin
+node arg \ // continued
+  more
+//^ string
+/* block /* nested */ comment */ node
+// <- comment
+//                 ^ comment
+//                               ^ tag
+/-commented "arg" key=value
+// <- comment
+//^ comment
+//          ^ comment
+//                ^ comment
+//                    ^ comment
+node /-(t)1 /-key=#true kept /- {
+//      ^ comment
+//          ^ comment
+//              ^ comment
+//                    ^ comment
+//                      ^ string
+//                           ^ comment
+//                              ^ comment
+  child
+//^ comment
+} {
+// <- comment
+//^ punctuation.bracket
+  real
+//^ tag
+}

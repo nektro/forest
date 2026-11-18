@@ -1,0 +1,76 @@
+==================
+KDL 1.0 keywords
+==================
+node true false null
+
+---
+
+(document
+  (node
+    name: (identifier)
+    (argument
+      value: (boolean))
+    (argument
+      value: (boolean))
+    (argument
+      value: (null))))
+
+==================
+KDL 1.0 raw strings
+==================
+node r"C:\path" r#"has "quotes""# r##"
+spans lines
+"##
+
+---
+
+(document
+  (node
+    name: (identifier)
+    (argument
+      value: (raw_string))
+    (argument
+      value: (raw_string))
+    (argument
+      value: (raw_string))))
+
+==================
+KDL 1.0 configuration
+==================
+keybinds {
+    normal {
+        bind "Ctrl g" { SwitchToMode "locked"; }
+    }
+}
+pane_frames false
+default_shell "fish"
+
+---
+
+(document
+  (node
+    name: (identifier)
+    children: (children
+      (node
+        name: (identifier)
+        children: (children
+          (node
+            name: (identifier)
+            (argument
+              value: (string
+                (string_content)))
+            children: (children
+              (node
+                name: (identifier)
+                (argument
+                  value: (string
+                    (string_content))))))))))
+  (node
+    name: (identifier)
+    (argument
+      value: (boolean)))
+  (node
+    name: (identifier)
+    (argument
+      value: (string
+        (string_content)))))

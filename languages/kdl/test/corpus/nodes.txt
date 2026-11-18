@@ -1,0 +1,194 @@
+==================
+Empty document
+==================
+
+
+---
+
+(document)
+
+==================
+Bare node
+==================
+node
+
+---
+
+(document
+  (node
+    name: (identifier)))
+
+==================
+Arguments and properties
+==================
+node 1 "two" three key=value "quoted key"=#true
+
+---
+
+(document
+  (node
+    name: (identifier)
+    (argument
+      value: (number))
+    (argument
+      value: (string
+        (string_content)))
+    (argument
+      value: (identifier))
+    (property
+      key: (identifier)
+      value: (identifier))
+    (property
+      key: (string
+        (string_content))
+      value: (boolean))))
+
+==================
+Type annotations
+==================
+(author)person (u8)25 name=(string)"Ana"
+
+---
+
+(document
+  (node
+    type: (type
+      (identifier))
+    name: (identifier)
+    (argument
+      type: (type
+        (identifier))
+      value: (number))
+    (property
+      key: (identifier)
+      type: (type
+        (identifier))
+      value: (string
+        (string_content)))))
+
+==================
+Children
+==================
+parent {
+  child1
+  child2 arg; child3
+}
+
+---
+
+(document
+  (node
+    name: (identifier)
+    children: (children
+      (node
+        name: (identifier))
+      (node
+        name: (identifier)
+        (argument
+          value: (identifier)))
+      (node
+        name: (identifier)))))
+
+==================
+Children on one line
+==================
+a { b; c }
+
+---
+
+(document
+  (node
+    name: (identifier)
+    children: (children
+      (node
+        name: (identifier))
+      (node
+        name: (identifier)))))
+
+==================
+Empty children
+==================
+a {}
+
+---
+
+(document
+  (node
+    name: (identifier)
+    children: (children)))
+
+==================
+Semicolon terminators
+==================
+a; b; c
+
+---
+
+(document
+  (node
+    name: (identifier))
+  (node
+    name: (identifier))
+  (node
+    name: (identifier)))
+
+==================
+Node names of every string kind
+==================
+"quoted name"
+#"raw name"#
+"""
+multi-line name
+"""
+
+---
+
+(document
+  (node
+    name: (string
+      (string_content)))
+  (node
+    name: (raw_string))
+  (node
+    name: (string
+      (string_content))))
+
+==================
+Blank lines and indentation
+==================
+
+
+  a
+
+    b
+
+
+---
+
+(document
+  (node
+    name: (identifier))
+  (node
+    name: (identifier)))
+
+==================
+Line continuation
+==================
+node 1 \
+  2 \ // a comment
+  3
+
+---
+
+(document
+  (node
+    name: (identifier)
+    (argument
+      value: (number))
+    (line_continuation)
+    (argument
+      value: (number))
+    (line_continuation
+      (line_comment))
+    (argument
+      value: (number))))

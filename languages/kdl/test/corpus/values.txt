@@ -1,0 +1,194 @@
+==================
+Identifiers
+==================
+node foo-bar +x -y .z +.w - + . 🎉 a<b>c
+
+---
+
+(document
+  (node
+    name: (identifier)
+    (argument
+      value: (identifier))
+    (argument
+      value: (identifier))
+    (argument
+      value: (identifier))
+    (argument
+      value: (identifier))
+    (argument
+      value: (identifier))
+    (argument
+      value: (identifier))
+    (argument
+      value: (identifier))
+    (argument
+      value: (identifier))
+    (argument
+      value: (identifier))
+    (argument
+      value: (identifier))))
+
+==================
+Quoted strings
+==================
+node "" "plain" "tab\there" "\u{1F600}" "\"q\"" "\\ \/ \s"
+
+---
+
+(document
+  (node
+    name: (identifier)
+    (argument
+      value: (string))
+    (argument
+      value: (string
+        (string_content)))
+    (argument
+      value: (string
+        (string_content)
+        (escape_sequence)
+        (string_content)))
+    (argument
+      value: (string
+        (escape_sequence)))
+    (argument
+      value: (string
+        (escape_sequence)
+        (string_content)
+        (escape_sequence)))
+    (argument
+      value: (string
+        (escape_sequence)
+        (string_content)
+        (escape_sequence)
+        (string_content)
+        (escape_sequence)))))
+
+==================
+Whitespace escape
+==================
+node "one \
+      two"
+
+---
+
+(document
+  (node
+    name: (identifier)
+    (argument
+      value: (string
+        (string_content)
+        (escape_sequence)
+        (string_content)))))
+
+==================
+Multi-line strings
+==================
+node """
+  line "one"
+  line ""two""
+  esc\n "\t"
+  """
+
+---
+
+(document
+  (node
+    name: (identifier)
+    (argument
+      value: (string
+        (string_content)
+        (escape_sequence)
+        (string_content)
+        (string_content)
+        (escape_sequence)
+        (string_content)))))
+
+==================
+Raw strings
+==================
+node #"C:\path"# #""# ##"has "# inside"## ###"a"##b"###
+
+---
+
+(document
+  (node
+    name: (identifier)
+    (argument
+      value: (raw_string))
+    (argument
+      value: (raw_string))
+    (argument
+      value: (raw_string))
+    (argument
+      value: (raw_string))))
+
+==================
+Multi-line raw strings
+==================
+node #"""
+  raw "quotes" and \n
+  """#
+
+---
+
+(document
+  (node
+    name: (identifier)
+    (argument
+      value: (raw_string))))
+
+==================
+Numbers
+==================
+node 0 -1 +2 1_000 1.5 -0.5e-10 1E+3 0xdead_BEEF 0o755 0b1010 #inf #-inf #nan
+
+---
+
+(document
+  (node
+    name: (identifier)
+    (argument
+      value: (number))
+    (argument
+      value: (number))
+    (argument
+      value: (number))
+    (argument
+      value: (number))
+    (argument
+      value: (number))
+    (argument
+      value: (number))
+    (argument
+      value: (number))
+    (argument
+      value: (number))
+    (argument
+      value: (number))
+    (argument
+      value: (number))
+    (argument
+      value: (number))
+    (argument
+      value: (number))
+    (argument
+      value: (number))))
+
+==================
+Keywords
+==================
+node #true #false #null
+
+---
+
+(document
+  (node
+    name: (identifier)
+    (argument
+      value: (boolean))
+    (argument
+      value: (boolean))
+    (argument
+      value: (null))))

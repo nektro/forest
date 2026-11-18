@@ -22,6 +22,7 @@ A bundle of tree-sitter grammars.
 | Java | [languages/java](languages/java) | none |
 | JSON (and JSONC, JSON Lines) | [languages/json](languages/json) | none |
 | Justfile | [languages/just](languages/just) | none |
+| KDL (2.0, and 1.0) | [languages/kdl](languages/kdl) | none |
 | Lua (5.1 to 5.5) | [languages/lua](languages/lua) | none |
 | Nix | [languages/nix](languages/nix) | none |
 | Python (3.14) | [languages/python](languages/python) | none |

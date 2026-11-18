@@ -1,0 +1,33 @@
+/- kdl-version 2
+// A service definition, in KDL 2.0.
+
+service "forest-api" version=(semver)"2.4.1" {
+    image registry="ghcr.io" "nektro/forest" tag=#null
+    replicas 3
+    restart on-failure max-attempts=5
+
+    listen (ipv4)"0.0.0.0" port=8080 tls=#true
+    /- listen (ipv6)"::" port=8080   // not yet
+
+    limits cpu=0.5 memory=0x2000_0000 timeout=#inf
+
+    env {
+        LOG_LEVEL info
+        GREETING "Hello,\tworld! \u{1F332}"
+        WINDOWS_PATH #"C:\Program Files\forest"#
+    }
+
+    healthcheck \
+        interval=30 \
+        retries=3
+
+    /* Startup script.
+       /* Block comments nest. */ */
+    script """
+        set -e
+        echo "starting"
+        exec forest serve
+        """
+
+    mounts { data "/var/lib/forest"; cache "/tmp/forest" }
+}

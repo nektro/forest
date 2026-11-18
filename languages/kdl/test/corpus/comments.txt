@@ -1,0 +1,157 @@
+==================
+Line comments
+==================
+// leading
+node // trailing
+// last
+
+---
+
+(document
+  (line_comment)
+  (node
+    name: (identifier))
+  (line_comment)
+  (line_comment))
+
+==================
+Block comments
+==================
+node /* inline */ arg /* multi
+line */ arg2
+
+---
+
+(document
+  (node
+    name: (identifier)
+    (block_comment)
+    (argument
+      value: (identifier))
+    (block_comment)
+    (argument
+      value: (identifier))))
+
+==================
+Nested block comments
+==================
+/* outer /* inner */ still outer // not a line comment */ node
+
+---
+
+(document
+  (block_comment
+    (block_comment))
+  (node
+    name: (identifier)))
+
+==================
+Slashdash node
+==================
+/-node 1 2
+/- other
+
+---
+
+(document
+  (node
+    (slashdash)
+    name: (identifier)
+    (argument
+      value: (number))
+    (argument
+      value: (number)))
+  (node
+    (slashdash)
+    name: (identifier)))
+
+==================
+Slashdash entries
+==================
+node /-1 2 /-key=val /- (t)3
+
+---
+
+(document
+  (node
+    name: (identifier)
+    (argument
+      (slashdash)
+      value: (number))
+    (argument
+      value: (number))
+    (property
+      (slashdash)
+      key: (identifier)
+      value: (identifier))
+    (argument
+      (slashdash)
+      type: (type
+        (identifier))
+      value: (number))))
+
+==================
+Slashdash children
+==================
+node /-{ a } { b } /- {
+  c
+}
+
+---
+
+(document
+  (node
+    name: (identifier)
+    children: (children
+      (slashdash)
+      (node
+        name: (identifier)))
+    children: (children
+      (node
+        name: (identifier)))
+    children: (children
+      (slashdash)
+      (node
+        name: (identifier)))))
+
+==================
+Slashdash across lines
+==================
+node 1 /-
+  2 3
+/-
+
+dropped
+
+---
+
+(document
+  (node
+    name: (identifier)
+    (argument
+      value: (number))
+    (argument
+      (slashdash)
+      value: (number))
+    (argument
+      value: (number)))
+  (node
+    (slashdash)
+    name: (identifier)))
+
+==================
+Version marker
+==================
+/- kdl-version 2
+node
+
+---
+
+(document
+  (node
+    (slashdash)
+    name: (identifier)
+    (argument
+      value: (number)))
+  (node
+    name: (identifier)))
